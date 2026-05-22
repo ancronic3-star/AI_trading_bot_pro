@@ -1,0 +1,52 @@
+# Runtime, credentials, and local state
+.env
+.env.*
+keys/
+secrets/
+*.pem
+*.key
+*key*.json
+*keys*.txt
+*jwt*.txt
+*credential*
+*credentials*
+acc_*.json
+balances_baseline.json
+tracked_account_snapshot.json
+live_snapshot.json
+wm3_support_snapshot.json
+decision_replay_snapshot.json
+
+# Logs, ledgers, diagnostics, snapshots, and artifacts
+logs/
+*.log
+*.jsonl
+*.zip
+menu_state.json
+run_active.json
+*_state.json
+*_active.json
+*_diag*/
+*_diagnostics*/
+*_backup*/
+*_backups*/
+*_snapshot*/
+*_bundle*/
+test-results/
+cache/
+.state/
+
+# Generated/dependency folders
+__pycache__/
+*.pyc
+.venv/
+venv/
+venv2/
+node_modules/
+.next/
+dist/
+build/
+
+# Local OS/editor files
+.DS_Store
+Thumbs.db

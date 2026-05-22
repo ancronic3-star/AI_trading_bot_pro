@@ -1,0 +1,13 @@
+backoff==2.2.1
+certifi==2025.8.3
+cffi==1.17.1
+charset-normalizer==3.4.3
+coinbase-advanced-py==1.8.2
+cryptography==45.0.6
+idna==3.10
+pycparser==2.22
+PyJWT==2.10.1
+python-dotenv==1.1.1
+requests==2.32.4
+urllib3==2.5.0
+websockets==13.1
