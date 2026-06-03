@@ -25,35 +25,40 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T14:58:00Z
+Timestamp: 2026-06-03T15:10:00Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally.
-- Latest local supervised DRY observe task: completed at 2026-06-03T14:54:23Z.
-- Latest supervised DRY observe completed: exit 0, ticks=4, elapsed_sec=36.6.
+- Latest local supervised DRY observe task: completed at 2026-06-03T15:08:25Z.
+- Latest supervised DRY observe completed: exit 0, ticks=3, elapsed_sec=25.3.
 - No run_koko_dry_supervised/run_manager trading process left running from this observe.
 - DRY=true, LIVE=false.
 
 Current blocker:
 - DRY observe still opens no candidates: opened=0, open_count=0, closed=0, wins=0, losses=0.
-- Data/preflight cache lane is now usable: supervisor preflight cache guard saw cache_refresh_required=false, supported=true, timestamp_ratio=0.883, liquid=16, blocker empty before the latest observe.
-- Previous stale timestamp blocker was handled by automatic public recent-candle cache refresh inside tools/run_koko_dry_supervised.py; earlier refresh result was refreshed=392, failed=1, supported=true, timestamp_ratio=0.883, liquid=16.
-- Remaining blocker is current open-lane eligibility, not Profit Score tuning: latest drynear evidence shows candidates missing actual dmid thresholds after usable cache coverage. ETH-USD had recent_candle_dmid=17.67/40.00 then tick_dmid near 0.70/10.00; LINK-USD had recent_candle_dmid=30.77/40.00 and tick_dmid=1.77/10.00.
-- U=0/stale-feed false cause reduced: tick dmid now distinguishes unwarmed first samples from real tick movement. Unwarmed tick confirmation no longer blocks when recent-candle dmid passes, while warmed tick dmid below DRY_MIN_TICK_DMID_BPS still blocks.
-- Do not tune profit scoring while opened=0; next action should stay in runtime open-lane diagnostics and candidate/feed alignment.
+- Feed/preflight lane is usable: supervisor preflight cache guard saw cache_refresh_required=false, supported=true, timestamp_ratio=0.8753, liquid=14, blocker empty before the latest observe.
+- Latest readiness is now correctly scoped to the latest local run. It shows signals=393, all_pass_candidates=0, one_gate_near_miss_present=true, dominant_blocker=trough, and the liquid subset has 18 signals with one_gate_counts dmid=5.
+- Latest drynear: ETH-USD failed dmid with score=0.9986, spread=0.05/5.00, TOB=3648/500, quote_volume=8815416/250000, recent_candle_dmid=-1.72/40.00, tick_dmid=0.43/10.00, twarm=1.
+- Current near miss: ADA-USD is one gate away, failing only recent-candle dmid at 14.0384/40.00 with tick_dmid_warmed=false. This is a real dmid miss after usable coverage, not stale feed or tick warmup misclassification.
+- Do not tune Profit Score while opened=0; next action remains DRY open-lane/feed alignment and longer observe once hang risk is stable.
 
 Files changed in current local worktree for this lane:
-- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
-- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
-- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
-- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
-- C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py
 - C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
-- C:\ai_trading_bot_koko\logs\cache_market_regime_latest_runtime_window.json
+- C:\ai_trading_bot_koko\managers\logging_manager\tdi_logger.py
+- C:\ai_trading_bot_koko\tests\test_tdi_logger.py
+- Earlier lane files remain changed: tools\run_koko_dry_supervised.py, tests\test_run_koko_dry_supervised_preflight.py, tools\koko_cache_market_regime.py, tests\test_koko_cache_market_regime.py.
+
+Changes applied:
+- Readiness now filters PAPER_BUY_SIGNAL rows with --since-local-start/marker, matching tick_diag filtering and removing stale historical near-miss pollution.
+- Paper signals and drynear diagnostics now expose tick_dmid_warmed/twarm so unwarmed tick samples and real weak tick movement are distinguishable.
+- Readiness now mirrors runtime warm-sample logic: explicitly unwarmed tick dmid does not count as a tick_dmid failure when DRY_TICK_DMID_REQUIRE_WARM_SAMPLE is true.
+- Runtime candle-cache path lookup now has a short TTL path cache to stop per-signal glob scans across the candle cache.
+- TDI snapshot logger now rotates oversized tdi_snapshots.jsonl before append. Existing oversized file was rotated to tdi_snapshots.20260603T150805Z.rotated.jsonl; fresh tdi_snapshots.jsonl is about 0.9 MB after smoke observe.
 
 Dry Profit Score evidence:
 - Current Profit Score: 0/100.
@@ -62,12 +67,11 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet because opened=0.
 
 Verification evidence:
-- py_compile managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py tools\koko_cache_market_regime.py: OK.
-- test_koko_dry_candidate_rank.py: 8 OK.
-- test_run_koko_dry_supervised_preflight.py: 2 OK.
-- test_koko_cache_market_regime.py: 15 OK.
-- Earlier test_koko_dry_observe_readiness.py: 3 OK.
-- Latest bounded DRY observe with supervisor preflight refresh enabled: exit 0, ticks=4, opened=0, dry P&L flat.
+- py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py managers\logging_manager\tdi_logger.py: OK.
+- test_koko_dry_candidate_rank.py: 9 OK.
+- test_koko_dry_observe_readiness.py: 5 OK.
+- test_tdi_logger.py: 1 OK.
+- Latest bounded DRY observe with supervisor preflight refresh enabled: exit 0, ticks=3, opened=0, dry P&L flat.
 
 Guardrails:
 - Coinbase/order placement path not touched by this relay update or the latest patches.
@@ -75,3 +79,6 @@ Guardrails:
 - LIVE remains false.
 - Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+
+Reporting note:
+- Local SMTP reporter still lacks SMTP env and writes .eml outbox files instead of sending directly; Gmail connector was used for material status email while this local env gap remains.
