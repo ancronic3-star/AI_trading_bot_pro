@@ -25,39 +25,40 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T21:55:45Z
+Timestamp: 2026-06-03T22:23:12Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
-- Latest local DRY supervised entry-preflight sample: completed, DRY=true, LIVE=false.
-- Latest local monitor snapshot: 2026-06-03T21:52:34Z, DRY=true, LIVE=false.
+- Latest local run marker: stale pid=856 ts=21:52:27; process is not running.
+- Latest local DRY supervised entry-preflight sample: completed, DRY=true, LIVE=false, no new DRY opens.
 - TDI Factor reporting destination: tdifactorToday@gmail.com.
 - TDI Factor summary cadence: every two hours only, plus immediate material-event emails.
 - No duplicate/no-fluff email rule remains active.
 
 Current blocker:
-- Primary blocker: cache-liquid+dmid candidates are being skipped early by the trough gate before DRY open evaluation.
-- Latest readiness: signals=317, open_candidate=false, probe_candidate=false, drysig=0, dryopen=0.
-- Latest tick diagnostic: U=120, S=393, brf=80, pass=29, drysig=0, dryopen=0, rej=trough:336,spr:28,trough_wait:28,tob:1.
-- New early-skip evidence: dryliqskip=trough:7.
-- dryliqskip_top examples: ENA-USD qv=955,798 rdmid=143.11 score=0.9613; ONDO-USD qv=955,053 rdmid=98.13 score=0.8770; WLD-USD qv=930,991 rdmid=89.17 score=0.7010; ZEC-USD qv=15,976,914 rdmid=73.61 score=0.6030; ICP-USD qv=1,505,238 rdmid=73.46 score=0.7323.
-- Runtime products are now aligned to the actual ranked/discovered universe: C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json with 393 products.
-- Cache support is usable against runtime products: cache_supported=true, files_present=393, missing_files=0.
-- Timestamp coverage is usable: timestamp_ratio=0.8651, timestamp_shortfall=0.
-- Liquid subset coverage is usable: liquid_subset=22 vs required 10, liquid_shortfall=0.
-- Runtime top-120 ranked observe coverage is usable: timestamp_ratio=1.0, liquid_subset=22, green_ratio=0.9667, dmid_liquidity_overlap=7.
-- Full-universe green breadth remains short: green_ratio=0.7027 vs required 0.8500, green_shortfall=0.1473.
-- U=0 / stale-feed is not the current cause.
-- Missing product/cache gap is not the current cause after runtime product snapshot alignment.
+- Primary blocker in the latest cache/preflight window: green_breadth.
+- Current cache support: cache_supported=false because green_ratio=0.1903 vs min 0.8500, green_shortfall=0.6597.
+- Timestamp coverage is usable: timestamp_ratio=0.9389, timestamp_shortfall=0.
+- Liquid subset coverage is usable at the full cache level: liquid_subset=21 vs required 10, liquid_shortfall=0.
+- Dmid/liquidity overlap is not usable in the current window: dmid_liquidity_overlap=0 and dmid_liquidity_range_overlap=0.
+- Best ranked observe subset is also not openable: mode=dmid_desc, green_ratio=0.5604, liquid_subset=2, dmid_liquidity_overlap=0.
+- U=0 / stale-feed is not the current cause; latest reporter evidence has U=120, S=393, drysig=0, dryopen=0.
+- Missing product/cache gap is not the current cause: files_present=393, missing_files=0.
+- Previous runtime evidence still matters: cache-liquid+dmid candidates were skipped early by trough, dryliqskip=trough:7, dryliqskip_top includes ENA-USD qv=955,798 rdmid=143.11 score=0.9613.
+- DRY-only trough probe was added so trough-only candidates can continue to normal dry quality gates when DRY_OBSERVE_TROUGH_PROBE_ENABLED=true, but the latest bounded sample did not exercise it because preflight stopped on green_breadth/dmid_liquidity_overlap=0 first.
 - Do not tune Profit Score while open_count=0 and dryopen=0.
 
 Files changed in current lane:
-- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
 - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
-- Generated local evidence: C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
 - Generated local evidence: C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
 - Generated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
 - Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
@@ -69,20 +70,23 @@ Dry Profit Score evidence:
 - opened=11 historically; blocked_open=46; quarantined=7.
 - No new DRY opens in the latest bounded samples.
 - Overall dry net remains negative, so credible positive dry profitability evidence is not yet present.
+- Direct runtime dry_pnl_score.json is currently reset/empty, but TDI reporter status resolves the prior material dry P&L snapshot above; no positive-profit evidence was found.
 
 Patch/change evidence:
-- DRY supervisor now writes a runtime product snapshot from the actual ranked/discovered runtime universe before preflight cache checks.
-- DRY supervisor now prefers KOKO_DRY_PRODUCTS_FILE, then the runtime product snapshot, then legacy dry_observe_products files for cache/readiness.
-- DRY supervisor rechecks candle cache after writing runtime products so preflight coverage follows the same products runtime evaluates.
-- Runtime diagnostics now report dryliqskip and dryliqskip_top for cache-liquid+dmid candidates skipped before PAPER_BUY_SIGNAL logging.
+- Readiness now parses and promotes dryliqskip and dryliqskip_top for cache-liquid+dmid candidates skipped before PAPER_BUY_SIGNAL logging.
+- TDI status reporting now uses promoted dryliqskip evidence when it is the clearer blocker, includes dryliqskip in readiness evidence, and marks dead local run markers as stale.
+- Added DRY-only trough probe in run_manager: only enabled when DRY=true and DRY_OBSERVE_TROUGH_PROBE_ENABLED=true, only for reason=trough, and only after spread, tob_usd, quote_volume, candle range, and dmid gates pass.
+- Added DRY_OBSERVE_TROUGH_PROBE_ENABLED=true to run_settings.json; DRY remains true and LIVE remains false.
 - No scoring thresholds were tuned.
 - Coinbase/order placement path was not touched.
 
 Verification evidence:
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 12 OK in local runtime.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 21 OK in local runtime.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 19 OK in local runtime.
 - python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 16 OK in local runtime.
-- python -m py_compile tools\run_koko_dry_supervised.py: OK in local runtime.
-- python -m py_compile managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py: OK in local runtime.
-- Latest bounded DRY sample wrote runtime products=393 and cache products_file=C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\run_koko_dry_supervised.py: OK in local runtime.
+- Latest bounded DRY sample completed preflight and stopped before runtime open sampling because cache_supported=false, blocker=green_breadth.
 - Cloud checkout is a slim handoff tree; focused runtime tests were run against C:\ai_trading_bot_koko.
 
 Guardrails:
@@ -94,8 +98,9 @@ Guardrails:
 - Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
 
 Next action:
-- Surface dryliqskip evidence in readiness/reporting so emails and relay do not mislabel the issue as missing liquid overlap.
-- Then decide and implement a DRY-only trough-probe/bypass path for cache-liquid+dmid candidates, or wait for a trough window.
+- Continue data/preflight lane, not Profit Score tuning.
+- Refresh/wait for a cache window with usable green breadth and dmid/liquidity overlap, or improve supervisor observe-window waiting so DRY observe does not end on a transient bad preflight window.
+- Then rerun DRY observe with the DRY-only trough probe enabled and verify whether candidates can open.
 - Keep focus on data/preflight/openability while opened=0; do not tune Profit Score yet.
 - Keep reporting to tdifactorToday@gmail.com on two-hour cadence unless a material event occurs.
 - Keep DRY=true and LIVE=false.
