@@ -25,34 +25,35 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T15:48:16Z
+Timestamp: 2026-06-03T15:59:15Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
-- Latest local supervised DRY observe task: completed at 2026-06-03T15:48:16Z.
-- Latest completed supervised DRY observe: exit 0, ticks=12, elapsed_sec=107.5.
-- Prior supervised DRY observe attempt at 2026-06-03T15:39:41Z failed/non-zero after a Coinbase best-bid/ask data read hang and Windows access violation; hang dump: C:\ai_trading_bot_koko\logs\hang_dump_18312.log.
+- Latest local supervised DRY observe task: failed/non-zero after running ticks 1-6.
+- Latest failure: Windows access violation while writing TDI snapshot JSON append; hang dump: C:\ai_trading_bot_koko\logs\hang_dump_6872.log.
+- Previous Coinbase best-bid/ask data-read hang was mitigated by reducing actionable book refresh width; current failure is in TDI snapshot logging, not Coinbase/order placement.
 - DRY=true, LIVE=false.
-- PFID present in environment: yes.
-- COINBASE_KEY_FILE present in environment: yes.
+- PFID present in environment: yes, per prior local check.
+- COINBASE_KEY_FILE present in environment: yes, per prior local check.
 
 Current blocker:
 - No credible positive dry profitability evidence yet.
-- Current dry P&L is negative after two DRY paper probe losses: realized=-0.02282457 USD, unrealized=0.00 USD, net=-0.02282457 USD.
-- Open/closed/wins/losses: open=0, closed=2, wins=0, losses=2.
+- Current dry P&L is negative after three DRY paper probe losses: realized=-0.02983764 USD, unrealized=0.00 USD, net=-0.02983764 USD.
+- Open/closed/wins/losses: open=0, closed=3, wins=0, losses=3.
 - ADA-USD closed loss_trim at -60.8472 bps / -0.01825415 USD.
 - BTC-USD closed loss_trim at -15.2347 bps / -0.00457042 USD.
-- Probe was tightened after this evidence: DRY_OBSERVE_PROBE_MIN_DMID_BPS is now 0.0, so negative recent-dmid probe opens are blocked; DRY_OBSERVE_PROBE_MAX_SPREAD_BPS is 5.0.
-- Normal all-pass DRY gate remains breadth/dmid constrained: latest readiness has all_pass_candidates=0 and observe_open_candidate_present=false.
-- Latest preflight/feed status is usable but regime-blocked: refreshed=393, failed=0, timestamp_ratio=0.8957, liquid=18, blocker=green_breadth.
-- U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, brf=25, tdmidnz=263, tdmidok=166.
-- Liquid subset coverage exists but profitable overlap is absent: quote_volume_ge_min=18, dmid_ge_min_and_quote_volume_ge_min=0, timestamp_usable_and_quote_volume_ge_min green_ratio=0.0.
-- Green breadth is weak: latest cache green_ratio=0.1203; latest runtime market_green_ratio=0.45 vs dry_min_market_green_ratio=0.85.
-- Missing product/cache gap is not current: files_present=393/393 and latest preflight refresh failed=0.
+- JITOSOL-USD closed loss_trim at -23.3769 bps / -0.00701307 USD.
+- Latest root cause found: DRY observe probe branch ordering allowed a weak JITOSOL-USD open when failures included quote_volume plus dmid/market_breadth; the quote-volume floor was not enforced first.
+- Fix applied: quote_volume failures now always require DRY_OBSERVE_PROBE_MIN_QUOTE_FAILURE_DMID_BPS and DRY_OBSERVE_PROBE_MIN_QUOTE_VOLUME_USD before a DRY observe probe open is allowed.
+- Current active blocker after that fix: TDI snapshot append access violation prevents reliable supervised observe coverage.
+- Normal all-pass DRY gate remains breadth/dmid constrained; latest known readiness had all_pass_candidates=0 and observe_open_candidate_present=false.
+- U=0 / stale-feed cause is not current in latest known diagnostics: U=120, refreshed/signals available, and missing product/cache gap was not current.
+- Liquid subset coverage exists but profitable overlap remains weak: quote_volume_ge_min=18 and dmid_ge_min_and_quote_volume_ge_min=0 in latest known cache regime evidence.
+- Green breadth remains weak: latest known cache green_ratio=0.1203; latest runtime market_green_ratio=0.45 vs dry_min_market_green_ratio=0.85.
 
-Files changed in current local worktree for this lane:
+Files changed in current local lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
 - C:\ai_trading_bot_koko\run_settings.json
 - C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
@@ -62,26 +63,24 @@ Files changed in current local worktree for this lane:
 - GitHub relay file updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Changes applied in this update:
-- Tightened the DRY-only observe probe after loss evidence: negative recent-dmid probe entries are now rejected via DRY_OBSERVE_PROBE_MIN_DMID_BPS=0.0.
-- Added DRY_OBSERVE_PROBE_MAX_SPREAD_BPS handling in run_manager and tests; current cap is 5.0 bps, matching the normal dry spread gate while the dmid floor blocks the observed losing pattern.
-- Reduced DRY_ACTIONABLE_BOOK_REFRESH_TOP_N to 25 to keep actionable book refresh coverage but avoid the prior 120-product data-read burst that hung in Coinbase get_best_bid_ask.
-- No Profit Score tuning was performed.
+- Added quote-volume DRY observe probe settings: DRY_OBSERVE_PROBE_MIN_QUOTE_FAILURE_DMID_BPS=40.0 and DRY_OBSERVE_PROBE_MIN_QUOTE_VOLUME_USD=50000.0.
+- Fixed DRY observe probe decision order so quote_volume failures cannot slip through the lower generic dmid/market-breadth branch.
+- Added regression coverage for the JITOSOL pattern: failures=[dmid, quote_volume, market_breadth], dmid_bps=5.3, quote_usd=257 must reject with quote_failure_dmid_floor.
+- Kept DRY_ACTIONABLE_BOOK_REFRESH_TOP_N=25 to avoid broad Coinbase best-bid/ask read bursts.
+- No Profit Score tuning was performed while opened/evidence stayed unusable.
 - Coinbase/order placement path was not touched.
 
 Dry Profit Score evidence:
 - Current Profit Score observed in local reporter: 12/100.
-- dry P&L: realized=-0.02282457 USD, unrealized=0.00 USD, net=-0.02282457 USD.
-- open/closed/wins/losses: open=0, closed=2, wins=0, losses=2.
+- dry P&L: realized=-0.02983764 USD, unrealized=0.00 USD, net=-0.02983764 USD.
+- open/closed/wins/losses: open=0, closed=3, wins=0, losses=3.
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
-- python -m unittest discover -s tests -p 'test_koko_dry_candidate_rank.py': 11 OK.
+- python -m unittest discover -s tests -p 'test_koko_dry_candidate_rank.py': 12 OK.
 - py_compile managers\run_manager\run_manager.py: OK.
-- run_settings.json JSON parse/settings check: DRY=True, LIVE=False, probe min dmid=0.0, probe max spread=5.0, refresh top N=25, TP=8.0, SL=0.8.
-- 8-tick supervised DRY observe after actionable-refresh throttle: exit 0, no crash, no opens.
-- 12-tick supervised DRY observe after probe settings adjustment: exit 0, no opens, no new losses.
-- Readiness regenerated to C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json.
-- Cache regime regenerated to C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json.
+- run_settings.json JSON parse/settings check: DRY=True, LIVE=False, allowed failures include dmid/quote_volume/market_breadth, quote-failure dmid floor=40.0, quote-volume floor=50000.0, TP=8.0, SL=0.8.
+- Short supervised DRY observe after fix: non-zero/failure; JITOSOL was closed loss_trim on tick 1 and no new opens were recorded before the TDI logger access violation.
 
 Guardrails:
 - Coinbase/order placement path not touched by this relay update or latest patches.
@@ -91,11 +90,13 @@ Guardrails:
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
 
 Next action:
-- Continue bounded DRY observe only when liquid candidates stop showing negative recent dmid, or add a DRY-only diagnostic lane for positive-dmid but low-quote-volume candidates without weakening live/order safety.
-- Keep focus on data/preflight/open-lane coverage, not Profit Score tuning, while no credible positive P&L exists.
+- Fix the TDI snapshot logging/access-violation blocker so supervised DRY observe can run long enough to measure timestamp coverage, liquid subset coverage, green breadth, stale-feed causes, and missing product/cache gaps.
+- Regenerate dry observe readiness and cache market regime evidence after the logger fix.
+- Resume DRY-only observe coverage work before any dry P&L improvement tuning.
 
 User action required:
 - No.
 
 Reporting note:
 - Gmail connector should be used for material status email while local SMTP reporter env remains unavailable.
+- Do not send duplicate/noise emails; send material state changes and hourly summaries only.
