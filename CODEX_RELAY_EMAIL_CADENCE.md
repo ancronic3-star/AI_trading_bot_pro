@@ -5,9 +5,9 @@ Relay confirmed:
 - Use the GitHub relay file for material status, blockers, files changed, dry P&L evidence, and user-action-needed status.
 
 Email update change:
-- Stop frequent/material-event email reporting.
-- Continue email updates only once per day as a daily summary.
-- Do not send hourly status emails.
+- Routine status email updates go out once every two hours.
+- Immediate emails are reserved for true material/safety events only.
+- Do not send hourly status emails unless the two-hour cadence is due.
 - Do not send duplicate/no-change emails.
 - Do not email about emails.
 

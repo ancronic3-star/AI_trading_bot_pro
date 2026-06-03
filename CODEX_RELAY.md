@@ -13,6 +13,86 @@ Standing state:
 
 Use this file for approved instructions, report requests, and status handoffs related to KOKO Cloud engine work.
 
+## Codex relay status update
+
+Timestamp: 2026-06-03T23:44:43Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest visible remote branch status: ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot at 211e3cd before this relay update.
+- Latest local DRY supervised verify completed with DRY=true, LIVE=false, no Python observe process left running.
+- Latest status reporter preview was no-send by request/tooling; no email was sent during this relay update.
+- Routine TDI/KOKO status email cadence is two hours per latest user instruction; no duplicate/no-fluff emails, and material/safety events only when truly material.
+
+Current blocker:
+- Primary blocker remains data/preflight/openability, not Profit Score tuning.
+- Latest reporter subject blocker: cache-liquid candidates blocked by trough (4; top OPN-USD).
+- Latest readiness evidence: signals=368, U=120, S=393, brf=80, drysig=0, dryopen=0, max_drysig=0, max_dryopen=0.
+- Timestamp coverage is usable: timestamp_ratio=0.8575, timestamp_shortfall=0.0000.
+- Liquid subset coverage is usable at cache level: liquid_subset=18 vs required 10, liquid_shortfall=0.
+- Green breadth is still short in the broader cache view: green_ratio=0.6739 vs min 0.8500, green_shortfall=0.1761; best_ranked=dmid_desc has green=1.0000 and liquid=15.
+- Runtime liquid/dmid overlap exists but does not open: liquid=14, dmid=30, liquid_dmid_overlap=3, liquid_dmid_spread_tob_overlap=1.
+- Tick diagnostics show warmup is now visible but not enough for opens: tick_diag_rows=4, tick_diag_dmid_nonzero=52, tick_diag_dmid_ready=2, tick_diag_warmed_seen=true, but current paper coverage still has tick_dmid_ready=0 and max_dryopen=0.
+- U=0 / stale-feed is not the current cause; latest evidence has U=120.
+- Missing product/cache gap is not the current cause; latest evidence has S=393.
+- Named openability evidence: OPN-USD trough candidate rejected by spread with qv=311,911, rdmid=83.02, score=0.8332, refreshed top-book source=actionable_book_refresh_batch, prior top-book=686, spread=12.40 bps vs max 5.00.
+- Runtime near miss: NEAR-USD has qv=1,901,311, rdmid=77.71, spread=3.53, tob=1141, but remains blocked by tick_dmid/dmid confirmation in current readiness.
+- Probe quote candidates surfaced by reporter: NEAR-USD, HYPE-USD, WLD-USD, ICP-USD, LIGHTER-USD.
+- Do not tune Profit Score while open_count=0 and dryopen=0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- opened=12 historically; blocked_open=50; quarantined=8.
+- No new DRY opens in latest post-patch verification.
+- Credible positive dry profitability evidence is not present yet.
+- Forward evidence is mixed and not sufficient to resume score tuning: dry_open_forward signals=1, horizon_min=10, avg_net_close_bps=41.3940, but broader forward dmid avg_net_close_bps=-136.7681 and supported_ranked_modes=0.
+
+Patch/change evidence:
+- Runtime preflight/readiness now blocks first-tick unwarmed tick-dmid candidates instead of allowing apparent recent-candle dmid passes to open on tdmid=0/twarm=0.
+- Readiness reporting now treats unwarmed tick-dmid as non-openable when warm sample is required and exposes max tick diagnostic drysig/dryopen fields.
+- TDI status reporting now includes tick diagnostic readiness evidence so status emails/previews do not hide earlier dryopen/drysig evidence inside the sample window.
+- No Profit Score thresholds were tuned in this patch.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 22 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- Post-patch short DRY verify completed with no first-tick unwarmed DRY open; latest readiness has dryopen=0 and max_dryopen=0.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox; routine updates every two hours unless a true material/safety event requires an immediate report.
+
+Next action:
+- Continue bounded DRY observe after the tick-dmid warmup patch long enough for warmed tick candidates to appear.
+- Keep focus on timestamp/liquid/green/feed/openability coverage and candidate opening; do not tune score while dryopen=0/open_count=0.
+- Regenerate readiness and status evidence after the next observe run, then resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No for DRY/LIVE safety or relay visibility.
+- Yes only if direct local SMTP delivery is required from this runtime: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or use an authenticated Gmail connector path.
+
 ## Relay test
 
 Timestamp: 2026-06-01
