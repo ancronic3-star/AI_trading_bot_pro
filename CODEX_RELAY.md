@@ -127,6 +127,88 @@ User action required:
 
 ## Codex relay status update
 
+Timestamp: 2026-06-03T23:09:46Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest visible remote branch status: ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot at d4dcf43 before this relay update.
+- Latest local supervisor marker: stale pid=5820, started 2026-06-03T23:04:38Z, DRY=true, LIVE=false.
+- Latest bounded supervisor sample exited cleanly but did not produce a new observe tick because KOKO_SUPERVISOR_PREFLIGHT_REFRESH=0 caused preflight_observe_skip blocker=observe_window.
+- Latest usable bounded tick evidence remains the 2026-06-03T22:58:21Z sample with dryliqskip_top trough probe rejection metrics.
+- TDI Factor reporting destination remains tdifactorToday@gmail.com.
+- Routine TDI/KOKO email cadence is two hours: TDI_REPORT_HOURLY_SEC=7200.
+- SMTP delivery is currently blocked by missing sender env values: user, password, sender. Reporter wrote local .eml outbox files instead of delivering Gmail messages.
+
+Current blocker:
+- Primary blocker remains data/preflight/openability, not Profit Score.
+- Latest reporter subject blocker: timestamp_coverage.
+- Current usable runtime readiness evidence: signals=324, U=120, S=393, brf=80, drysig=0, dryopen=0, liquid=4, dmid=5, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0, dryliqskip=trough:4.
+- Named probe/openability misses from latest usable tick:
+  - ZEC-USD rejected by trough probe on spread: spr=5.7414 vs max 5.0000, qv=9,948,525, rdmid=56.26.
+  - WLD-USD rejected by trough probe on spread: spr=7.3706 vs max 5.0000, qv=1,068,713, rdmid=49.98.
+  - ENA-USD rejected by trough probe on spread: spr=17.5901 vs max 5.0000, qv=376,736, rdmid=44.05.
+  - MON-USD rejected by trough probe on top-book: tob=51.4198 vs min 500, qv=281,123, rdmid=44.01.
+- Cache support remains enough to continue observe: cache_supported=true, timestamp_ratio=0.8473, liquid_subset=19, best_probe=dmid_desc, best_probe_quote_overlap=5, best_probe_range_overlap=5.
+- Green breadth remains weak: green_ratio=0.2374 vs min 0.8500.
+- U=0 / stale-feed is not the current cause; U=120.
+- Missing product/cache gap is not the current cause; S=393 and cache files are present.
+- Current blocker for reporting delivery: missing SMTP/Gmail sender credentials in local env, so local reporter cannot send directly even though it can render status emails.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\run_settings.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.05528612 USD, unrealized=0.00000000 USD, net=-0.05528612 USD.
+- open/closed/wins/losses: open=0, closed=11, wins=3, losses=8.
+- blocked_open=46, opened=11 historically, quarantined=7.
+- No new DRY opens in latest usable verification.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- TDI reporting cadence is confirmed at two hours via TDI_REPORT_HOURLY_SEC=7200.
+- Reporter previews/samples are deduped; recent attempts were skipped as hourly_not_due except delivery attempts that failed because SMTP env is missing.
+- DRY-only trough-skip probe diagnostics remain active and parse/report spread/top-book rejection details.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 22 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- Latest reporter state shows last_status event=two_hour_summary, sent=false, reason=hourly_not_due after the failed SMTP delivery window.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with routine updates every two hours unless a material event requires an immediate report.
+
+Next action:
+- Keep data/preflight focus until DRY observe can actually open candidates.
+- Run the next bounded DRY observe sample with a usable observe window or with preflight refresh enabled so it produces a fresh tick containing book source diagnostics.
+- Resolve Gmail delivery by providing SMTP/Gmail sender env values or routing through the authenticated Gmail connector.
+- Do not tune Profit Score while opened/open_count remains 0.
+
+User action required:
+- Yes for unattended local SMTP delivery: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or equivalent SMTP/Gmail env values.
+- No user action required for DRY/LIVE safety; DRY remains true and LIVE remains false.
+
+## Codex relay status update
+
 Timestamp: 2026-06-03T23:00:41Z
 
 RELAY_FILE_VISIBLE=yes
