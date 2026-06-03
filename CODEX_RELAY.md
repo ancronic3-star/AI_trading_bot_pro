@@ -25,7 +25,7 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T17:04:23Z
+Timestamp: 2026-06-03T17:08:36Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -43,11 +43,11 @@ Current blocker:
 - Open/closed/wins/losses: open=0, closed=5, wins=0, losses=5.
 - Profit Score evidence: 12/100 as computed by tools/tdi_status_reporter.py from five closed losses and negative net P&L; the P&L summary file does not store a literal score field.
 - Do not tune Profit Score while opened=0 / dryopen=0.
-- U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, chk=393, brf=80, tdmid=393, tdmidnz=259, tdmidok=5.
+- U=0 / stale-feed cause is not current: latest observed tick_diag has U=120, S=393, chk=393, brf=80, tdmid=393, tdmidnz=259, tdmidok=5.
 - Actionable book refresh cap reaches the configured target: DRY_ACTIONABLE_BOOK_REFRESH_TOP_N=80, max_book_refresh_count=80, target_refreshed_book_gap=0.
 - Runtime market breadth passed strongly in the latest supervised observe: market_green_ratio=0.9333 vs min=0.85, market_dmid_bps=70.81 vs disabled floor -999999.0.
 - Fresh canonical cache-regime preflight now passes configured regime support: cache_market_regime_supported=true, timestamp_usable_ratio=0.8728, liquid_subset_products=12 vs min=10, blocker=none.
-- Latest readiness fresh window has all_pass_candidates=0, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
+- Latest readiness fresh window has signals=393, all_pass_candidates=0, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
 - Current runtime near blockers are dmid-focused: runtime_failure_combos={dmid:16, tob|dmid:4}.
 - Closest runtime near miss: SUI-USD blocked by dmid only, spr=2.45/5.00, tob=714/500, qv=547490/250000, rdmid=8.56/40.00, market_green_ratio=0.9333/0.8500.
 - Dominant paper-signal blocker is trough, but liquid/runtime near misses still fail dmid; no blind score or gate tuning applied.
@@ -60,9 +60,8 @@ Files changed in current local lane:
 - Local workspace has no .git metadata, so git status is unavailable here.
 
 Changes applied in this update:
-- Added top-level readiness metadata: generated_at_utc, activity_log, since_ts_utc, since_local_marker, and since_local_start.
-- Regenerated logs/dry_observe_readiness_latest.json for the fresh 12:01 local DRY observe window.
-- Ran a fresh bounded DRY observe; no opens yet, but feed/preflight coverage is now usable and supported.
+- Read CODEX_RELAY.md from ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot and confirmed RELAY_FILE_VISIBLE=yes.
+- Updated this relay status block with the latest local Cloud task status, current blocker, files changed, and dry Profit Score evidence.
 - No Coinbase/order placement path changes.
 - No Profit Score tuning.
 - DRY remains true and LIVE remains false.
@@ -74,6 +73,7 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
+- CODEX_RELAY.md fetched successfully from GitHub branch codex/cloud-ready-koko-bot before this write.
 - python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 13 OK.
 - py_compile tools\koko_dry_observe_readiness.py: OK.
 - Fresh bounded supervised DRY observe: exit 0, ticks=4, drysig=0, dryopen=0, brf=80.
