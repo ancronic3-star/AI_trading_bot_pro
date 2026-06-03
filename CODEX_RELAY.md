@@ -25,7 +25,7 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T16:14:53Z
+Timestamp: 2026-06-03T16:20:41Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -43,14 +43,14 @@ Current blocker:
 - Open/closed/wins/losses: open=0, closed=5, wins=0, losses=5.
 - Weak-dmid probe pattern is rejected as unprofitable: ADA, BTC, JITOSOL, DOGE, and HYPE all closed loss_trim.
 - Latest HYPE-USD weak-dmid probe closed loss_trim at -12.5174 bps / -0.00375522 USD.
-- DRY observe probe was tightened after loss evidence: allowed failures now only [market_breadth], and DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0. It can no longer waive the dmid gate.
+- DRY observe probe remains tightened: allowed failures only [market_breadth], and DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0. It can no longer waive the dmid gate.
 - Latest post-tightening readiness: all_pass_candidates=0, observe_open_candidate_present=false, drysig=0, dryopen=0.
 - U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, chk=393, brf=25, tdmid=393, tdmidnz=20, tdmidok=3.
 - Timestamp/cache coverage is usable: files_present=393, missing_files=0, timestamp_usable_ratio=0.9135.
 - Liquid subset coverage exists: quote_volume_ge_min=16, liquid_subset_products=16, min_liquid_subset_products=10.
 - Profitable overlap is thin: dmid_ge_min_and_quote_volume_ge_min=1.
 - Green breadth remains weak: cache green_ratio=0.1613 and runtime market_green_ratio=0.4583 vs dry_min_market_green_ratio=0.85.
-- Main blocker is market breadth/dmid, not missing product/cache coverage and not stale feed.
+- Main blocker is green_breadth/dmid, not missing product/cache coverage and not stale feed.
 
 Files changed in current local lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
@@ -59,17 +59,16 @@ Files changed in current local lane:
 - C:\ai_trading_bot_koko\run_settings.json
 - C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
 - C:\ai_trading_bot_koko\tests\test_tdi_logger.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
 - C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
 - Existing lane files still changed locally: C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py, C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py, C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py, C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py.
 - GitHub relay file updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Changes applied in this update:
-- Hardened TDI snapshot logger JSON serialization and added TDI_SNAPSHOT_ENABLED=false to keep DRY observe stable while preserving TDI scoring.
-- Added tdi_logger tests for disabled snapshot no-op and JSON-safe payload sanitization.
-- Tightened DRY observe probe so weak-dmid candidates are no longer opened: only market_breadth can be waived by the probe.
-- Updated candidate-rank tests for market-breadth-only probe behavior; kept quote-volume helper coverage for explicitly configured experiments.
-- Patched TDI status reporter throttling so failed local SMTP attempts still advance hourly/material dedupe state and do not generate every-minute outbox spam.
+- Patched TDI status reporter blocker selection to prefer cache market-regime blockers over raw readiness failure counts. This changes local status/subjects from misleading spread to green_breadth when cache regime says green_breadth is primary.
+- Added regression test for reporter blocker precedence.
+- Fixed no-send preview handling so preview/test renders do not advance material/hourly dedupe state, while failed SMTP attempts still throttle to avoid outbox spam.
 - No Profit Score tuning was performed.
 - Coinbase/order placement path was not touched.
 
@@ -80,14 +79,13 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
+- python -m unittest discover -s tests -p 'test_tdi_status_reporter.py': 2 OK.
 - python -m unittest discover -s tests -p 'test_koko_dry_candidate_rank.py': 12 OK.
 - python -m unittest discover -s tests -p 'test_tdi_logger.py': 3 OK.
-- py_compile managers\run_manager\run_manager.py managers\logging_manager\tdi_logger.py tools\tdi_status_reporter.py: OK.
-- run_settings.json parse/settings check: DRY=True, LIVE=False, DRY_OBSERVE_PROBE_ALLOWED_FAILURES=[market_breadth], DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0, TDI_SNAPSHOT_ENABLED=False, TP=8.0, SL=0.8.
-- Supervised DRY observe after TDI snapshot mitigation: exit 0, ticks=8.
-- Supervised DRY observe after probe tightening: exit 0, ticks=8, no new opens after HYPE closed; latest drysig=0 and dryopen=0.
-- Readiness regenerated to C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json.
-- Cache regime regenerated to C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json using configured runtime candle cache.
+- py_compile tools\tdi_status_reporter.py managers\run_manager\run_manager.py managers\logging_manager\tdi_logger.py: OK.
+- Status reporter no-send render now produces subject [TDI STATUS] Profit 12/100 | DRY=true LIVE=false | green_breadth.
+- run_settings.json parse/settings check remains: DRY=True, LIVE=False, DRY_OBSERVE_PROBE_ALLOWED_FAILURES=[market_breadth], DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0, TDI_SNAPSHOT_ENABLED=False, TP=8.0, SL=0.8.
+- Latest supervised DRY observe after probe tightening: exit 0, ticks=8, no new opens after HYPE closed; latest drysig=0 and dryopen=0.
 
 Guardrails:
 - Coinbase/order placement path not touched by this relay update or latest patches.
@@ -106,4 +104,4 @@ User action required:
 
 Reporting note:
 - Gmail connector remains the actual delivery path while local SMTP env is unavailable.
-- Local reporter failed-SMTP dedupe is patched to avoid every-minute outbox spam.
+- Local reporter failed-SMTP dedupe is patched to avoid every-minute outbox spam, and no-send previews no longer suppress real reports.
