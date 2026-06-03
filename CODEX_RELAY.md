@@ -25,25 +25,25 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T22:23:12Z
+Timestamp: 2026-06-03T22:28:42Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
 - Latest local run marker: stale pid=856 ts=21:52:27; process is not running.
-- Latest local DRY supervised entry-preflight sample: completed, DRY=true, LIVE=false, no new DRY opens.
+- Latest local DRY observe wait probe: completed with a 5-second env cap, DRY=true, LIVE=false, no new DRY opens.
 - TDI Factor reporting destination: tdifactorToday@gmail.com.
-- TDI Factor summary cadence: every two hours only, plus immediate material-event emails.
+- TDI Factor summary cadence: every two hours; no duplicate/no-fluff updates.
 - No duplicate/no-fluff email rule remains active.
 
 Current blocker:
 - Primary blocker in the latest cache/preflight window: green_breadth.
-- Current cache support: cache_supported=false because green_ratio=0.1903 vs min 0.8500, green_shortfall=0.6597.
-- Timestamp coverage is usable: timestamp_ratio=0.9389, timestamp_shortfall=0.
-- Liquid subset coverage is usable at the full cache level: liquid_subset=21 vs required 10, liquid_shortfall=0.
+- Current cache support: cache_supported=false because green_ratio=0.2215 vs min 0.8500, green_shortfall=0.6285.
+- Timestamp coverage is usable: timestamp_ratio=0.9593, timestamp_shortfall=0.
+- Liquid subset coverage is usable at the full cache level: liquid_subset=22 vs required 10, liquid_shortfall=0.
 - Dmid/liquidity overlap is not usable in the current window: dmid_liquidity_overlap=0 and dmid_liquidity_range_overlap=0.
-- Best ranked observe subset is also not openable: mode=dmid_desc, green_ratio=0.5604, liquid_subset=2, dmid_liquidity_overlap=0.
+- Best ranked observe subset is also not openable: mode=dmid_desc, green_ratio=0.6667, liquid_subset=3, dmid_liquidity_overlap=0.
 - U=0 / stale-feed is not the current cause; latest reporter evidence has U=120, S=393, drysig=0, dryopen=0.
 - Missing product/cache gap is not the current cause: files_present=393, missing_files=0.
 - Previous runtime evidence still matters: cache-liquid+dmid candidates were skipped early by trough, dryliqskip=trough:7, dryliqskip_top includes ENA-USD qv=955,798 rdmid=143.11 score=0.9613.
@@ -54,6 +54,7 @@ Files changed in current lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
 - C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
 - C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
 - C:\ai_trading_bot_koko\run_settings.json
 - C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
@@ -77,6 +78,8 @@ Patch/change evidence:
 - TDI status reporting now uses promoted dryliqskip evidence when it is the clearer blocker, includes dryliqskip in readiness evidence, and marks dead local run markers as stale.
 - Added DRY-only trough probe in run_manager: only enabled when DRY=true and DRY_OBSERVE_TROUGH_PROBE_ENABLED=true, only for reason=trough, and only after spread, tob_usd, quote_volume, candle range, and dmid gates pass.
 - Added DRY_OBSERVE_TROUGH_PROBE_ENABLED=true to run_settings.json; DRY remains true and LIVE remains false.
+- Supervisor observe-window wait now reads KOKO_SUPERVISOR_WAIT_FOR_OBSERVE_WINDOW, KOKO_SUPERVISOR_OBSERVE_WINDOW_POLL_SEC, and KOKO_SUPERVISOR_OBSERVE_WINDOW_MAX_WAIT_SEC from env or run_settings.json, with env taking priority.
+- Added run_settings wait controls: KOKO_SUPERVISOR_WAIT_FOR_OBSERVE_WINDOW=true, poll_sec=300, max_wait_sec=7200 so unattended DRY observe waits for a usable market window instead of ending immediately on a transient preflight miss.
 - No scoring thresholds were tuned.
 - Coinbase/order placement path was not touched.
 
@@ -84,9 +87,9 @@ Verification evidence:
 - python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 12 OK in local runtime.
 - python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 21 OK in local runtime.
 - python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 19 OK in local runtime.
-- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 16 OK in local runtime.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 18 OK in local runtime.
 - python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\run_koko_dry_supervised.py: OK in local runtime.
-- Latest bounded DRY sample completed preflight and stopped before runtime open sampling because cache_supported=false, blocker=green_breadth.
+- Latest bounded DRY wait probe used env max_wait_sec=5, refreshed 392/393 products, and proved the wait loop logs/checks the current blocker without running the full two-hour wait in this interactive turn.
 - Cloud checkout is a slim handoff tree; focused runtime tests were run against C:\ai_trading_bot_koko.
 
 Guardrails:
@@ -99,7 +102,7 @@ Guardrails:
 
 Next action:
 - Continue data/preflight lane, not Profit Score tuning.
-- Refresh/wait for a cache window with usable green breadth and dmid/liquidity overlap, or improve supervisor observe-window waiting so DRY observe does not end on a transient bad preflight window.
+- Let unattended DRY observe wait for a cache window with usable green breadth and dmid/liquidity overlap instead of ending immediately on a transient bad preflight window.
 - Then rerun DRY observe with the DRY-only trough probe enabled and verify whether candidates can open.
 - Keep focus on data/preflight/openability while opened=0; do not tune Profit Score yet.
 - Keep reporting to tdifactorToday@gmail.com on two-hour cadence unless a material event occurs.
