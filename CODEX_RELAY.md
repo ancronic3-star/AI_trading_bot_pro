@@ -25,7 +25,7 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T17:20:31Z
+Timestamp: 2026-06-03T17:25:01Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -35,6 +35,7 @@ Cloud task status:
 - Latest local readiness task: regenerated at 2026-06-03T17:15:24Z for since_local_start=2026-06-03 12:10:50.
 - Latest forward-outcome task: completed exit 0; loaded 120 recent paper signals, evaluated 114 outcomes over 30 minutes, 6 had no forward candles.
 - Latest ranked-forward task: completed exit 0; no supported positive ranked slice found.
+- Latest threshold-forward sweep: completed exit 0; evaluated 350 threshold configs and found supported_count=0.
 - PFID present in environment: yes, per prior local check.
 - COINBASE_KEY_FILE present in environment: yes, per prior local check.
 
@@ -46,24 +47,28 @@ Current blocker:
 - Do not tune Profit Score while opened=0 / dryopen=0.
 - U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, brf=80, drysig=0, dryopen=0.
 - Entry coverage blocker remains explicit: quote_volume_usable=19 and dmid_usable=71, but liquid_dmid_overlap=0 and liquid_dmid_spread_tob_overlap=0.
-- Forward evidence is negative: dmid signals avg_net_forward_close_bps=-136.7681 with sl_touch_rate=1.0; best ranked slice active_dmid_desc avg_net_forward_close_bps=-72.3032 and supported=false; supported_ranked_modes=0.
-- Current blocker label in reporter now resolves to: liquid+dmid overlap=0 (liquid=19, dmid=71).
+- Ranked forward evidence is negative: dmid signals avg_net_forward_close_bps=-136.7681 with sl_touch_rate=1.0; best ranked slice active_dmid_desc avg_net_forward_close_bps=-72.3032 and supported=false; supported_ranked_modes=0.
+- Threshold sweep evidence is negative: configs_evaluated=350, supported_count=0, best_avg_net_forward_close_bps=-47.1284, best_positive_net_close_rate=0.3333.
+- Best threshold config was still unsupported: min_dmid_bps=20, max_spread_bps=10, min_quote_volume_usd=0, min_tob_usd=0, max_trough_pct=999, signals=6, validation avg_net_forward_close_bps=-61.4972.
+- Current blocker label in reporter resolves to: liquid+dmid overlap=0 (liquid=19, dmid=71).
 - No blind score or gate tuning applied.
 
 Files changed in current local lane:
+- C:\ai_trading_bot_koko\tools\koko_forward_threshold_sweep.py
+- C:\ai_trading_bot_koko\tests\test_koko_forward_threshold_sweep.py
 - C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
 - C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
-- Generated local evidence: C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest.json, C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_history.json, C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
-- Prior lane files still changed locally: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json, C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py, C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py, C:\ai_trading_bot_koko\run_settings.json.
+- Generated local evidence: C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- Prior lane files still changed locally: C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest.json, C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_history.json, C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json, C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json, C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py, C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py, C:\ai_trading_bot_koko\run_settings.json.
 - GitHub relay file updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 - Local workspace has no .git metadata, so git status is unavailable here.
 
 Changes applied in this update:
-- Ran DRY-only forward outcomes on recent paper signals for reasons dmid, spread, quote_volume, tob_usd, trough, trough_wait using current static TP/SL reporting: TP=800 bps, SL=80 bps.
-- Ran ranked forward outcome summary; no ranked mode produced a supported positive subset.
-- Patched tools/tdi_status_reporter.py to include readiness evidence and forward evidence in material/hourly emails.
-- Patched the reporter blocker selection to prefer explicit entry liquid+dmid overlap gaps over dominant paper-signal blocker labels.
-- Added reporter tests for entry-overlap blocker selection and email evidence rendering.
+- Added tools/koko_forward_threshold_sweep.py to repeatably sweep DRY forward outcomes by qv, dmid, spread, tob, and trough thresholds.
+- Added tests/test_koko_forward_threshold_sweep.py covering supported positive slices and negative validation rejection.
+- Ran threshold sweep against current recent forward outcomes; no supported positive threshold subset exists.
+- Patched tools/tdi_status_reporter.py to include threshold_sweep evidence in material/hourly emails.
+- Updated reporter tests to verify threshold sweep evidence renders.
 - No Coinbase/order placement path changes.
 - No Profit Score tuning.
 - No DRY/LIVE or static TP/SL changes.
@@ -75,12 +80,11 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_forward_threshold_sweep.py": 2 OK.
 - python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 4 OK.
-- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 14 OK.
-- py_compile tools\tdi_status_reporter.py tools\tdi_status_monitor.py: OK.
+- py_compile tools\koko_forward_threshold_sweep.py tools\tdi_status_reporter.py: OK.
 - Reporter preview subject: [TDI STATUS] Profit 12/100 | DRY=true LIVE=false | liquid+dmid overlap=0 (liquid=19, dmid=71).
-- Forward outcomes: 114 evaluated, dmid avg_net_forward_close_bps=-136.7681, dmid sl_touch_rate=1.0.
-- Ranked forward outcomes: best active_dmid_desc avg_net_forward_close_bps=-72.3032, supported=false, supported_ranked_modes=0.
+- Reporter preview forward evidence includes threshold_sweep configs=350 supported=0 best_avg_net_close_bps=-47.1284.
 
 Guardrails:
 - Coinbase/order placement path not touched by this update.
@@ -90,9 +94,9 @@ Guardrails:
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
 
 Next action:
-- Continue DRY-only observe with usable data/preflight coverage and monitor liquid+dmid overlap plus supported forward-ranked slices.
+- Continue DRY-only observe with usable data/preflight coverage and wait for liquid+dmid overlap plus supported positive ranked or threshold forward evidence before gate changes.
 - Do not tune Profit Score while opened=0 / dryopen=0 and no credible positive dry P&L exists.
-- Do not loosen gates based on current forward evidence; current recent paper-signal outcomes are net negative.
+- Do not loosen gates based on current forward evidence; current recent paper-signal threshold sweep is net negative.
 
 User action required:
 - No.
