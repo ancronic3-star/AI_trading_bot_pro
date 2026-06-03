@@ -25,7 +25,7 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T20:53:38Z
+Timestamp: 2026-06-03T21:00:03Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -35,6 +35,8 @@ Cloud task status:
 - Latest entry-preflight sample closed the SUI-USD dry open with opened_delta=0 and closed_delta=1, then skipped full observe because entry spread/top-book overlap was still zero.
 - Latest local monitor snapshot: local pid=5312 ts=20:49:35, DRY=true, LIVE=false.
 - TDI Factor Gmail/reporting cadence remains two-hour summaries plus immediate material events only; no duplicate/spam updates.
+- Material patch applied: DRY-only profit-protect exit logic now tracks peak dry P&L and can close a positive giveback as profit_protect before it decays into loss_trim.
+- Material patch applied: DRY entry gate now enforces DRY_PNL_MAX_NEGATIVE_OPEN_SHARE when configured.
 
 Current blocker:
 - Primary blocker: entry spread/top-book overlap=0.
@@ -49,6 +51,8 @@ Current blocker:
 
 Files changed in current local lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko_cloud_source\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko_cloud_source\run_settings.template.json
 - C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
 - C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
 - C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
@@ -56,6 +60,7 @@ Files changed in current local lane:
 - C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
 - C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
 - C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
 - C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py
 - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
@@ -74,6 +79,7 @@ Dry Profit Score evidence:
 - Latest dry ledger event: SUI-USD closed via loss_trim at 2026-06-03T20:49:40Z.
 - Latest SUI-USD close evidence: -73.9189 bps, -0.02217568 USD.
 - Prior positive evidence still exists but was not retained: SUI-USD was previously marked as high as unrealized_pnl_bps=+74.5349 before reversing.
+- Profit-protect patch evidence: new synthetic dry ledger test marks SUI-USD from +80.0 bps down to +55.0 bps and closes as exit_reason=profit_protect, with static TP/SL unchanged.
 - Overall dry net remains negative, so credible positive dry profitability evidence is not yet present.
 
 Coverage evidence:
@@ -86,13 +92,13 @@ Coverage evidence:
 - Dominant blockers: spread=270, trough_wait=46, trough=23, tob_usd=22, dmid=10.
 
 Verification evidence:
+- python -m unittest tests.test_cloud_only_corrections: 6 OK.
 - python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 12 OK.
-- python -m unittest discover -s tests -p "test_koko_cache_market_regime.py": 19 OK.
 - python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 18 OK.
-- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 17 OK.
-- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 7 OK.
-- python -m py_compile tools\run_koko_dry_supervised.py: OK after duplicate-report suppression patch.
+- python -m py_compile managers\run_manager\run_manager.py: OK in local runtime.
+- python -m py_compile managers\run_manager\run_manager.py: OK in cloud checkout.
 - python -m json.tool run_settings.json: OK.
+- python -m json.tool run_settings.template.json: OK in cloud checkout.
 
 Guardrails:
 - Coinbase/order placement path not touched by this update.
@@ -100,12 +106,13 @@ Guardrails:
 - LIVE remains false.
 - TDI report cadence remains TDI_REPORT_HOURLY_SEC=7200.
 - Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Profit-protect settings added without changing static TP/SL: enabled=true, min_peak=40 bps, giveback=25 bps, retain=5 bps.
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
 - Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
 
 Next action:
 - Stay in the data/preflight lane until entry spread/top-book overlap returns and dryopen can become nonzero.
-- Investigate why positive dry marks were allowed to reverse into loss_trim without changing static TP/SL or Coinbase/order code.
+- Resume DRY observe only when entry spread/top-book overlap returns; profit-protect will then collect evidence on future positive dry opens.
 - Do not keep tuning score while open_count=0 and dryopen=0.
 - Keep reporting to tdifactorToday@gmail.com on two-hour cadence unless a material event occurs.
 - Keep DRY=true and LIVE=false.

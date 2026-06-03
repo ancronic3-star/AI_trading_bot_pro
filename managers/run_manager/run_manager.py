@@ -1969,6 +1969,23 @@ def _dry_pnl_notional_usd(cfg: Dict[str, Any]) -> float:
     return max(0.0, _safe_float(cfg.get("SOLDIER_USD", 10.0), 10.0))
 
 
+def _dry_pnl_profit_protect_reason(cfg: Dict[str, Any], pos: Dict[str, Any], pnl_bps: float, age_min: float) -> str:
+    if not bool(cfg.get("DRY_PNL_PROFIT_PROTECT_ENABLED", False)):
+        return ""
+    min_age = _safe_float(cfg.get("DRY_PNL_PROFIT_PROTECT_MIN_AGE_MIN", 0.0), 0.0)
+    if age_min < min_age:
+        return ""
+    peak_bps = _safe_float(pos.get("peak_pnl_bps"), pnl_bps)
+    min_peak_bps = _safe_float(cfg.get("DRY_PNL_PROFIT_PROTECT_MIN_PEAK_BPS", 40.0), 40.0)
+    giveback_bps = abs(_safe_float(cfg.get("DRY_PNL_PROFIT_PROTECT_GIVEBACK_BPS", 25.0), 25.0))
+    retain_bps = _safe_float(cfg.get("DRY_PNL_PROFIT_PROTECT_RETAIN_BPS", 5.0), 5.0)
+    if giveback_bps <= 0.0:
+        return ""
+    if peak_bps >= min_peak_bps and pnl_bps >= retain_bps and pnl_bps <= (peak_bps - giveback_bps):
+        return "profit_protect"
+    return ""
+
+
 def _dry_pnl_pid_has_positive_expectancy(pid: str, cfg: Dict[str, Any]) -> bool:
     stats = _DRY_PNL_STATE.get("stats") if isinstance(_DRY_PNL_STATE.get("stats"), dict) else {}
     row = stats.get(str(pid or "").strip().upper()) if isinstance(stats, dict) else None
@@ -2017,6 +2034,17 @@ def _dry_pnl_entry_block_reason(cfg: Dict[str, Any], pid: str) -> str:
     net_usd = realized_usd + unrealized_usd
     neg_open = _safe_int(summary.get("negative_open_count"), 0)
     pos_open = _safe_int(summary.get("positive_open_count"), 0)
+    max_negative_share = _safe_float(cfg.get("DRY_PNL_MAX_NEGATIVE_OPEN_SHARE"), 0.0)
+    if max_negative_share > 0.0 and neg_open > 0:
+        open_count = max(1, _safe_int(summary.get("open_count"), len(open_rows or {})))
+        negative_share = float(neg_open) / float(open_count)
+        if negative_share > max_negative_share:
+            can_override_negative_share = bool(
+                cfg.get("DRY_PNL_ALLOW_EXPECTANCY_OVERRIDE_NEGATIVE_OPEN_SHARE", True)
+                and _dry_pnl_pid_has_positive_expectancy(pid, cfg)
+            )
+            if not can_override_negative_share:
+                return "negative_open_share"
     basket_negative = bool(unrealized_usd < 0.0 or neg_open > pos_open)
     net_negative = bool(net_usd < 0.0 and bool(cfg.get("DRY_PNL_BLOCK_NEW_WHEN_NET_NEGATIVE", True)))
     if basket_negative and bool(cfg.get("DRY_PNL_BLOCK_NEW_WHEN_UNREALIZED_NEGATIVE", True)):
@@ -2163,6 +2191,13 @@ def _dry_pnl_mark_from_rows(cfg: Dict[str, Any], t: int, rows: Any) -> None:
             pos["last_mark_ts_utc"] = now_utc
             pos["last_pnl_bps"] = round(float(pnl_bps), 4)
             pos["last_pnl_usd"] = round(float(pnl_usd), 8)
+            prior_peak_bps = _safe_float(pos.get("peak_pnl_bps"), pnl_bps)
+            if "peak_pnl_bps" not in pos or pnl_bps > prior_peak_bps:
+                pos["peak_pnl_bps"] = round(float(pnl_bps), 4)
+                pos["peak_pnl_usd"] = round(float(pnl_usd), 8)
+                pos["peak_mid"] = float(mid)
+                pos["peak_tick"] = int(t)
+                pos["peak_ts_utc"] = now_utc
             unrealized_bps_total += float(pnl_bps)
             unrealized_usd_total += float(pnl_usd)
             marked_count += 1
@@ -2198,14 +2233,16 @@ def _dry_pnl_mark_from_rows(cfg: Dict[str, Any], t: int, rows: Any) -> None:
             elif sl_bps < 0.0 and pnl_bps <= sl_bps:
                 reason = "sl"
             else:
-                max_age_min = _safe_float(cfg.get("DRY_PNL_STALE_MAX_MIN", 240.0), 240.0)
-                stale_max_bps = _safe_float(cfg.get("DRY_PNL_STALE_EXIT_MAX_BPS", 0.0), 0.0)
-                if max_age_min > 0.0 and age_min >= max_age_min and pnl_bps <= stale_max_bps:
-                    reason = "stale"
-                else:
-                    if bool(cfg.get("DRY_PNL_FORCE_CLOSE_LOSERS_WHEN_BASKET_NEGATIVE", True)) and (basket_negative or net_negative):
-                        if age_min >= force_age and pnl_bps <= force_bps:
-                            reason = "loss_trim"
+                reason = _dry_pnl_profit_protect_reason(cfg, pos, float(pnl_bps), float(age_min))
+                if not reason:
+                    max_age_min = _safe_float(cfg.get("DRY_PNL_STALE_MAX_MIN", 240.0), 240.0)
+                    stale_max_bps = _safe_float(cfg.get("DRY_PNL_STALE_EXIT_MAX_BPS", 0.0), 0.0)
+                    if max_age_min > 0.0 and age_min >= max_age_min and pnl_bps <= stale_max_bps:
+                        reason = "stale"
+                    else:
+                        if bool(cfg.get("DRY_PNL_FORCE_CLOSE_LOSERS_WHEN_BASKET_NEGATIVE", True)) and (basket_negative or net_negative):
+                            if age_min >= force_age and pnl_bps <= force_bps:
+                                reason = "loss_trim"
             if not reason:
                 continue
             event = {
@@ -2222,6 +2259,9 @@ def _dry_pnl_mark_from_rows(cfg: Dict[str, Any], t: int, rows: Any) -> None:
                 "entry_ts_utc": pos.get("entry_ts_utc"),
                 "entry_tick": pos.get("entry_tick"),
             }
+            for optional_key in ("peak_pnl_bps", "peak_pnl_usd", "peak_mid", "peak_tick", "peak_ts_utc"):
+                if optional_key in pos:
+                    event[optional_key] = pos.get(optional_key)
             closed.append((pid, event))
         stale_unmarked_max_min = _safe_float(cfg.get("DRY_PNL_UNMARKED_STALE_MAX_MIN", 360.0), 360.0)
         if stale_unmarked_max_min > 0.0:
@@ -2244,12 +2284,22 @@ def _dry_pnl_mark_from_rows(cfg: Dict[str, Any], t: int, rows: Any) -> None:
                         and net_negative
                         and float(last_pnl_bps) < 0.0
                     )
-                    if close_last_mark_loss or (stale_age_min > 0.0 and age_min >= stale_age_min and float(last_pnl_bps) <= stale_max_bps):
+                    profit_protect_last_mark = bool(
+                        _dry_pnl_profit_protect_reason(cfg, pos, float(last_pnl_bps), float(age_min))
+                    )
+                    if (
+                        profit_protect_last_mark
+                        or close_last_mark_loss
+                        or (stale_age_min > 0.0 and age_min >= stale_age_min and float(last_pnl_bps) <= stale_max_bps)
+                    ):
                         notional = _safe_float(pos.get("notional_usd"), _dry_pnl_notional_usd(cfg))
+                        exit_reason = "profit_protect"
+                        if not profit_protect_last_mark:
+                            exit_reason = "loss_trim" if close_last_mark_loss else "stale_last_mark"
                         event = {
                             "type": "close",
                             "product_id": pid,
-                            "exit_reason": "loss_trim" if close_last_mark_loss else "stale_last_mark",
+                            "exit_reason": exit_reason,
                             "exit_ts_utc": now_utc,
                             "exit_tick": int(t),
                             "exit_mid": float(last_mid),
@@ -2260,6 +2310,9 @@ def _dry_pnl_mark_from_rows(cfg: Dict[str, Any], t: int, rows: Any) -> None:
                             "entry_ts_utc": pos.get("entry_ts_utc"),
                             "entry_tick": pos.get("entry_tick"),
                         }
+                        for optional_key in ("peak_pnl_bps", "peak_pnl_usd", "peak_mid", "peak_tick", "peak_ts_utc"):
+                            if optional_key in pos:
+                                event[optional_key] = pos.get(optional_key)
                         closed.append((pid, event))
                         continue
                     unrealized_bps_total += float(last_pnl_bps)
