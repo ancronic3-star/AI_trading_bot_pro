@@ -15,6 +15,80 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-03T23:55:45Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local DRY supervised sample completed cleanly with DRY=true and LIVE=false.
+- Latest run reached entry preflight, then continuous_start and continuous_done for 7 warmed ticks after the entry sample.
+- No Python observe process remains running.
+- Latest status reporter preview was no-send; no email was sent outside the two-hour cadence.
+
+Current blocker:
+- Primary blocker is now green_breadth / market+dmid overlap, not timestamp coverage.
+- Preflight no longer stops on stale tail timestamp coverage when ranked timestamp/liquid coverage is usable.
+- Cache evidence: timestamp_ratio=0.7888 globally, but ranked_timestamp_observe_supported=true, ranked_liquid_timestamp_observe_supported=true, dry_observe_coverage_supported=true.
+- Tail stale cache remains visible: tail_cache_refresh_required=true, timestamp_outside_window_files=83.
+- Missing product/cache gap is not current cause: missing_files=0, S=393.
+- U=0 / stale feed is not current cause: U=120.
+- Latest readiness: signals=363, liquid=17, dmid=12, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Warmed tick diagnostics are now available: tick_diag_rows=8, tick_diag_dmid_nonzero=204, tick_diag_dmid_ready=18, tick_diag_warmed_seen=true.
+- Still no opens: max_drysig=0, max_dryopen=0, all_pass_candidates=0.
+- Runtime near evidence: ETH-USD had qv=13,820,015, rdmid=10.36, spr=0.06, tob=798, but failed dmid and market_breadth.
+- Do not tune Profit Score while dryopen=0/open_count=0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- opened=12 historically; blocked_open=50; quarantined=8.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- Cache preflight now distinguishes full-universe stale tail timestamp coverage from ranked actionable timestamp/liquid coverage.
+- Missing selected product/cache files still require refresh; only stale tail products can be bypassed when ranked timestamp coverage is usable.
+- Supervisor preflight now allows DRY observe to proceed when dry_observe_coverage_supported=true, while keeping actual open gates unchanged.
+- Entry preflight now continues into the bounded DRY observe block when cache coverage supports observing, so tick-dmid can warm beyond first-tick twarm=0.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile tools\koko_cache_market_regime.py tools\run_koko_dry_supervised.py: OK.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 22 OK.
+- python -m unittest discover -s tests -p "test_koko_cache_market_regime.py": 22 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
+- Latest bounded DRY observe reached continuous_start ticks=7 and continuous_done elapsed_sec=56.4.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence remains two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Continue DRY observe in bounded samples while market breadth/dmid overlap is the blocker.
+- Do not tune score until dryopen/open_count is nonzero or a candidate can pass data/openability gates.
+- Watch for green breadth recovery and liquid+dmid overlap; then resume dry P&L improvement from actual open/close evidence.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-03T23:44:43Z
 
 RELAY_FILE_VISIBLE=yes
