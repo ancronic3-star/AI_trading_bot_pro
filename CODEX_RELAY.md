@@ -25,31 +25,27 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T20:25:43Z
+Timestamp: 2026-06-03T20:53:38Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
-- Latest local supervised DRY task: completed exit 0 on 2026-06-03 with DRY=true and LIVE=false.
-- Latest wait-mode observe smoke found an actionable ranked preflight window and ran instead of skipping.
-- Latest 12-tick DRY observe closed the prior SUI-USD open as the first dry win.
-- Added an entry preflight sample in the supervised DRY runner so the runner samples one DRY tick after candle/cache preflight and records actual spread/top-book entry readiness before spending a full observe block.
-- Latest entry-preflight sample found real entry overlap and opened SUI-USD again; latest follow-up marked it open and negative.
-- Latest DRY samples marked the current SUI-USD open positive; full observe stayed skipped because current entry spread/top-book overlap returned to zero.
-- Added duplicate-report suppression for repeated entry-preflight spread/top-book blockers so product-specific near-miss changes do not create duplicate "new blocker" reports.
-- TDI Factor Gmail reporting cadence: every two hours plus immediate material events. User update cadence should now be two-hour email summaries unless a material event occurs.
-- PFID present in environment: yes, per prior local check.
-- COINBASE_KEY_FILE present in environment: yes, per prior local check.
+- Latest local supervised DRY task: completed; stale run_active.json recorded pid=5312 at 20:49:35, and that process is no longer running.
+- Latest entry-preflight sample closed the SUI-USD dry open with opened_delta=0 and closed_delta=1, then skipped full observe because entry spread/top-book overlap was still zero.
+- Latest local monitor snapshot: local pid=5312 ts=20:49:35, DRY=true, LIVE=false.
+- TDI Factor Gmail/reporting cadence remains two-hour summaries plus immediate material events only; no duplicate/spam updates.
 
 Current blocker:
-- The old opened=0/preflight-feed blocker is no longer current: DRY observe opened SUI-USD again after entry preflight found a real all-pass candidate.
-- Current blocker is entry spread/top-book overlap=0 plus negative total dry net P&L; not Profit Score tuning.
-- Latest entry readiness: signals=346, observe_open_candidate_present=false, liquid_dmid_overlap=4, liquid_dmid_spread_tob_overlap=0, dominant_blocker=spread.
-- Closest current entry shortfall: FET-USD spread_excess=2.71 bps.
-- Current SUI-USD open is positive, but total dry net remains negative.
-- U=0 / stale-feed cause is not current in the latest evidence; cache files are present and mtime_fresh_ratio=1.0.
-- Missing product/cache gap is not current: files_present=393, missing_files=0.
+- Primary blocker: entry spread/top-book overlap=0.
+- Latest readiness: signals=371, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=0, observe_open_candidate_present=false, observe_probe_candidate_present=false.
+- Closest current entry shortfall: USELESS-USD spread_excess=5.63 bps with top-of-book shortfall=0.
+- Green breadth is weak: green_ratio=0.1868 vs required 0.8500; best ranked green=0.5795.
+- Timestamp coverage is usable: timestamp_ratio=0.8779 and timestamp_shortfall=0.
+- Liquid subset coverage is usable: liquid_subset=25 vs required 10, liquid_shortfall=0.
+- U=0 / stale-feed is not the current cause: latest tick shows U=120, S=393, brf=80.
+- Missing product/cache gap is not current in latest evidence: cache_supported=true.
+- Do not tune Profit Score while open_count=0 and dryopen=0.
 
 Files changed in current local lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
@@ -64,39 +60,30 @@ Files changed in current local lane:
 - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
 - C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
-- Generated local evidence: C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
-- Generated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
 - Generated local evidence: C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
-- Generated local evidence: C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- Generated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Generated local evidence: C:\ai_trading_bot_koko\logs\tdi_status_monitor_state.json
+- Generated local evidence: C:\ai_trading_bot_koko\logs\tdi_status_reporter_state.json
 - Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
-Changes applied in this update:
-- Added preflight wait-for-observe-window mode in the supervised DRY runner so DRY observe can wait for usable coverage instead of ending at a red preflight snapshot.
-- Added entry-preflight sample logic in tools\run_koko_dry_supervised.py: after candle/cache preflight passes, the runner can take one DRY sample tick, regenerate readiness, and continue only when the sample opens, finds an all-pass candidate, or finds an eligible probe candidate.
-- Added coarse duplicate-report suppression for repeated entry-preflight blockers: the supervisor now keys repeated spread/top-book gap reports as entry_liquid_dmid_spread_tob_overlap_gap instead of product-specific blocker text.
-- Added supervisor tests for the entry-preflight continue/skip decisions.
-- Seeded local generated state logs\entry_preflight_blocker_state.json to suppress immediate duplicate reports for the already-known entry spread/top-book gap.
-- Preserved the preflight skip when the window remains non-actionable.
-- Changed TDI Factor periodic email summary cadence to two hours through code default and run_settings.json.
-- Set DRY_PNL_MAX_OPEN_POSITIONS=4 for DRY-only evidence collection; BUY_MAX_OPEN stayed 1.
-- Ran DRY observe after wait-mode and entry sample found usable coverage; prior SUI-USD closed as a win and a new SUI-USD dry open is currently negative.
-- Preserved Coinbase/order placement guardrail; no Coinbase/order path changes.
-- Preserved DRY/LIVE safety: DRY=true and LIVE=false.
-- Preserved static TP/SL safety: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
-
 Dry Profit Score evidence:
-- Current Profit Score: 20/100.
-- dry P&L: realized=-0.03902483 USD, unrealized=+0.01644696 USD, net=-0.02257787 USD.
-- open/closed/wins/losses: open=1, closed=7, wins=1, losses=6.
-- opened=8 historically; latest open is SUI-USD.
-- Prior SUI-USD close evidence: +12.7924 bps, +0.00383772 USD, first win.
-- Current SUI-USD open mark: unrealized_pnl_bps=+54.8232, unrealized_pnl_usd=+0.01644696.
+- Current Profit Score: 19/100.
+- dry P&L: realized=-0.06120051 USD, unrealized=0.00000000 USD, net=-0.06120051 USD.
+- open/closed/wins/losses: open=0, closed=8, wins=1, losses=7.
+- opened=8 historically; blocked_open=42; quarantined=6.
+- Latest dry ledger event: SUI-USD closed via loss_trim at 2026-06-03T20:49:40Z.
+- Latest SUI-USD close evidence: -73.9189 bps, -0.02217568 USD.
+- Prior positive evidence still exists but was not retained: SUI-USD was previously marked as high as unrealized_pnl_bps=+74.5349 before reversing.
 - Overall dry net remains negative, so credible positive dry profitability evidence is not yet present.
 
 Coverage evidence:
-- Latest entry readiness: signals=346, observe_open_candidate_present=false, entry_liquid_dmid_spread_tob_overlap_gap=true, liquid_dmid_overlap=4, liquid_dmid_spread_tob_overlap=0.
-- Latest entry sample evidence: opened_delta=0, closed_delta=0, signals=346, liquid_dmid=4, liquid_dmid_spread_tob=0.
-- Latest follow-up evidence: open remained 1 and unrealized improved from -0.00332635 USD to +0.01644696 USD.
+- Latest entry readiness: entry_liquid_dmid_spread_tob_overlap_gap=true, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=0.
+- Book metric coverage: source_present=116, source_missing=255, present_ratio=0.3127.
+- Dmid coverage: dmid_present=371, dmid_usable=7, dmid_usable_ratio=0.0189.
+- Liquid coverage: quote_volume_present=371, quote_volume_usable=29, liquid_dmid_overlap=2.
+- Top-book coverage: tob_usable=113, tob_usable_ratio=0.3046.
+- Latest tick diagnostic: tick=1 U=120 S=393 top=393 chk=393 brf=80 drysig=0 dryopen=0.
+- Dominant blockers: spread=270, trough_wait=46, trough=23, tob_usd=22, dmid=10.
 
 Verification evidence:
 - python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 12 OK.
@@ -104,26 +91,23 @@ Verification evidence:
 - python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 18 OK.
 - python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 17 OK.
 - python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 7 OK.
-- python -m py_compile tools\run_koko_dry_supervised.py tools\koko_dry_observe_readiness.py: OK.
 - python -m py_compile tools\run_koko_dry_supervised.py: OK after duplicate-report suppression patch.
-- python -m py_compile tools\koko_cache_market_regime.py tools\run_koko_dry_supervised.py: OK from prior check.
-- python -m py_compile managers\run_manager\run_manager.py tools\tdi_status_reporter.py tools\tdi_status_monitor.py: OK.
 - python -m json.tool run_settings.json: OK.
 
 Guardrails:
 - Coinbase/order placement path not touched by this update.
 - DRY remains true.
 - LIVE remains false.
+- TDI report cadence remains TDI_REPORT_HOURLY_SEC=7200.
 - Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
 - Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
 
 Next action:
-- Continue DRY observe only through the data/preflight lane with wait-for-observe-window and entry-preflight sample enabled.
-- Do not tune Profit Score while fresh dry opens are unavailable.
-- Let the current SUI-USD dry ledger position mark/close under existing static TP/SL and dry-cycle exit rules.
-- Wait for entry spread/top-book overlap to return before allowing full observe blocks.
-- Collect more dry P&L evidence until net dry P&L improves materially or a new blocker appears.
+- Stay in the data/preflight lane until entry spread/top-book overlap returns and dryopen can become nonzero.
+- Investigate why positive dry marks were allowed to reverse into loss_trim without changing static TP/SL or Coinbase/order code.
+- Do not keep tuning score while open_count=0 and dryopen=0.
+- Keep reporting to tdifactorToday@gmail.com on two-hour cadence unless a material event occurs.
 - Keep DRY=true and LIVE=false.
 
 User action required:
