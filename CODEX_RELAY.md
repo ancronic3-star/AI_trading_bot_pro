@@ -25,15 +25,14 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T16:33:05Z
+Timestamp: 2026-06-03T16:43:44Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
 - Latest local supervised DRY observe task: completed exit 0 at 2026-06-03T16:32:46Z after 4 ticks with DRY=true and LIVE=false.
-- Material Gmail status sent to tdifactorToday@gmail.com: message id 19e8e56ffd0902dc.
-- Previous TDI snapshot logger access-violation blocker remains mitigated by TDI_SNAPSHOT_ENABLED=false and tdi_logger hardening.
+- Latest local status task: readiness regenerated for fresh since window 2026-06-03T16:32:00Z.
 - PFID present in environment: yes, per prior local check.
 - COINBASE_KEY_FILE present in environment: yes, per prior local check.
 
@@ -41,12 +40,17 @@ Current blocker:
 - No credible positive dry profitability evidence yet.
 - Current dry P&L is negative after five DRY paper probe losses: realized=-0.04232084 USD, unrealized=0.00 USD, net=-0.04232084 USD.
 - Open/closed/wins/losses: open=0, closed=5, wins=0, losses=5.
-- Main broad blocker remains green_breadth; latest open-lane blockers are dmid/spread with drysig=0 and dryopen=0.
+- Profit Score remains 12/100.
+- Do not tune Profit Score while opened=0 / dryopen=0.
+- Broad cache blocker remains green_breadth: green_ratio=0.1006 vs min=0.85.
+- Timestamp coverage is usable: timestamp_usable_ratio=0.9288, timestamp_missing_files=0.
+- Product/cache coverage is usable: files_present=393, missing_files=0.
+- Liquid subset coverage is usable but thin: liquid_subset_products=18 vs min=10, quote_volume_ge_min=18, dmid_ge_min_and_quote_volume_ge_min=1.
 - U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, chk=393, brf=25, tdmid=393, tdmidnz=22, tdmidok=4.
-- Latest readiness after patch has all_pass_candidates=0 and observe_probe_candidate_present=false for the new 16:32 run.
-- The earlier NEAR market-breadth-only mismatch is fixed in readiness: it is no longer reported as all-pass and is only marked probe-eligible when DRY observe probe floors allow it.
-- Current nearest fresh candidate: NEAR-USD is blocked by spread only, spread=7.0671 bps vs max=5.0, dmid=49.1573 bps, quote_volume=1898059.8699 USD, tob=4349.13 USD.
-- Current latest tick_diag drynear is BTC-USD blocked by dmid|market_breadth: recent dmid=-57.26/40.00, market_green_ratio=0.2583/0.8500, dryopen=0.
+- Latest readiness fresh window has all_pass_candidates=0, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
+- Runtime drynear blockers now surface as multi-gate combos: dmid|market_breadth=18 and tob|dmid|market_breadth=2.
+- Closest runtime near miss: ZEC-USD blocked by dmid|market_breadth, spr=1.32/5.00, tob=533/500, qv=3287566/250000, rdmid=14.66/40.00, tick_dmid=11.96/10.00, market_green_ratio=0.2583/0.8500.
+- Closest paper one-gate near miss: NEAR-USD blocked by spread only, spread=7.0671 bps vs max=5.0, dmid=49.1573 bps, quote_volume=1898059.8699 USD, tob=4349.13 USD.
 
 Files changed in current local lane:
 - C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
@@ -57,11 +61,10 @@ Files changed in current local lane:
 - GitHub relay file updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Changes applied in this update:
-- Patched tools/koko_dry_observe_readiness.py so market_breadth-blocked candidates are no longer counted as all-pass.
-- Added dry_observe_probe eligibility reporting to readiness output, mirroring runtime floors/failure allow-list.
-- Set DRY_OBSERVE_PROBE_MIN_MARKET_DMID_BPS=-999999.0 in run_settings.json so a market-breadth-only DRY observe probe can open when product gates pass.
-- Added regression tests for market-breadth all-pass mismatch and probe eligibility.
-- Added runtime probe test for the disabled market-dmid floor case.
+- Patched tools/koko_dry_observe_readiness.py so readiness reports runtime_near_misses from tick_diag drynear/drynear_top lines.
+- Added runtime_failure_combos and closest_runtime_near_miss promotion evidence.
+- Fixed --since-ts-utc filtering for tick_diag so old drynear candidates do not leak into fresh windows.
+- Kept market_breadth-blocked candidates out of all_pass_candidates and exposed probe eligibility separately.
 - No Coinbase/order placement path changes.
 - No Profit Score tuning.
 - DRY remains true and LIVE remains false.
@@ -73,11 +76,10 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
-- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 8 OK.
-- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 13 OK.
-- py_compile tools\koko_dry_observe_readiness.py managers\run_manager\run_manager.py: OK via isolated PYTHONPYCACHEPREFIX.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 10 OK.
+- py_compile tools\koko_dry_observe_readiness.py: OK via isolated PYTHONPYCACHEPREFIX.
+- Latest readiness regenerated after patch for 2026-06-03T16:32:00Z window: all_pass_candidates=0, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false, signals=393, tick_diag_rows=4.
 - Bounded supervised DRY observe after patch: exit 0, ticks=4, drysig=0, dryopen=0.
-- Latest readiness regenerated after patch for 2026-06-03T16:32:00Z window: all_pass_candidates=0, observe_probe_candidate_present=false, signals=393.
 - Settings check remains: DRY=True, LIVE=False, allowed probe failures=[market_breadth], DRY_OBSERVE_PROBE_MIN_MARKET_DMID_BPS=-999999.0, TP=8.0, SL=0.8.
 
 Guardrails:
@@ -89,12 +91,8 @@ Guardrails:
 
 Next action:
 - Continue DRY-only observe and data/preflight coverage checks until a product-level candidate is all-pass or market-breadth-only probe-eligible again.
-- Current immediate open-lane focus: spread on NEAR-style dmid/liquid candidates and dmid on liquid majors while green breadth remains weak.
+- Current immediate open-lane focus: green breadth and dmid on liquid majors; spread remains the only paper one-gate blocker for the NEAR-style candidate.
 - Do not tune Profit Score while opened=0 / dryopen=0 and no credible positive dry P&L exists.
 
 User action required:
 - No.
-
-Reporting note:
-- Gmail connector is the actual delivery path while local SMTP env is unavailable.
-- Latest material status email was sent to tdifactorToday@gmail.com.
