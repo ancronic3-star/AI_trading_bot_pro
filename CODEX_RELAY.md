@@ -25,7 +25,7 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T22:36:46Z
+Timestamp: 2026-06-03T22:42:24Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -44,6 +44,10 @@ Current blocker:
 - Liquid subset coverage is usable at the full cache level: liquid_subset=16 vs required 10, liquid_shortfall=0.
 - Main dmid/liquidity overlap remains zero in runtime readiness: liquid=3, dmid=4, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
 - Best ranked probe observe: mode=dmid_desc, green_ratio=0.7125, liquid_subset=2, probe_quote_volume_overlap=3, probe_quote_volume_range_overlap=2.
+- Probe quote candidates are now explicit in reporting: BILL-USD, LIGHTER-USD, DEGEN-USD.
+- Probe quote range-clean candidates are now explicit in reporting: BILL-USD, LIGHTER-USD.
+- Runtime mapping shows BILL-USD is the closest active probe candidate but currently fails book gates: spr=5.7514 bps vs max 5.0, tob_usd=15.61 vs min 500, qv=208,024 vs main 250k, rdmid=91.65.
+- LIGHTER-USD and DEGEN-USD appear in cache probe diagnostics but were not current actionable runtime probe candidates in the latest one-tick sample; older runtime rows show LIGHTER spread/tob miss and DEGEN spread/tob/dmid miss.
 - U=0 / stale-feed is not the current cause; latest reporter evidence has U=120, S=393, drysig=0, dryopen=0.
 - Missing product/cache gap is not the current cause: files_present=393, missing_files=0.
 - Entry sample no longer stops the full block when cache-ranked probe evidence is present; latest bounded sample reached continuous_start and continuous_done.
@@ -85,6 +89,8 @@ Patch/change evidence:
 - Cache preflight now mirrors DRY observe probe quote-volume semantics: it counts probe_quote_volume_overlap separately from the main 250k liquidity gate using DRY_OBSERVE_PROBE_MIN_QUOTE_VOLUME_USD and DRY_OBSERVE_PROBE_MIN_QUOTE_FAILURE_DMID_BPS.
 - DRY_OBSERVE_PROBE_ALLOWED_FAILURES now includes quote_volume alongside market_breadth, still DRY-only and still constrained by the 50k quote probe floor and dmid floor.
 - Entry-preflight continuation now honors cache-ranked probe support, so a one-tick readiness spread/top-book gap does not end the full DRY block when cache preflight says a ranked probe window is worthwhile.
+- Cache preflight now emits top_timestamp_usable_probe_quote_candidates and top_timestamp_usable_probe_quote_range_candidates.
+- TDI reporter now includes best_probe fields and probe candidate IDs in readiness evidence, so Gmail/relay can name the cache probe candidates without manual log parsing.
 - No scoring thresholds were tuned.
 - Coinbase/order placement path was not touched.
 
@@ -96,6 +102,7 @@ Verification evidence:
 - python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 20 OK in local runtime.
 - python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\run_koko_dry_supervised.py tools\koko_cache_market_regime.py: OK in local runtime.
 - Latest bounded DRY sample with KOKO_SUPERVISOR_MAX_CYCLES=2 reached continuous_start ticks=1 and continuous_done elapsed_sec=0.6 after the entry sample.
+- Latest reporter preview was no-send/hourly_not_due and included probe_quote_candidates=BILL-USD|LIGHTER-USD|DEGEN-USD plus probe_quote_range_candidates=BILL-USD|LIGHTER-USD.
 - Cloud checkout is a slim handoff tree; focused runtime tests were run against C:\ai_trading_bot_koko.
 
 Guardrails:
@@ -109,7 +116,7 @@ Guardrails:
 Next action:
 - Continue data/preflight lane, not Profit Score tuning.
 - Continue candidate openability inside DRY observe now that cache preflight and entry preflight no longer stop early.
-- Inspect why runtime probe candidates are not surfacing from the current one-tick sample even though cache-ranked probe overlap exists; current near-misses are spread/tob/quote quality and trough.
+- Continue runtime openability from the named candidates: BILL-USD is closest but needs current spread/top-book to improve; do not tune score or weaken book gates.
 - Rerun longer DRY observe only after confirming the probe/openability evidence path, then resume dry P&L improvement.
 - Keep focus on data/preflight/openability while opened=0; do not tune Profit Score yet.
 - Keep reporting to tdifactorToday@gmail.com on two-hour cadence unless a material event occurs.
