@@ -25,15 +25,15 @@ If Codex can read this file, report back through the available Cloud/GitHub/task
 
 ## Codex relay status update
 
-Timestamp: 2026-06-03T16:20:41Z
+Timestamp: 2026-06-03T16:27:07Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
-- Latest local supervised DRY observe task: completed exit 0 at 2026-06-03T16:14:28Z after 8 ticks with DRY=true and LIVE=false.
-- Previous TDI snapshot logger access-violation blocker was mitigated by disabling TDI snapshot file writes in DRY settings via TDI_SNAPSHOT_ENABLED=false and hardening tdi_logger JSON sanitization.
-- Latest hang_dump files after the patch are timeout stack snapshots during loop sleep, not fatal access violations.
+- Latest local supervised DRY observe task: completed exit 0 at 2026-06-03T16:24:24Z with DRY=true and LIVE=false.
+- Latest reporter state: local pid=3264 ts=16:24:19, current status timestamp 2026-06-03T16:27:04Z.
+- Previous TDI snapshot logger access-violation blocker remains mitigated by TDI_SNAPSHOT_ENABLED=false and tdi_logger hardening.
 - PFID present in environment: yes, per prior local check.
 - COINBASE_KEY_FILE present in environment: yes, per prior local check.
 
@@ -41,16 +41,14 @@ Current blocker:
 - No credible positive dry profitability evidence yet.
 - Current dry P&L is negative after five DRY paper probe losses: realized=-0.04232084 USD, unrealized=0.00 USD, net=-0.04232084 USD.
 - Open/closed/wins/losses: open=0, closed=5, wins=0, losses=5.
-- Weak-dmid probe pattern is rejected as unprofitable: ADA, BTC, JITOSOL, DOGE, and HYPE all closed loss_trim.
-- Latest HYPE-USD weak-dmid probe closed loss_trim at -12.5174 bps / -0.00375522 USD.
-- DRY observe probe remains tightened: allowed failures only [market_breadth], and DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0. It can no longer waive the dmid gate.
-- Latest post-tightening readiness: all_pass_candidates=0, observe_open_candidate_present=false, drysig=0, dryopen=0.
-- U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, chk=393, brf=25, tdmid=393, tdmidnz=20, tdmidok=3.
-- Timestamp/cache coverage is usable: files_present=393, missing_files=0, timestamp_usable_ratio=0.9135.
-- Liquid subset coverage exists: quote_volume_ge_min=16, liquid_subset_products=16, min_liquid_subset_products=10.
-- Profitable overlap is thin: dmid_ge_min_and_quote_volume_ge_min=1.
-- Green breadth remains weak: cache green_ratio=0.1613 and runtime market_green_ratio=0.4583 vs dry_min_market_green_ratio=0.85.
-- Main blocker is green_breadth/dmid, not missing product/cache coverage and not stale feed.
+- Main blocker remains green_breadth, not stale feed and not missing product/cache coverage.
+- Latest cache regime coverage: files_present=393, missing_files=0, timestamp_usable_ratio=0.9288.
+- Liquid subset coverage exists: quote_volume_ge_min=18, liquid_subset_products=18, min_liquid_subset_products=10.
+- Profitable overlap remains thin: dmid_ge_min_and_quote_volume_ge_min=1.
+- Green breadth remains weak: cache green_ratio=0.1006 versus DRY_MIN_MARKET_GREEN_RATIO=0.85.
+- U=0 / stale-feed cause is not current: latest tick_diag has U=120, S=393, chk=393, brf=25, tdmid=393, drysig=0, dryopen=0.
+- Runtime drynear shows NEAR-USD as market_breadth-only at tick 1: score=0.9844, spread=3.50/5.00 bps, tob=756/500 USD, quote_volume=4130522/250000 USD, recent dmid=49.16/40.00 bps, market_green_ratio=0.2833/0.8500.
+- Readiness output currently reports observe_open_candidate_present=true and all_pass_candidates containing NEAR-USD, while runtime still shows drysig=0 and dryopen=0. This is the next data/preflight/open-lane issue to inspect before any Profit Score tuning.
 
 Files changed in current local lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
@@ -66,11 +64,10 @@ Files changed in current local lane:
 - GitHub relay file updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Changes applied in this update:
-- Patched TDI status reporter blocker selection to prefer cache market-regime blockers over raw readiness failure counts. This changes local status/subjects from misleading spread to green_breadth when cache regime says green_breadth is primary.
-- Added regression test for reporter blocker precedence.
-- Fixed no-send preview handling so preview/test renders do not advance material/hourly dedupe state, while failed SMTP attempts still throttle to avoid outbox spam.
-- No Profit Score tuning was performed.
-- Coinbase/order placement path was not touched.
+- Updated CODEX_RELAY.md with RELAY_FILE_VISIBLE=yes and the latest DRY observe/feed coverage status.
+- No Coinbase/order placement path changes.
+- No Profit Score tuning.
+- DRY remains true and LIVE remains false.
 
 Dry Profit Score evidence:
 - Current Profit Score observed in local reporter: 12/100.
@@ -79,25 +76,22 @@ Dry Profit Score evidence:
 - No credible positive dry profitability evidence yet.
 
 Verification evidence:
-- python -m unittest discover -s tests -p 'test_tdi_status_reporter.py': 2 OK.
-- python -m unittest discover -s tests -p 'test_koko_dry_candidate_rank.py': 12 OK.
-- python -m unittest discover -s tests -p 'test_tdi_logger.py': 3 OK.
-- py_compile tools\tdi_status_reporter.py managers\run_manager\run_manager.py managers\logging_manager\tdi_logger.py: OK.
-- Status reporter no-send render now produces subject [TDI STATUS] Profit 12/100 | DRY=true LIVE=false | green_breadth.
-- run_settings.json parse/settings check remains: DRY=True, LIVE=False, DRY_OBSERVE_PROBE_ALLOWED_FAILURES=[market_breadth], DRY_OBSERVE_PROBE_MIN_DMID_BPS=40.0, TDI_SNAPSHOT_ENABLED=False, TP=8.0, SL=0.8.
-- Latest supervised DRY observe after probe tightening: exit 0, ticks=8, no new opens after HYPE closed; latest drysig=0 and dryopen=0.
+- Latest supervised DRY observe task completed exit 0.
+- Latest readiness/cache refresh completed with timestamp/cache and liquid subset coverage usable.
+- Reporter state subject basis remains: [TDI STATUS] Profit 12/100 | DRY=true LIVE=false | green_breadth.
+- Previously verified tests remain: test_tdi_status_reporter.py 2 OK, test_koko_dry_candidate_rank.py 12 OK, test_tdi_logger.py 3 OK, and py_compile OK for reporter/run_manager/tdi_logger.
 
 Guardrails:
-- Coinbase/order placement path not touched by this relay update or latest patches.
+- Coinbase/order placement path not touched by this relay update.
 - DRY remains true.
 - LIVE remains false.
 - Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
 - Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
 
 Next action:
-- Continue DRY-only observe when market breadth/dmid improves enough to produce all-pass or market-breadth-only candidates.
-- Do not tune Profit Score while opened=0 and no credible positive P&L exists.
-- Keep collecting coverage evidence and monitor for true liquid+dmid overlap.
+- Inspect the readiness/runtime mismatch where NEAR-USD appears as a market-breadth-only observe candidate but runtime still reports drysig=0 and dryopen=0.
+- Keep work in the data/preflight/open-lane path: timestamp coverage, liquid subset coverage, green breadth, U=0/stale feed causes, and missing product/cache gaps.
+- Do not tune Profit Score while opened=0 / dryopen=0 and no credible positive dry P&L exists.
 
 User action required:
 - No.
