@@ -127,6 +127,99 @@ User action required:
 
 ## Codex relay status update
 
+Timestamp: 2026-06-03T23:00:41Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local run marker: stale pid=20240 ts=22:58:16.
+- Latest bounded DRY sample produced runtime tick evidence, but the supervisor command exited nonzero during the second preflight refresh after emitting the tick; no live trading was enabled.
+- TDI reporter preview was no-send with reason=hourly_not_due; no email was sent because the two-hour cadence was not due.
+
+Current blocker:
+- Still data/preflight/openability, not Profit Score.
+- Latest reporter subject blocker: timestamp_coverage.
+- Runtime readiness now has richer early-skip evidence:
+  - signals=324
+  - U=120, S=393, brf=80
+  - drysig=0, dryopen=0
+  - liquid=4, dmid=5
+  - liquid_dmid_overlap=0
+  - liquid_dmid_spread_tob_overlap=0
+  - dryliqskip=trough:4
+- The current named trough/probe blockers are now explicit:
+  - ZEC-USD: qv=9,948,525, rdmid=56.26, rejected by trough probe on spread 5.7414 vs max 5.0000.
+  - WLD-USD: qv=1,068,713, rdmid=49.98, rejected by trough probe on spread 7.3706 vs max 5.0000.
+  - ENA-USD: qv=376,736, rdmid=44.05, rejected by trough probe on spread 17.5901 vs max 5.0000.
+  - MON-USD: qv=281,123, rdmid=44.01, rejected by trough probe on top-book 51.4198 vs min 500.
+- Cache evidence remains supportive enough to continue observe:
+  - cache_supported=true
+  - timestamp_ratio=0.8473, timestamp shortfall=0.0027
+  - liquid_subset=19 vs min 10
+  - green_ratio=0.2374 remains weak
+  - best_probe=dmid_desc, best_probe_green=0.6421, best_probe_liquid=3
+  - best_probe_quote_overlap=5, best_probe_range_overlap=5
+  - probe_quote_candidates=ZEC-USD|WLD-USD|MON-USD|ENA-USD|FARTCOIN-USD
+  - probe_quote_range_candidates=ZEC-USD|WLD-USD|MON-USD|ENA-USD|FARTCOIN-USD
+- U=0 / stale feed is not the current cause; U=120.
+- Missing product/cache gap is not the current cause; S=393 and cache refresh had broad coverage, with two Coinbase candle refresh failures in the sample.
+- Current named candidates fail strict spread/top-book gates, so do not tune score and do not weaken gates without separate approval.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.05528612 USD, unrealized=0.00000000 USD, net=-0.05528612 USD.
+- open/closed/wins/losses: open=0, closed=11, wins=3, losses=8.
+- blocked_open=46, opened=11, quarantined=7.
+- No new DRY opens in latest verification.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- Added DRY-only trough-skip probe rejection metrics to dryliqskip_top.
+- The runtime tick line now includes fields such as tprej, spr/sprmax, tob/tobmin, quote floors, range floors, and dmid floors when those metrics are available.
+- Readiness parsing now preserves those fields as structured evidence.
+- TDI reporter now includes compact probe rejection details in the status evidence string, so Gmail summaries can name the real openability blocker without manual log parsing.
+- This is diagnostics/preflight reporting only; no trading threshold was lowered.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+- No score tuning was done.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 22 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- Bounded DRY verification produced a current tick with richer dryliqskip_top evidence.
+- Reporter preview after the patch included dryliqskip_top=ZEC-USD:reason=trough:qv=9948525:rdmid=56.26:score=0.5913:tprej=spread:spr=5.74/5.00 and was not sent because hourly_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries unless separately directed otherwise.
+
+Next action:
+- Continue DRY observe openability from named candidates.
+- Investigate whether current spread/top-book failures are transient book-state misses or a ranking/refresh window issue.
+- Do not tune Profit Score while opened/open_count remains 0.
+- Keep data/preflight focus: timestamp coverage, liquid subset coverage, green breadth, U/stale-feed causes, and product/cache gaps.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-03T22:49:15Z
 
 RELAY_FILE_VISIBLE=yes
