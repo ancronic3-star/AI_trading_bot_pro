@@ -15,7 +15,7 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
-Timestamp: 2026-06-04T00:02:44Z
+Timestamp: 2026-06-04T00:07:27Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -26,6 +26,7 @@ Cloud task status:
 - No Python observe process remains running.
 - Latest status reporter preview was a no-send two_hour_summary; no email was sent outside the two-hour cadence.
 - Routine status email cadence is two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Latest no-send status preview now includes structured runtime breadth evidence from tick diagnostics.
 
 Current blocker:
 - Primary blocker is now green_breadth / market+dmid overlap, not timestamp coverage.
@@ -36,6 +37,7 @@ Current blocker:
 - U=0 / stale feed is not current cause: U=120.
 - Latest readiness: signals=363, liquid=17, dmid=11, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
 - Warmed tick diagnostics are now available: tick_diag_rows=16, tick_diag_dmid_nonzero=294, tick_diag_dmid_ready=204, tick_diag_warmed_seen=true.
+- Structured market breadth evidence is now explicit: latest_mbr=0.4417/0.8500, max_near_mbr=0.6083, latest_mdmid=13.79/-999999.00, max_near_mdmid=24.72.
 - Still no opens: max_drysig=0, max_dryopen=0, all_pass_candidates=0.
 - Runtime near evidence: ETH-USD had qv=13,820,015, rdmid=10.36, spr=0.06, tob=1376, but failed dmid and market_breadth.
 - Reporter cache evidence: green_ratio=0.2398 vs green_min=0.8500, best_ranked=dmid_desc, best_ranked_green=0.5464, best_ranked_liquid=9.
@@ -44,8 +46,13 @@ Current blocker:
 Files changed in current local runtime lane:
 - C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
 - C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
 - C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py
 - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
 - Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Dry Profit Score evidence:
@@ -61,6 +68,8 @@ Patch/change evidence:
 - Missing selected product/cache files still require refresh; only stale tail products can be bypassed when ranked timestamp coverage is usable.
 - Supervisor preflight now allows DRY observe to proceed when dry_observe_coverage_supported=true, while keeping actual open gates unchanged.
 - Entry preflight now continues into the bounded DRY observe block when cache coverage supports observing, so tick-dmid can warm beyond first-tick twarm=0.
+- Readiness now promotes latest/peak runtime market breadth and market dmid from tick diagnostics.
+- TDI status reporting now includes latest_mbr/max_near_mbr and latest_mdmid/max_near_mdmid so two-hour emails can distinguish real green breadth failure from stale/missing feed coverage.
 - No Profit Score thresholds were tuned.
 - Coinbase/order placement path was not touched.
 - Static TP/SL safety was not touched.
@@ -72,7 +81,8 @@ Verification evidence:
 - python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
 - python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
 - Latest bounded DRY observe reached continuous_start ticks=15 and continuous_done elapsed_sec=131.1.
-- Latest reporter preview command completed with --no-send and subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-03 18:58:20" --out logs\dry_observe_readiness_latest.json: OK.
+- Latest reporter preview command completed with --no-send and subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth, including latest_mbr=0.4417/0.8500 and max_near_mbr=0.6083.
 
 Guardrails:
 - DRY remains true.
