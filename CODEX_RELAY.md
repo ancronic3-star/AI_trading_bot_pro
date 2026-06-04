@@ -15,6 +15,61 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T17:39:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: changed DRY candidate ranking to the preflight-supported timestamp/liquid/green/dmid mode, ran focused tests, completed a fresh 60-cycle bounded DRY observe, regenerated current-window readiness, and previewed the reporter with no send.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No manual duplicate email was sent; reporter preview was no-send only.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Latest reporter subject blocker: dry_pnl_guard needs recovery; recovery blocked by dmid; closest gate trough (WLD-USD).
+- The data/preflight lane improved materially after switching DRY_CANDIDATE_RANK from timestamp_liquidity_dmid_desc to timestamp_liquid_green_dmid_desc.
+- Latest bounded DRY observe completed exit 0 with 57 continuous diagnostic ticks after entry preflight.
+- Latest readiness generated at 2026-06-04T17:38:35Z: signals=17695, U=120, S=354, brf=120, max_drysig=0, max_dryopen=0, max_dryblk=0.
+- Coverage improvement versus the prior scoped run: liquid_dmid_overlap 0 -> 46, liquid_dmid_spread_tob_overlap 0 -> 1, dmid_usable 875 -> 1712, quote_volume_usable 581 -> 913, book_metric_source_present_ratio 0.9842 -> 0.9860.
+- Green breadth is now usable in the runtime tick diagnostics: latest_mbr=0.9417/0.8500 and latest_mdmid=53.76/0.00.
+- Closest final-gate candidate is WLD-USD: blocked_by=dry_pnl_guard with gate failure trough, trough=0.3941/0.3000, tick_dmid=41.46/10.00, spr=3.37/5.00, tob=571/500, dmid=214.704 bps, qv=3282231.
+- Recovery positive-expectancy products remain VVV-USD, XLM-USD, and XRP-USD; recovery_all_metrics remains 0.
+- Recovery shortfalls are now very close but still not openable: XLM dmid shortfall=0.7022 bps, XLM tick_dmid shortfall=0.04 bps, XRP book_pressure shortfall=0.01, VVV spread shortfall=0.05 bps; recovery primary blocker=dmid.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Missing product/cache gap is not the current cause: runtime product coverage remains present=315, stale=39, missing=0.
+- Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Safety settings rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Focused relevant tests: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_cache_market_regime tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter: 144 OK.
+- Syntax check: python -m py_compile tools\run_koko_dry_supervised.py tools\koko_cache_market_regime.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- Reporter preview: python tools\tdi_status_reporter.py --no-send --force returned subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | dry_pnl_guard needs recovery; recovery blocked by dmid; closest gate trough (WLD-USD).
+
+Next action:
+- Continue DRY-only observe/openability work now that market coverage is usable; focus on recovery-product dmid/tick/top-book alignment and WLD trough alignment.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Resume dry P&L improvement only after DRY observe produces actual opens.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T17:20:00Z
 
 RELAY_FILE_VISIBLE=yes
