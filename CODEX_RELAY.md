@@ -15,6 +15,64 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T16:43:28Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran a fresh 60-cycle bounded DRY observe after the final-gate diagnostics patch and fixed a threshold-reporting fallback for null compact book-pressure fields.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No manual/duplicate email was sent.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains final DRY openability, not Profit Score tuning.
+- Latest bounded DRY observe completed exit 0: preflight refreshed 353/354 products, supported=true, timestamp_ratio=0.9181, liquid=18; continuous_start ticks=57; continuous_done elapsed_sec=521.1.
+- Latest readiness regenerated at 2026-06-04T16:41:45Z from since_local_start 2026-06-04 11:33:04: signals=15642, tick_diag_rows=57, liquid_dmid_overlap=9, liquid_dmid_spread_tob_overlap=7, runtime_near_misses=25, max_dry_open=0.
+- Coverage improved materially versus prior window: liquid_dmid_overlap 2 -> 9, liquid_dmid_spread_tob_overlap 2 -> 7, tick_dmid_usable 420 -> 771.
+- Closest final-gate block is ZEC-USD tick=54: qv=16926929.7499, rdmid=70.3834, spr=4.0967, tob=2630.7397, trough_pct=0.198224 <= 0.3, but failures=tick_dmid|book_pressure.
+- Enriched shortfall evidence: tick_dmid=-59.0511 vs min=10.0, tick_dmid_shortfall=69.05111; press=0.029876 vs dry_min_book_pressure=0.04, book_pressure_shortfall=0.010124.
+- Market breadth remains weak in cache regime: green_ratio=0.3811 vs min=0.85, blocker=green_breadth.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open=131, opened=28 historically.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked this turn: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Focused relevant tests after fallback fix: python -m unittest tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 114 OK.
+- Syntax check: python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py.
+- Current readiness regenerated with --since-local-start "2026-06-04 11:33:04".
+
+Next action:
+- Continue DRY-only observe/openability work; current nearest path needs tick_dmid and book pressure alignment on ZEC-style candidates, while broader market breadth remains below the 0.85 gate.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T16:30:44Z
 
 RELAY_FILE_VISIBLE=yes
