@@ -15,6 +15,76 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T14:58:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: force-refreshed DRY candle cache, ran a 5-minute entry-overlap watch, refreshed readiness/coverage/forward diagnostics, and rebuilt runtime products after new sparse-forward promotions.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent for this relay-only update.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains entry openability, not Profit Score tuning.
+- The 5-minute entry-overlap watch never found a usable entry overlap and ended with `entry_preflight_observe_skip blocker=liquid_dmid_overlap`.
+- Latest readiness at 2026-06-04T14:55:04Z: signals=267, dmid_usable=24, quote_volume_usable=9, spread_usable=14, tob_usable=66, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0, tick_dmid_usable=0.
+- Blockers: trough=152, spread=92, trough_wait=14, tob_usd=7, dmid=2.
+- Latest cache regime at 2026-06-04T14:54:42Z: timestamp_usable_ratio=0.8939, timestamp_usable_files=320/358, green_ratio=0.2955, avg_dmid_bps=-4.7791, liquid_subset=20, dmid_liquidity_overlap=1, dmid_liquidity_range_overlap=1.
+- Latest runtime coverage at 2026-06-04T14:57:32Z: runtime_products=356, present=338, stale=18, repeat_sparse_in_runtime=12.
+- Runtime universe rebuild applied 37 repeat-sparse exclusions and 74 skipped sparse entries after B3-USD and BLZ-USD reached the 3-run exclusion threshold.
+- U=0 is not the blocker; latest ticks show U=120 and S=358/356 depending on the pre/post-prune sample.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Forward evidence:
+- Latest 5-minute forward window from 2026-06-04T14:49:25Z loaded 267 signals, matured 137, and had 130 no-forward-candle gaps.
+- Main blocker slices remain net negative after costs: dmid avg_net=-26.8762 bps, spread avg_net=-40.7457 bps, tob_usd avg_net=-30.0885 bps, trough avg_net=-68.8977 bps.
+- Ranked forward is unsupported: best mode active_dmid_desc top_n=20 still requires positive full/train/validation net forward close.
+- Threshold sweep is unsupported: best avg_net_forward_close_bps=1.7059 but positive_net_close_rate=0.4286 and train/validation support is insufficient.
+- This evidence argues against promoting/tuning score while opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_all_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- C:\ai_trading_bot_koko\logs\codex_latest_observe_start.txt
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Force candle cache refresh completed: refreshed=357, failed=1.
+- Entry-overlap watch completed exit 0 and stopped at liquid_dmid_overlap after 300s max wait.
+- Runtime product rebuild completed: products=356, repeat_sparse_excluded=37, repeat_sparse_skipped=74.
+- Ranked/threshold/gap diagnostics completed exit 0.
+
+Next action:
+- Keep waiting for or detecting real entry overlap before full observe: liquid+dmid candidate with spread/top-book/tick_dmid usable.
+- Rebuild/prune again if repeat-sparse history promotes more products to 3+ runs.
+- Keep data/preflight/openability focus; do not tune Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No user action required for trading safety.
+- Yes only for unattended local SMTP email delivery; connector-based two-hour reporting remains the fallback.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T14:46:00Z
 
 RELAY_FILE_VISIBLE=yes
