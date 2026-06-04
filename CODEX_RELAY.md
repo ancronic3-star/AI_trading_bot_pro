@@ -15,6 +15,78 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T01:20:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local work completed in DRY-only data/preflight lane.
+- Patch applied to keep DRY actionable book metrics refreshable on later ticks after their source becomes actionable_book_refresh_batch.
+- Full recent-candle cache refresh completed for 393 runtime products: refreshed=393, failed=0, workers=4.
+- Fresh preflight snapshot after cache refresh shows current market breadth is red again; no longer a good window for a longer observe.
+- TDI status reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker is back to market breadth / preflight quality for the live window, not Profit Score.
+- Fresh cache/preflight evidence: timestamp_ratio=0.9008, green_ratio=0.1661, liquid_subset=23, cache_supported=true.
+- Reporter preview evidence: green_shortfall=0.6839, best_ranked=dmid_desc, best_ranked_green=0.5783, best_ranked_liquid=3, best_ranked_dmid_liq_overlap=1, best_ranked_dmid_range_overlap=1.
+- Latest readiness from prior bounded observe still shows no opens: signals=368, liquid=26, dmid=51, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=0, max_drysig=0, max_dryopen=0, open_count=0.
+- Entry-data issue fixed in code: actionable_book_refresh_batch metrics will now be eligible for the next batch refresh instead of freezing spread/top-book/tick_dmid after first refresh.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- Regenerated cache evidence: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\logs\backtests\_cache\candles
+- Updated cache/preflight evidence: C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Runtime-near forward history remains negative: signals_unique=20, best_reason=dmid|market_breadth, avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+
+Patch/change evidence:
+- _dry_refresh_actionable_book_metrics now treats actionable_book_refresh and actionable_book_refresh_batch as refreshable sources.
+- _dry_batch_refresh_actionable_book_metrics now treats actionable_book_refresh and actionable_book_refresh_batch as refreshable sources.
+- Regression test added: previous actionable_book_refresh_batch metrics are refreshed again, updating spread, top-book USD, tick_dmid_bps, and tick_dmid_warmed.
+- No score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile managers\run_manager\run_manager.py tests\test_koko_dry_candidate_rank.py: OK.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 25 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python tools\refresh_koko_recent_candle_cache.py --products-file logs\dry_runtime_products_latest.json --days 1 --granularity 900 --limit 393 --workers 4: OK, refreshed=393, failed=0.
+- Direct preflight rebuild/write of cache_market_regime_latest.json: OK, timestamp_ratio=0.9008, green_ratio=0.1661, cache_supported=true.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --no-send --force: OK, sent=false.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Wait for a worthwhile preflight window, then run a bounded DRY observe to verify actionable book re-refresh improves spread/top-book/tick_dmid coverage for liquid+dmid candidates.
+- Keep diagnosing timestamp/liquid/green/U=0/stale-feed/cache causes when coverage regresses.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T01:14:30Z
 
 RELAY_FILE_VISIBLE=yes
