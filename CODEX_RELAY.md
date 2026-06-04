@@ -15,6 +15,93 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T00:27:24Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local DRY readiness regeneration completed cleanly with DRY=true and LIVE=false.
+- Latest status reporter preview was --no-send; no email was sent outside the two-hour cadence.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Primary blocker remains green_breadth plus recent/tick dmid alignment, not Profit Score tuning.
+- U=0 / stale feed is not current cause: U=120, S=393, brf=80.
+- Missing product/cache gap is not current cause for the current observe sample: signals=343.
+- Latest readiness generated_at_utc=2026-06-04T00:23:50Z.
+- Coverage: signals=343, liquid=6, dmid=3, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Tick diagnostics: tick_diag_rows=3, max_tick_dmid_nonzero=59, max_tick_dmid_ready=20, tick_dmid_warmed_seen=true.
+- Green breadth remains short: latest_mbr=0.3500/0.8500, latest_mdmid=6.28/-999999.00.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Closest runtime near miss is timestamped: ETH-USD at ts_utc=2026-06-04T00:19:24Z, entry_mid=1815.415, qv=4,584,462, rdmid=10.36/40.00, tdmid=4.90/10.00, spr=0.06/5.00, tob=3439/500, failures=dmid|market_breadth.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\koko_paper_signal_forward_outcomes.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_koko_paper_signal_forward_outcomes.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- New local evidence: C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- opened=12 historically; blocked_open=50; quarantined=8.
+- Credible positive dry profitability evidence is not present yet.
+
+Runtime near forward evidence:
+- Added timestamped runtime_near_misses so candidates now carry local_ts and ts_utc from tick_diag rows.
+- Added DRY-only runtime-near forward analysis path using readiness runtime_near_misses.
+- Latest runtime_near_forward_outcomes_latest.json: signals=10, horizon_min=5.
+- dmid|market_breadth group: signals=9, avg_net_forward_close_bps=-65.5874, positive_net_close_rate=0.0000.
+- tob_usd|dmid|market_breadth group: signals=1, avg_net_forward_close_bps=-65.2049, positive_net_close_rate=0.0000.
+- This is negative evidence and argues against loosening gates just to force opens.
+
+Patch/change evidence:
+- Readiness tick_diag parsing now adds local_ts and derived ts_utc to tick rows, latest_near_candidates, near_tail, and runtime_near_misses.
+- Runtime near misses can now be anchored to real observe moments for forward checks.
+- Forward outcome tooling can analyze readiness runtime_near_misses and skips unmatured candidates before the requested horizon has elapsed.
+- TDI status reporting now includes runtime_near_forward evidence in no-send/two-hour preview output.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_paper_signal_forward_outcomes.py tools\tdi_status_reporter.py: OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_koko_paper_signal_forward_outcomes.py": 8 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 14 OK.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-03 19:19:00" --out logs\dry_observe_readiness_latest.json: OK.
+- python tools\koko_paper_signal_forward_outcomes.py --readiness-runtime-near logs\dry_observe_readiness_latest.json --horizon-min 5 --granularity 60 --limit 10 --tp-pct 8.0 --sl-pct 0.8 --out logs\runtime_near_forward_outcomes_latest.json: OK.
+- python tools\tdi_status_reporter.py --mode hourly --event two_hour_summary --no-send --force: OK, sent=false, subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth, body includes runtime_near_forward.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence remains two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Continue DRY observe until market breadth/dmid coverage produces actual openable candidates.
+- Use timestamped runtime_near_forward evidence to avoid loosening gates into negative forward expectancy.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:21:35Z
 
 RELAY_FILE_VISIBLE=yes
