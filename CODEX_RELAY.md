@@ -15,6 +15,88 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T01:14:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local work completed in DRY-only data/preflight/observe lane.
+- Full recent-candle cache refresh completed for 393 runtime products: refreshed=393, failed=0, workers=4.
+- Cache preflight became worthwhile after refresh; bounded DRY observe completed 10/10 ticks without hanging.
+- TDI status reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker has moved from stale cache / liquid+dmid overlap=0 to dry entry-data openability.
+- Cache/preflight evidence after full refresh: timestamp_ratio=0.9466, green_ratio=0.6205, liquid_subset=24, dmid_quote=2, dmid_quote_range=2, supported=true, worthwhile=true.
+- Best-ranked preflight mode is now usable: timestamp_liquid_green_dmid_desc with green=0.9250, liquid=24, dmid_liq_overlap=2, dmid_range_overlap=2, probe_quote_overlap=9, probe_range_overlap=9.
+- Latest readiness: signals=368, liquid=26, dmid=51, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=0.
+- Latest tick diagnostics: U=120, S=393, brf=80, tick_diag_rows=10, tick_diag_dmid_nonzero=284, tick_diag_dmid_ready=21, tick_diag_warmed_seen=true.
+- Green breadth is no longer the immediate observe blocker in the latest tick: latest_mbr=0.9000/0.8500 and latest_mdmid=48.37/-999999.00.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Entry-data shortfall evidence: WLD-USD is the closest liquid+dmid candidate, blocked by spread/top-book/tick_dmid with spread_excess=0.70 bps and tob_shortfall=48.55 USD.
+- Additional liquid+dmid candidate evidence: INJ-USD also had recent dmid but failed spread/top-book/tick_dmid.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- No new runtime file edits in this handoff step.
+- Earlier local runtime patches remain active:
+  - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+  - C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+  - C:\ai_trading_bot_koko\tools\tdi_status_monitor.py
+  - C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+  - C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+  - C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+  - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Refreshed cache evidence: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\logs\backtests\_cache\candles
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Runtime-near forward history remains negative: signals_unique=20, best_reason=dmid|market_breadth, avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+- Reporter preview also showed older dry_open_forward evidence of one positive dry open, but this is not enough to override current open_count=0 and negative runtime-near evidence.
+
+Patch/change evidence:
+- No score tuning was performed.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+- Latest work repaired/verified data coverage by refreshing the full runtime product cache and running a bounded DRY observe only after preflight became worthwhile.
+
+Verification evidence:
+- python tools\refresh_koko_recent_candle_cache.py --products-file logs\dry_runtime_products_latest.json --days 1 --granularity 900 --limit 393 --workers 4: OK, refreshed=393, failed=0.
+- Direct preflight rebuild/write of cache_market_regime_latest.json: OK, supported=true, worthwhile=true.
+- Bounded observe command run_manager.run_loop(console=False, ticks=10): completed with exit code 0.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-03 20:09:52" --out logs\dry_observe_readiness_latest.json: OK.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --no-send --force: OK, sent=false, subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (2; top ENA-USD).
+- TDI_REPORT_HOURLY_SEC=7200 verified in run_settings.json.
+- Previous test coverage remains green: test_koko_dry_candidate_rank.py 24 OK; test_koko_dry_observe_readiness.py 20 OK; test_tdi_status_reporter.py 22 OK; test_run_koko_dry_supervised_preflight.py 25 OK.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Inspect dry entry-data causes for the two liquid+dmid candidates, especially refreshed spread/top-book depth and tick_dmid warmup behavior.
+- Keep DRY observe bounded to windows where cache/preflight remains worthwhile.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T01:04:45Z
 
 RELAY_FILE_VISIBLE=yes
