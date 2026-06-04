@@ -15,6 +15,98 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T08:13:35Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: fresh bounded DRY observe, readiness refresh, matured 5-minute recovery-forward refresh, dry_pnl_guard forward refresh, and reporter render verification.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered the cloud_task_completed status and did not send because it was not material enough for out-of-cadence delivery: reason=not_material:cloud_task_completed.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe has usable market coverage, but net-negative DRY P&L safety is still preventing new opens.
+- Latest blocker remains dry signal blocked by net_negative_low_tick_dmid (XRP-USD).
+- Latest dry P&L remains net negative and unchanged: -0.30033076 USD.
+- Fresh bounded observe produced no opens; blocked_open increased from 116 to 123.
+- Latest bounded observe still has opened=28, closed=28, wins=8, losses=20, open_count=0.
+- Fresh readiness remains usable for observe: signals=8344, quote_volume_usable=638, dmid_usable=3767, tick_dmid_ready=259, tick_dmid_warmed=7982, liquid_dmid_overlap=431, liquid_dmid_spread_tob_overlap=85.
+- U/stale feed is not the current cause: U=120, S=393, brf=120, book_gap=false, book_metric_source_present_ratio=0.9879.
+- Timestamp/cache coverage is usable: timestamp_ratio=0.9669, cache_supported=true, cache_openable=true.
+- Liquid subset is usable: liquid_subset=24 against min 10.
+- Full-universe green breadth remains weak: green_ratio=0.7350 against min 0.8500, while best ranked green remains usable at 0.9000.
+- Recovery candidate coverage remains signals=63, all_recovery_metrics=0 with failures tick_dmid=61, book_pressure=47, tob_usd=41, spread=13.
+- Fresh recovery shortfall diagnostics:
+  - tick_dmid closest miss: VVV-USD observed=8.806608 bps, required=10.0 bps, shortfall=1.193392 bps.
+  - book_pressure closest miss: XRP-USD observed=0.859443, required=0.900000, shortfall=0.040557.
+  - spread closest miss: VVV-USD observed=5.0835 bps, required<=5.0 bps, excess=0.0835 bps.
+  - tob_usd closest miss: VVV-USD observed=306.3220 USD, required=500.0 USD, shortfall=193.6780 USD.
+- Fresh mature recovery-forward evidence is worse than the previous run and still negative after costs: signals=10, horizon=5m, positive_net_close_rate=0.0000.
+- recovery|tick_dmid avg_net_close_bps=-61.0042, best_net_close_bps=-47.8218, shortfall_bps=47.8218.
+- recovery|tick_dmid|book_pressure avg_net_close_bps=-65.5526, best_net_close_bps=-57.2958.
+- recovery|tob_usd avg_net_close_bps=-75.7631, sl_touch_rate=1.0000.
+- Fresh mature dry_pnl_guard forward evidence is negative after costs: signals=4, horizon=5m, avg_net_close_bps=-131.5061, positive_net_close_rate=0.0000, sl_touch_rate=1.0000, best_net_close_shortfall_bps=101.8468.
+- No credible positive dry profitability evidence yet.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_ledger.jsonl
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_recovery_5m.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_dry_pnl_guard_5m.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=123.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- No code patch was applied in this observe turn.
+- Refreshed readiness and forward-evidence artifacts from a fresh bounded DRY observe.
+- This is not Profit Score tuning and does not loosen any DRY entry/P&L guard.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- Fresh bounded DRY observe command completed exit 0 with KOKO_SUPERVISOR_MAX_CYCLES=24, DRY=true, LIVE=false.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 03:03:28" --out logs\dry_observe_readiness_latest.json: completed.
+- python tools\koko_paper_signal_forward_outcomes.py --readiness-recovery logs\dry_observe_readiness_latest.json --since-ts-utc "2026-06-04T08:03:28Z" --horizon-min 5 --granularity 60 --limit 20 --out logs\paper_signal_forward_outcomes_latest_recovery_5m.json: completed.
+- python tools\koko_paper_signal_forward_outcomes.py --activity-log logs\activity_ticker.log --since-ts-utc "2026-06-04T08:03:28Z" --reasons dry_pnl_guard --horizon-min 5 --granularity 60 --limit 40 --out logs\paper_signal_forward_outcomes_latest_dry_pnl_guard_5m.json: completed.
+- python tools\tdi_status_reporter.py --mode event --event cloud_task_completed ... --no-send: rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | dry signal blocked by net_negative_low_tick_dmid (XRP-USD); sent=false reason=not_material:cloud_task_completed.
+- No code tests were run in this observe-only turn.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Keep the DRY P&L guard in place.
+- Continue observe/data-preflight only; do not tune Profit Score while fresh mature forward evidence is this negative.
+- Watch recovery_shortfalls for sustained convergence, especially VVV spread/tob_usd and XRP book_pressure/tick_dmid.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired and credentials are still absent: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T08:02:20Z
 
 RELAY_FILE_VISIBLE=yes
