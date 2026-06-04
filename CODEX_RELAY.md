@@ -15,6 +15,90 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T07:01:45Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local patch/change completed: DRY net-negative recovery entries now require immediate tick-dmid >= DRY_PNL_NET_NEGATIVE_MIN_TICK_DMID_BPS in addition to positive expectancy and book pressure.
+- DRY remains true and LIVE remains false.
+- Reporter rendered the material patch-change email but did not send/write outbox because report cadence was not due: reason=report_cadence_not_due.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- The 45-cycle observe before this patch opened high-pressure XRP and DOGE recovery entries and both closed as loss_trim.
+- Net dry P&L worsened from -0.28643482 USD to -0.30033076 USD.
+- Fresh losing entries had high pressure but weak immediate tick-dmid:
+  - XRP-USD opened with press=0.9719192790443063 and dmid_bps/tick_dmid_bps=-3.3587, closed loss_trim at -21.8386 bps.
+  - DOGE-USD opened with press=0.9329300829778928 and dmid_bps/tick_dmid_bps=-2.2251, closed loss_trim at -24.4812 bps.
+- This proves the previous high-pressure-only recovery gate was insufficient.
+- After the patch, a short bounded observe produced no new opens and did not worsen P&L further.
+- Ledger evidence after the patch shows XRP blocked twice with reason=net_negative_low_tick_dmid.
+- Current runtime near miss is NEAR-USD blocked by spread.
+- U/stale feed is not active: latest readiness shows U=120, S=393, brf=120.
+- Tick-dmid is warmed in the validation window: tick_dmid_warmed=4946/5254, tick_dmid_ready=190.
+- Market breadth is passing: latest_mbr=0.8917/0.8500 and latest_mdmid=69.16/0.00.
+- No credible positive dry profitability evidence yet; net dry P&L remains negative.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- Credible positive dry profitability evidence is not present yet because net P&L remains negative.
+
+Patch/change evidence:
+- Added DRY_PNL_NET_NEGATIVE_MIN_TICK_DMID_BPS=10.0.
+- _dry_pnl_entry_block_reason now rejects positive-expectancy net-negative recovery entries with net_negative_low_tick_dmid when payload tick_dmid_bps/dmid_bps is below the configured floor.
+- Readiness active_gates now includes DRY_PNL_NET_NEGATIVE_MIN_BOOK_PRESSURE and DRY_PNL_NET_NEGATIVE_MIN_TICK_DMID_BPS.
+- Regression coverage proves high-pressure positive-expectancy recovery is blocked when tick_dmid is negative, and still allowed when tick_dmid is above the floor.
+- This is not Profit Score tuning; it is a DRY P&L safety/quality guard learned from fresh loss evidence.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_cloud_only_corrections.py": PASS, 12 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 26 tests.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: PASS.
+- python -m json.tool run_settings.json: PASS.
+- Pre-patch bounded observe with KOKO_SUPERVISOR_MAX_CYCLES=45 completed; opened increased to 28, both new opens closed loss_trim, net=-0.30033076.
+- Post-patch bounded observe with KOKO_SUPERVISOR_MAX_CYCLES=18 completed; opened remained 28, closed remained 28, net remained -0.30033076.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 01:57:50": completed.
+- python tools\tdi_status_reporter.py --mode event --event patch_change ...: rendered status; sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue DRY observe only for high-pressure, positive-expectancy entries that also satisfy tick_dmid >= 10 bps while net P&L is negative.
+- Require realized/net dry P&L improvement before considering profitability recovery evidence credible.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T06:47:00Z
 
 RELAY_FILE_VISIBLE=yes
