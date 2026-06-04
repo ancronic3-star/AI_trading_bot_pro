@@ -15,6 +15,61 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T14:30:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: refreshed candle cache 363/364, reran runtime coverage, ran an 8-cycle DRY-only observe, refreshed readiness, and confirmed dry P&L unchanged.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- One connector-sent status email was delivered earlier in this turn; no duplicate follow-up email was sent for this small observe update.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains openability/market breadth, not Profit Score tuning.
+- The new observe completed with drysig=0, dryopen=0, dryblk=0.
+- Readiness generated at 2026-06-04T14:29:30Z: signals=261, dmid_usable=17, quote_volume_usable=11, spread_usable=11, tob_usable=76, liquid_dmid_overlap=1, liquid_dmid_spread_tob_overlap=0.
+- Blockers: trough=177, spread=65, trough_wait=15, tob_usd=3, dmid=1.
+- Latest near miss shifted to PAXG-USD with dmid|market_breadth failures: qv=632,862, spread=1.50/5.00, tob=3129/500, rdmid=-4.75/40.00, tdmid=-0.04/10.00, market_breadth=0.1917/0.8500, market_dmid=-30.74/0.00.
+- Closest liquid+dmid spread/top-book shortfall is DEGEN-USD: rdmid=492.81, qv=528,560, but spread=32.457/5.00 and tob=20.88/500.
+- U=0 is not the blocker; latest ticks show U=120 and S=362 after runtime rebuild.
+- Missing product/cache gap is not the current blocker, but repeat-sparse history grew again in runtime coverage and should be pruned/promoted next.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\codex_latest_observe_start.txt
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked before observe: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Candle cache refresh completed: refreshed=363/364, failed=1 (COSMOSDYDX-USD).
+- Runtime coverage completed exit 0 at 2026-06-04T14:27:54Z.
+- 8-cycle DRY-only observe completed exit 0.
+- Readiness refresh completed exit 0.
+
+Next action:
+- Promote/prune repeat-sparse runtime products that reached 3+ runs, then rerun bounded DRY observe when market breadth is less hostile.
+- Keep data/preflight/openability focus; do not tune Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- Yes only for unattended local email delivery: provide SMTP/Gmail sender env values or keep authorizing connector-based sending.
+- No user action required for trading safety.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T14:25:00Z
 
 RELAY_FILE_VISIBLE=yes
