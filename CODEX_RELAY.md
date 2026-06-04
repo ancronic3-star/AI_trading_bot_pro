@@ -15,6 +15,59 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T16:47:55Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: fixed readiness/reporter blocker selection so once liquid+dmid+spread+TOB candidates exist, status reports name the closest final-gate blocker instead of generic trough early-skip noise.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No manual/duplicate email was sent; reporter preview was no-send only.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker is now reported as: entry final gate blocked by tick_dmid (ZEC-USD).
+- Latest readiness regenerated from since_local_start 2026-06-04 11:33:04: signals=15642, liquid_dmid_overlap=9, liquid_dmid_spread_tob_overlap=7, tick_dmid_usable=771, max_dry_open=0.
+- Closest final block remains ZEC-USD tick=54: failures=tick_dmid|book_pressure, trough=0.1982/0.3000, press=0.0299/0.0400, tick_dmid=-59.05/10.00, spr=4.10, tob=2631.
+- Reporter evidence now prints missing per-row market breadth as mbr=na/0.8500 instead of a fake observed 0.0000.
+- Cache remains openable/supported with timestamp_ratio=0.9181 and liquid_subset=18; green_ratio=0.3811 remains below the 0.85 broad market gate.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open=131, opened=28 historically.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- Focused relevant tests after blocker/reporting fix: python -m unittest tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 117 OK.
+- Syntax check: python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py.
+- Reporter preview: python tools\tdi_status_reporter.py --no-send --force returned subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | entry final gate blocked by tick_dmid (ZEC-USD).
+
+Next action:
+- Continue DRY-only observe/openability work; nearest current path is ZEC-style final-gate alignment on tick_dmid and book pressure while broad market breadth remains under 0.85.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T16:43:28Z
 
 RELAY_FILE_VISIBLE=yes
