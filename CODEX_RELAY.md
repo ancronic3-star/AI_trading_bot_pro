@@ -15,6 +15,52 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T22:10:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: removed duplicate TDI status heartbeat automation so reporting is kept to one two-hour Gmail path.
+- Active reporting path now remains the local cron automation `tdi-koko-two-hour-email-status`, configured for C:\ai_trading_bot_koko and tdifactorToday@gmail.com every two hours through the Gmail connector.
+- Deleted duplicate automation: `tdi-gmail-status-every-two-hours`.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains green_breadth.
+- Latest cache regime is not openable: cache_openable=false, green_ratio=0.0848/0.8500, avg market dmid=-39.7318 bps.
+- Timestamp coverage is usable: timestamp_ratio=0.8729, timestamp_usable=309/354, missing_files=0, empty_files=0.
+- Liquid subset coverage is usable at 21, but liquid+dmid overlap remains zero.
+- Do not run another DRY observe until cache_openable=true or regime evidence improves.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current step:
+- C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md
+- Codex automation state changed: deleted duplicate heartbeat automation `tdi-gmail-status-every-two-hours`.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Current status sample: DRY=true, LIVE=false, current_blocker=green_breadth, next_action=wait for cache_openable=true; current blocker=green_breadth.
+- Observe intentionally skipped because cache_openable=false and liquid+dmid overlap is 0.
+- Duplicate heartbeat automation was deleted successfully.
+
+Next action:
+- Keep the two-hour Gmail cron as the single reporting path.
+- Wait for cache_openable=true before running DRY observe.
+- Continue data/preflight focus; do not tune Profit Score until actual DRY opens resume.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T22:04:20Z
 
 RELAY_FILE_VISIBLE=yes
