@@ -15,6 +15,70 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T20:43:15Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched the DRY supervisor data lane so long continuous observe runs in chunks and refreshes/clears recent-candle cache between chunks. This prevents one-candle-lag dmid evidence when an observe window crosses a 15-minute candle boundary.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours. Reporter preview was generated with `--no-send`; no duplicate immediate email was sent because cadence was not due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe still has no new opens and no P&L movement.
+- Latest verification run completed exit 0 with KOKO_SUPERVISOR_MAX_CYCLES=25, continuous=true, chunk_ticks=10, refresh_min_sec=1, LIVE=false.
+- The new chunked path ran in the real supervisor log:
+  - `continuous_chunk_cache_refresh chunk=1 enabled=True refreshed=True products=354 ok=354 failed=0`
+  - `continuous_chunk_cache_refresh chunk=2 enabled=True refreshed=True products=354 ok=353 failed=1`
+  - each refresh cleared 393 in-memory recent-candle cache entries.
+- Latest continuous readiness: signals=6739, liquid_dmid_overlap=38, liquid_dmid_spread_tob_overlap=11, quote_volume_usable=388, dmid_usable=508, tick_dmid_ready=191.
+- Current blocker: entry final gate blocked by tick_dmid, closest BTC-USD with dmid=41.7337 bps, qv=105045941.5008, spr=0.0016/5.0000 bps, tob=1337.41/500.00, tick_dmid=6.1511/10.0000 bps.
+- Recovery-positive products remain VVV-USD, XLM-USD, XRP-USD; latest recovery coverage has signals=51 and all_recovery_metrics=0.
+- Recovery failure counts: dmid=51, tick_dmid=51, tob_usd=44, book_pressure=42, spread=16.
+- Closest recovery shortfalls: XRP-USD dmid shortfall=25.4961 bps, XLM-USD tick_dmid shortfall=1.019428 bps, XRP-USD tob shortfall=5.7002 USD, XRP-USD book_pressure shortfall=0.033091.
+- This is not U=0, stale feed, missing product, or broad cache failure. Latest tick diagnostics remain U=120, S=354, brf=120.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+  - C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+  - C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_recovery_5m.json
+  - C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_history_recovery_5m.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+- Recovery-forward history is now signals=18, horizon_min=5. Positive diagnostic buckets exist for candidates still missing dmid/tick or dmid/tob:
+  - recovery|dmid|tick_dmid: signals=2, avg_net_forward_close_bps=16.3078, positive_net_close_rate=1.0000.
+  - recovery|dmid|tob_usd: signals=3, avg_net_forward_close_bps=12.0401, positive_net_close_rate=1.0000.
+- Those are not actual DRY opens and not enough to declare dry profitability.
+
+Verification evidence:
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_tdi_status_reporter: 100 OK.
+- python -m py_compile tools\run_koko_dry_supervised.py tools\tdi_status_reporter.py: OK.
+- Bounded chunked DRY observe completed exit 0 and logged `continuous_chunk_cache_refresh` plus `continuous_readiness ... forward_evidence=True`.
+- Safety settings remained DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+
+Next action:
+- Continue DRY-only observe with chunked cache refresh enabled so recovery-positive products can align against current candle data.
+- Watch XRP/XLM/VVV recovery products for dmid/tick/top-book alignment and actual DRY opens.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T20:22:30Z
 
 RELAY_FILE_VISIBLE=yes
