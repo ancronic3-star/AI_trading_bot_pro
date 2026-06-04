@@ -15,6 +15,88 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T06:11:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local patch/change event completed: tick-dmid DRY observe probe now requires strong book pressure when configured.
+- DRY remains true and LIVE remains false.
+- Routine TDI/KOKO email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporter rendered the material-event email, but send is still blocked by missing SMTP env: user, password, sender. It also reported outbox_throttled.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Feed/preflight coverage is usable enough to open DRY candidates; opened=25 and max_dryopen=1 in the latest bounded run.
+- Remaining blocker is not timestamp/cache/liquid subset coverage. It is entry quality and protection: cache-liquid candidates are mostly blocked by trough, spread, or top-book USD.
+- Latest readiness since 2026-06-04 01:06:27: signals=7522, book_metric_source_present=7413/7522, book_metric_source_present_ratio=0.9855.
+- U/stale feed is not active: latest tick_diag shows U=120, S=393, top=393, chk=393, brf=120.
+- Tick-dmid coverage is warmed but sparse: tick_dmid_warmed=7202/7522, tick_dmid_ready=231/7522, tick_diag_dmid_ready=74.
+- Liquid/dmid overlap is present but strict entry overlap remains narrow: liquid_dmid_overlap=287, liquid_dmid_spread_tob_overlap=36.
+- Market breadth is green enough: latest_mbr=0.8917/0.8500 and latest_mdmid=59.12/0.00.
+- New pressure floor is active: one-gate tick_dmid near-misses such as NEAR-USD are rejected with dry_observe_probe.reason=tick_dmid_book_pressure_floor unless book pressure reaches 0.9.
+- Latest dry liquid early skip top: ZEC-USD trough; trough-probe rejected on spread at spr=6.50/5.00.
+- Latest closest spread/top-book shortfall: ADA-USD with spread_excess=0.07 bps, no top-book shortfall.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29669003 USD, unrealized=0.01166752 USD, net=-0.28502251 USD.
+- opened/closed/wins/losses: opened=25, closed=23, wins=6, losses=17.
+- open_count=2, positive_open_count=1, negative_open_count=1, quarantined=16.
+- Open positions: DOGE-USD +40.5691 bps / +0.01217072 USD; XRP-USD -1.6774 bps / -0.00050321 USD.
+- Latest P&L event timestamp: 2026-06-04T06:09:39Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Added DRY_OBSERVE_PROBE_MIN_TICK_DMID_FAILURE_BOOK_PRESSURE=0.9.
+- Runtime _dry_observe_probe_ok now rejects tick_dmid-only probe exceptions below that book-pressure floor.
+- Readiness reporting mirrors the same tick_dmid_book_pressure_floor decision.
+- This was based on latest DRY evidence: DOGE and XRP high-pressure survivors stayed positive/near-flat, while prior low-pressure tick-dmid probes closed as losses.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 39 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 26 tests.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: PASS.
+- python tools\run_koko_dry_supervised.py with KOKO_SUPERVISOR_MAX_CYCLES=25 and PAPER_SIGNAL_MIN_TICK_GAP=1: completed; opened advanced to 25 and closed to 23.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 01:06:27": completed; signals=7522.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --force: rendered status email; sent=false due missing SMTP env and outbox_throttled.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue DRY P&L improvement from usable coverage; inspect top-book/trough causes and protect net until positive dry evidence appears.
+- Do not enable LIVE.
+- Do not tune Profit Score blindly; opened/open_count is now nonzero, so optimize only against observed DRY P&L evidence.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+- No user action required for DRY/LIVE safety.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T05:50:00Z
 
 RELAY_FILE_VISIBLE=yes
