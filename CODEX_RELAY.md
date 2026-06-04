@@ -15,6 +15,65 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T18:50:02Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched DRY preflight refresh so stale positive-expectancy recovery products force a public candle cache refresh even when broad cache preflight looks openable, refreshed cache coverage, ran a 60-cycle bounded DRY observe, regenerated readiness, and let the TDI reporter evaluate cadence.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter state recorded the latest cloud_completed/new_blocker status but skipped email because cadence was not due: reason=report_cadence_not_due/hourly_not_due. No duplicate email was sent.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- The stale recovery-cache symptom is repaired: VVV-USD, XLM-USD, XRP-USD, ZEC-USD, and HYPE-USD now report runtime timestamp_usable=true after refresh.
+- Public candle preflight refresh completed 353/354 products; one public candle fetch failed.
+- Cache/preflight after refresh: supported=true, openable=true, timestamp_usable_ratio=0.9435, timestamp_usable=334/354, liquid_subset=20.
+- Best ranked preflight evidence: best_ranked=timestamp_liquid_green_dmid_desc, best_ranked_green=0.8583, best_ranked_liquid=20, best_ranked_dmid_liq_overlap=3, best_ranked_dmid_range_overlap=2.
+- Latest bounded observe completed exit 0 but produced no new DRY opens and no P&L movement.
+- Latest readiness generated at 2026-06-04T18:49:25Z: signals=14097, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=2, quote_volume_usable=227, dmid_usable=900, tick_dmid_ready=449, book_metric_source_present_ratio=0.9785.
+- Current blocker is now trough/final-gate alignment, not stale timestamp coverage: current_blocker=trough, open_candidate=false, closest final-gate block HYPE-USD failures=trough with tick_dmid=14.89, spr=2.97, tob=3549, trough=0.4232 vs max 0.3000.
+- Recovery positive-expectancy products remain VVV-USD, XLM-USD, and XRP-USD, but the latest slice had recovery signals=0/all_metrics=0 because refreshed recovery products had negative recent dmid or top-book misses.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- C:\ai_trading_bot_koko\logs\tdi_status_reporter_state.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Focused tests: python -m unittest tests.test_run_koko_dry_supervised_preflight: 44 OK.
+- Syntax check: python -m py_compile tools\run_koko_dry_supervised.py: OK.
+- Runtime recovery timestamp check after refresh: VVV-USD, XLM-USD, XRP-USD, ZEC-USD, and HYPE-USD all timestamp_usable=true.
+- Bounded DRY observe completed exit 0 with KOKO_SUPERVISOR_MAX_CYCLES=60 and LIVE=false.
+- Reporter cadence check preserved two-hour email rule and skipped duplicate sends.
+
+Next action:
+- Continue DRY-only observe/openability work now that stale recovery timestamps are repaired.
+- Focus next on trough/final-gate alignment and recovery-product dmid/top-book alignment.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen/open_count remains 0.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T18:12:00Z
 
 RELAY_FILE_VISIBLE=yes
