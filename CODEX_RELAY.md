@@ -15,6 +15,60 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T17:05:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: added final_gate_distance to TDI status readiness evidence, ran focused tests, and completed a fresh 60-cycle bounded DRY observe.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Latest reporter state recorded the bounded DRY supervisor completion as cloud_completed; no manual duplicate email was sent from the no-send preview.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker moved from tick_dmid/book_pressure to entry final gate blocked by market_breadth (ZEC-USD).
+- Latest bounded DRY observe completed exit 0 with 57 continuous diagnostic ticks after entry preflight.
+- Latest readiness generated at 2026-06-04T17:02:20Z: signals=15738, U=120, S=354, brf=120, max_drysig=0, max_dryopen=0, max_dryblk=0.
+- Coverage improved materially: liquid_dmid_overlap 9 -> 57, liquid_dmid_spread_tob_overlap 7 -> 12, dmid_usable 789 -> 1164.
+- Closest final block is now ZEC-USD with only market_breadth failing: fgdist=0.4804, trough=0.2730/0.3000, market_green_ratio=0.4417/0.8500, press=0.5979/0.0400, tick_dmid=35.27/10.00, spr=4.27/5.00, tob=6575/500.
+- Cache remains supported/openable but broad green breadth is weak: timestamp_ratio=0.7655, green_ratio=0.4375/0.8500, liquid_subset=13/10.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Missing product/cache gap is not the current cause.
+- Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\tdi_status_reporter_state.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Safety settings rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Focused relevant tests: python -m unittest tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight: 118 OK.
+- Syntax check: python -m py_compile tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py: OK.
+- Reporter preview: python tools\tdi_status_reporter.py --no-send --force returned subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | entry final gate blocked by market_breadth (ZEC-USD), with closest_entry_final_block including fgdist=0.4804.
+
+Next action:
+- Continue DRY-only observe/openability work while market breadth is the remaining closest final-gate blocker.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Resume dry P&L improvement only after DRY observe produces actual opens.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T16:47:55Z
 
 RELAY_FILE_VISIBLE=yes
