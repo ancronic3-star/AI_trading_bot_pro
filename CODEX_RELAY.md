@@ -15,7 +15,7 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
-Timestamp: 2026-06-04T00:07:27Z
+Timestamp: 2026-06-04T00:13:26Z
 
 RELAY_FILE_VISIBLE=yes
 
@@ -23,6 +23,7 @@ Cloud task status:
 - Cloud task URL: not configured locally / not visible from this workspace.
 - Latest local DRY supervised sample completed cleanly with DRY=true and LIVE=false.
 - Latest run reached entry preflight, then continuous_start ticks=15 and continuous_done elapsed_sec=131.1.
+- Fresh manual DRY-only observe sample completed 24 ticks from local start 2026-06-03 19:09:10 without invoking the supervisor status-email hook.
 - No Python observe process remains running.
 - Latest status reporter preview was a no-send two_hour_summary; no email was sent outside the two-hour cadence.
 - Routine status email cadence is two hours: TDI_REPORT_HOURLY_SEC=7200.
@@ -35,11 +36,11 @@ Current blocker:
 - Tail stale cache remains visible: tail_cache_refresh_required=true, timestamp_outside_window_files=83.
 - Missing product/cache gap is not current cause: missing_files=0, S=393.
 - U=0 / stale feed is not current cause: U=120.
-- Latest readiness: signals=363, liquid=17, dmid=11, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
-- Warmed tick diagnostics are now available: tick_diag_rows=16, tick_diag_dmid_nonzero=294, tick_diag_dmid_ready=204, tick_diag_warmed_seen=true.
-- Structured market breadth evidence is now explicit: latest_mbr=0.4417/0.8500, max_near_mbr=0.6083, latest_mdmid=13.79/-999999.00, max_near_mdmid=24.72.
+- Latest readiness from the fresh 24-tick sample: signals=355, liquid=13, dmid=4, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Warmed tick diagnostics are available: tick_diag_rows=24, tick_diag_dmid_nonzero=211, tick_diag_dmid_ready=56, tick_diag_warmed_seen=true.
+- Structured market breadth evidence is explicit: latest_mbr=0.4417/0.8500, max_near_mbr=0.4417, latest_mdmid=13.79/-999999.00, max_near_mdmid=13.79.
 - Still no opens: max_drysig=0, max_dryopen=0, all_pass_candidates=0.
-- Runtime near evidence: ETH-USD had qv=13,820,015, rdmid=10.36, spr=0.06, tob=1376, but failed dmid and market_breadth.
+- Runtime near evidence: WLD-USD had qv=634,459, rdmid=20.56, spr=3.77, tob=1703, tick_dmid=19.81, but failed recent-candle dmid and market_breadth.
 - Reporter cache evidence: green_ratio=0.2398 vs green_min=0.8500, best_ranked=dmid_desc, best_ranked_green=0.5464, best_ranked_liquid=9.
 - Do not tune Profit Score while dryopen=0/open_count=0.
 
@@ -53,6 +54,7 @@ Files changed in current local runtime lane:
 - C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
 - C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
 - Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Runtime evidence updated by fresh manual DRY observe: C:\ai_trading_bot_koko\logs\activity_ticker.log
 - Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
 Dry Profit Score evidence:
@@ -61,6 +63,7 @@ Dry Profit Score evidence:
 - open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
 - opened=12 historically; blocked_open=50; quarantined=8.
 - Credible positive dry profitability evidence is not present yet.
+- Fresh 24-tick sample did not change dry P&L and did not create any open dry position.
 - Latest status subject preview: [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth.
 
 Patch/change evidence:
@@ -82,7 +85,9 @@ Verification evidence:
 - python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
 - Latest bounded DRY observe reached continuous_start ticks=15 and continuous_done elapsed_sec=131.1.
 - python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-03 18:58:20" --out logs\dry_observe_readiness_latest.json: OK.
-- Latest reporter preview command completed with --no-send and subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth, including latest_mbr=0.4417/0.8500 and max_near_mbr=0.6083.
+- Fresh manual DRY observe run_loop(console=False, ticks=24): OK, elapsed_sec=218.2.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-03 19:09:10" --out logs\dry_observe_readiness_latest.json: OK.
+- Latest reporter preview command completed with --no-send and subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth, including latest_mbr=0.4417/0.8500 and runtime_near=WLD-USD.
 
 Guardrails:
 - DRY remains true.
