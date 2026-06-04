@@ -957,6 +957,74 @@ User action required:
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T03:59:10Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Reporter destination remains tdifactorToday@gmail.com.
+- Routine reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Material patch_change reporting is now classified as material.
+- Latest patch_change report could not send to Gmail because SMTP env is still missing; reporter returned missing SMTP env ['user', 'password', 'sender'] and outbox_throttled.
+- DRY remains true and LIVE remains false.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- DRY observe still opened zero candidates; do not tune Profit Score while open_count=0.
+- Data/preflight lane improved: DRY_CANDIDATE_RANK changed from timestamp_liquid_green_dmid_desc to dmid_desc, matching cache preflight best_ranked=dmid_desc.
+- Latest dmid_desc observe had U=120, S=393, top=393, chk=393, brf=80, so this is not a U=0 or stale-feed blocker.
+- Latest dmid_desc observe produced no new open: opened=19, closed=19, wins=5, losses=14, open_count=0, blocked_open=88.
+- Latest dryrank_top now correctly prioritizes major liquid candidates: BTC-USD, ETH-USD, XRP-USD, SOL-USD, then VVV-USD/MON-USD/AERO-USD/SUI-USD.
+- Latest dryrank_top evidence: BTC qv=50877783 rdmid=73.51 spr=0.00 tob=2458; ETH qv=24792131 rdmid=67.16 spr=0.06 tob=584; XRP qv=6947703 rdmid=55.95 spr=0.83 tob=2299; SOL qv=6564452 rdmid=45.10 spr=2.80 tob=10620.
+- Market breadth remained below target during this observe: latest_mbr=0.4083/0.8500, max_near_mbr=0.7083.
+- Latest drygate breakdown still includes market breadth on all failing drygate combos: latest_drygate=dmid:21, market_breadth:21, spread:20, quote_volume:19, tob:19, score:16.
+- Early cache-liquid candidates exist but are still blocked by trough/probe quality: early_skip_top=5, early_liquid=5, early_dmid=5, early_liquid_dmid=5, early_spread_tob=0, early_probe_rej=dmid:4,spread:1.
+- Top early-skip candidate shifted to BTC-USD under dmid_desc: qv=50877783, rdmid=73.51, score=1.0000, rejected by trough-probe dmid with tpdmid=-0.1027/10.0000.
+- Runtime near miss remains PAXG-USD blocked by dmid|market_breadth: qv=311190, rdmid=-8.70, spr=1.23, tob=1405.
+- Cache preflight remains generally usable but green/timestamp are slightly short in latest reporter evidence: timestamp_ratio=0.8448/0.8500, green_ratio=0.7714/0.8500, liquid_subset=21/10.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\activity_ticker.log
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- open/closed/wins/losses: open=0, closed=19, wins=5, losses=14.
+- No positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Added dryrank_top tick diagnostics so runtime ranked candidates expose qv, rdmid, spread, top-book, timestamp usability, and metric source.
+- Readiness now parses latest_dry_rank_top.
+- Reporter now includes dryrank_top in readiness evidence.
+- Reporter MATERIAL_EVENTS now includes patch_change.
+- Config changed DRY_CANDIDATE_RANK=dmid_desc; no Profit Score tuning was done.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 24 tests.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": PASS, 32 tests.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: PASS.
+- JSON rail check: DRY=True, LIVE=False, DRY_CANDIDATE_RANK=dmid_desc, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8, TDI_REPORT_HOURLY_SEC=7200.
+
+Next action:
+- Continue data/preflight lane, not Profit Score tuning.
+- Re-run/monitor DRY observe when green breadth improves; current candidate lane now surfaces liquid majors, but market breadth and trough-probe tick-dmid/top-book still block opens.
+- Investigate whether trough-probe tick-dmid threshold is over-filtering liquid majors in DRY observe, while keeping static TP/SL and Coinbase/order guardrails intact.
+
+User action required:
+- Only if real Gmail delivery is required now: provide SMTP env for TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or equivalents. Otherwise no immediate user action.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T01:52:00Z
 
 RELAY_FILE_VISIBLE=yes
