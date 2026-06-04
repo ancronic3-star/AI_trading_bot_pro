@@ -15,6 +15,63 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T21:08:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran a fresh bounded DRY observe with explicit DRY=true, LIVE=false, static TP/SL unchanged, continuous=true, max_cycles=80, chunk_ticks=20, and chunked recent-candle cache refresh enabled.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours; no duplicate immediate email should be sent outside cadence.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe still has no new opens and no P&L movement.
+- Latest bounded DRY observe completed exit 0.
+- Latest continuous readiness: signals=12299, quote_volume_usable=637, dmid_usable=765, tick_dmid_ready=254, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Current blocker: dmid / entry liquid+dmid overlap.
+- The missing overlap is not a broad stale-feed or product-cache failure: runtime products include the broad 354-product universe plus XRP-USD, XLM-USD, and VVV-USD; latest market-regime cache was refreshed at 2026-06-04 15:54:44 local; cache refresh logged refreshed=354 failed=0.
+- Liquid names are currently low/negative dmid: e.g. ETH-USD qv=19520038.3795 with dmid=7.2867/40.0 bps; XRP-USD qv=3379057.3951 with dmid=-21.2857/40.0 bps in recovery coverage.
+- Positive-dmid names are currently thin/wide or pre-entry skipped: e.g. BNKR-USD dmid=222.4824 bps but qv shortfall=52302.665 USD and spread/tob failures.
+- Early-skip diagnostics show liquid+dmid exists only in trough/spread-probe rejected rows: dry_liquid_early_skip_coverage top_products=25, quote_volume_usable=25, dmid_usable=25, liquid_dmid_overlap=25, spread_usable=0, probe_rejections.spread=25.
+- This is now an actionable market-gate alignment blocker, not U=0, stale feed, missing product, or missing cache.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed:
+- Relay file only for this update: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md
+- Runtime files changed earlier in this lane remain:
+  - C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+  - C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+  - C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+  - C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+- Recovery-forward history has diagnostic positive buckets, but these are not actual DRY opens and do not prove profitability.
+
+Verification evidence:
+- Fresh bounded DRY observe completed exit 0.
+- Runtime printed MODE=DRY and PFID from env during the run.
+- Latest readiness active_gates: DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Latest P&L artifact unchanged with open_count=0 and net=-0.30033076.
+
+Next action:
+- Continue DRY-only observe through fresh market windows with chunked cache refresh enabled.
+- If liquid+dmid overlap remains zero across repeated fresh windows, inspect whether trough/spread pre-entry diagnostics need a DRY observe-only data-lane treatment; do not loosen live/order safety or tune Profit Score.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T20:43:15Z
 
 RELAY_FILE_VISIBLE=yes
