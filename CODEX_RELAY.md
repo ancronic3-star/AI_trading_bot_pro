@@ -15,6 +15,56 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T17:51:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran one more 60-cycle bounded DRY observe after the rank change, regenerated current-window readiness, and previewed the reporter with no send.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No manual duplicate email was sent; reporter preview was no-send only.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Latest reporter subject blocker: dry_pnl_guard needs recovery; recovery blocked by dmid; closest gate trough (MON-USD).
+- Latest readiness generated at 2026-06-04T17:50:52Z: signals=17329, U=120, S=354, brf=120, max_drysig=0, max_dryopen=0, max_dryblk=0.
+- Latest slice still has one liquid+dmid+spread+tob candidate, but no open: liquid_dmid_overlap=1 and liquid_dmid_spread_tob_overlap=1.
+- Latest broad market weakened versus the prior slice: latest_mbr=0.2500/0.8500 and latest_mdmid=-16.62/0.00.
+- Closest final-gate candidate is MON-USD: blocked_by=dry_pnl_guard with failures trough|market_breadth, trough=0.9194/0.3000, market_green_ratio=0.3083/0.8500, tick_dmid=11.94/10.00, spr=4.77/5.00, tob=2381/500, dmid=110.5238 bps, qv=1440027.
+- Recovery positive-expectancy products remain VVV-USD, XLM-USD, and XRP-USD; recovery_all_metrics remains 0.
+- Recovery lane is not currently openable: failures=dmid:164,tick_dmid:156,book_pressure:125,tob_usd:124,spread:55; recovery primary blocker=dmid.
+- The previous rank change was still useful, but this newest market slice is not favorable enough to open. Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Latest bounded observe completed exit 0.
+- Reporter preview: python tools\tdi_status_reporter.py --no-send --force returned subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | dry_pnl_guard needs recovery; recovery blocked by dmid; closest gate trough (MON-USD).
+- Prior focused tests after the rank patch: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_cache_market_regime tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter: 144 OK.
+
+Next action:
+- Keep DRY-only observing the improved rank through better market breadth/dmid windows.
+- If overlap stays at 0-1 across multiple favorable breadth windows, inspect recovery-product feed/top-book freshness rather than Profit Score.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T17:39:00Z
 
 RELAY_FILE_VISIBLE=yes
