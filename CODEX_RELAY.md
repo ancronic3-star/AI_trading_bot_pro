@@ -15,6 +15,86 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T04:48:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local bounded DRY observe completed at 2026-06-04T04:47Z after preflight control-flow fixes.
+- DRY remains true and LIVE remains false.
+- Routine report cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporter delivery is still blocked by missing SMTP user/password/sender env.
+- No Coinbase/order placement path was touched.
+
+Current blocker:
+- Active blocker remains data/preflight/openability coverage, not Profit Score tuning.
+- Latest DRY observe ran successfully but opened zero candidates: drysig=0, dryopen=0, dryblk=0.
+- Market/feed is not U=0 or stale: latest observe had U=120, S=393, top=393, chk=393, brf=80.
+- Timestamp/cache coverage is usable but not fully fresh: timestamp_ratio=0.8931, timestamp_usable=351/393, timestamp_outside=42, timestamp_missing_files=0.
+- Liquid subset coverage exists: liquid_subset=20 versus min 10.
+- Green breadth is the main market blocker: cache green_ratio=0.1107 versus min 0.8500; latest runtime mbr stayed about 0.1167 to 0.1417 versus 0.8500.
+- Liquid+dmid openability overlap is still zero in the latest readiness artifact: liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Dmid/liquidity/range overlap remains zero in cache: dmid_ge_min_and_quote_volume_ge_min=0 and dmid_ge_min_and_quote_volume_ge_min_and_range_le_max=0.
+- Probe candidates exist but are below the main quote-volume threshold: TRAC-USD and CTR-USD.
+- Latest observe blockers: trough=221, spread=81, trough_wait=15, tob_usd=10.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\activity_ticker.log
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Fixed KOKO_SUPERVISOR_OBSERVE_WINDOW_MAX_WAIT_SEC=0 so preflight wait exits immediately instead of sleeping for the poll interval.
+- When KOKO_SUPERVISOR_PREFLIGHT_REFRESH=0, the supervisor now reuses logs\cache_market_regime_latest.json instead of discarding existing coverage evidence.
+- Added regression tests for zero-wait preflight behavior and disabled-refresh cached snapshot behavior.
+- Kept P&L-blocked candidate deprioritization enabled through DRY_PNL_DEPRIORITIZE_BLOCKED_CANDIDATES=true.
+- No Profit Score tuning was done while open_count=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": PASS, 32 tests.
+- python -m py_compile tools\run_koko_dry_supervised.py: PASS.
+- python tools\run_koko_dry_supervised.py with KOKO_SUPERVISOR_MAX_CYCLES=8 and KOKO_SUPERVISOR_PREFLIGHT_REFRESH=0: completed bounded DRY observe; no new open.
+- python tools\koko_dry_observe_readiness.py --since-local-start "2026-06-03 23:46:11" --out logs\dry_observe_readiness_latest.json: OK.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight repair around green breadth, liquid+dmid overlap, and spread/top-book overlap before resuming dry P&L improvement.
+- Do not tune Profit Score while open_count=0.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T04:30:00Z
 
 RELAY_FILE_VISIBLE=yes
