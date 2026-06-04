@@ -15,6 +15,64 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T16:18:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran a 60-cycle bounded DRY observe, patched readiness/status reporting for tick_dmid early-skip probe rejections, regenerated latest readiness, and ran focused tests.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent; latest user cadence says updates should go into the two-hour email lane.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains final DRY openability, not Profit Score tuning.
+- The data/preflight lane improved again: latest continuous readiness at 2026-06-04T16:16:01Z from since_local_start 2026-06-04 11:04:44 has signals=15708, tick_diag_rows=57, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=2, runtime_near_misses=25, max_dry_open=0.
+- This proves usable market coverage can now surface entry-overlap candidates. The remaining blocker is final-gate alignment: WLD-USD had two liquid+dmid+spread+tob candidates, but failed trough/market_breadth, and one also failed book_pressure.
+- WLD candidate 1: tick=11, blocked_by=dry_pnl_guard, qv=7822801, rdmid=123.645, spr=3.3294, tob=520.5688, tick_dmid=60.2914, failures=trough|market_breadth, trough_pct=1.0.
+- WLD candidate 2: tick=38, blocked_by=market_breadth, qv=7822801, rdmid=123.645, spr=3.4429, tob=502.1519, tick_dmid=39.7511, failures=trough|market_breadth|book_pressure, trough_pct=0.787879.
+- Latest cache regime at 2026-06-04T16:04:32Z: openable=true, supported=true, timestamp_usable_ratio=0.9379, liquid_subset=18, dmid_quote=2, dmid_quote_range=2, green_ratio=0.2143, blocker=green_breadth.
+- Latest early-skip probe coverage now separates spread and tick_dmid: top_products=25, liquid_dmid_overlap=25, probe_rejections spread=24 and tick_dmid=1, tick_dmid_probe_present=1, tick_dmid_probe_usable=0.
+- The old U=0/stale-feed symptom is not the immediate blocker: latest tick diagnostics are live with U=120, S=354, brf=120, tdmidnz=177, tdmidok=14, dryopen=0.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open=131, opened=28 historically.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Bounded DRY supervisor run completed exit 0: continuous_start ticks=57, continuous_done elapsed_sec=511.6, open=0, closed=28, wins=8, losses=20.
+- Focused tests for touched lanes: python -m unittest tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight tests.test_tdi_status_reporter.TdiStatusReporterTest.test_readiness_evidence_includes_dry_liquid_early_skip tests.test_tdi_status_reporter.TdiStatusReporterTest.test_readiness_evidence_includes_trough_probe_rejection_metrics: 72 OK.
+- Syntax check: python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py.
+- Full reporter suite currently has two cadence/SMTP expectation failures unrelated to this patch: test_material_event_obeys_two_hour_report_cadence and test_force_without_no_send_obeys_two_hour_cadence. Do not send duplicate/manual emails; keep two-hour lane.
+
+Next action:
+- Keep DRY-only observe focused on final-gate alignment now that entry-overlap candidates are visible.
+- Inspect WLD final-gate path: trough_pct remains too high and market breadth is weak; do not loosen spread/tob/dmid or Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T16:02:00Z
 
 RELAY_FILE_VISIBLE=yes
