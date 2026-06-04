@@ -15,6 +15,86 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T00:45:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Fresh bounded local DRY observe was attempted with DRY=true and LIVE=false.
+- The observe produced five activity ticks, then exited with a hang/access-violation dump.
+- Hang evidence: C:\ai_trading_bot_koko\logs\hang_dump_7888.log points through _trough_fetch_cached_candles / _dry_recent_candle_metrics / _dry_dmid_gate.
+- Latest status reporter preview was --no-send; no email was sent outside the two-hour cadence.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Primary blocker remains preflight/feed/openability coverage, not Profit Score tuning.
+- New runtime blocker: bounded DRY observe now reaches ticks but crashes/hangs in the candle/cache dmid lane before usable opens.
+- U=0 / stale feed is not current cause: U=120, S=393, brf=80.
+- Missing product/cache gap is not the whole cause: readiness has signals=377 and book_gap=false, but liquid candidates lack usable dmid.
+- Latest readiness generated_at_utc=2026-06-04T00:38:52Z.
+- Coverage: signals=377, liquid=5, dmid=0, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Tick diagnostics: tick_diag_rows=5, max_tick_dmid_nonzero=288, max_tick_dmid_ready=14, tick_dmid_warmed_seen=true.
+- Green breadth is unusable in the latest fresh window: latest_mbr=0.0000/0.8500, latest_mdmid=0.00/-999999.00.
+- Liquid missing dmid: BTC-USD, ETH-USD, ZEC-USD, XRP-USD, DOGE-USD.
+- Closest runtime near miss: BTC-USD at ts_utc=2026-06-04T00:35:38Z, qv=2,953,902, rdmid=0.00, failures=dmid|market_breadth.
+- Best-ranked cache scope still reports openability gaps: mode=dmid_desc, green=0.5464, liquid=9/10, dmid_liq_overlap=0, dmid_range_overlap=0, probe_quote_overlap=0, probe_range_overlap=0.
+- Best-ranked shortfalls: green_shortfall=0.3036, liquid_shortfall=1, dmid_liq_shortfall=1, range_shortfall=1.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tools\tdi_status_monitor.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- New runtime failure evidence: C:\ai_trading_bot_koko\logs\hang_dump_7888.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Runtime-near forward history remains negative: signals=10, horizon_min=5, best_reason=tob_usd|dmid|market_breadth, avg_net_close_bps=-65.2049, positive_net_close_rate=0.0000.
+
+Patch/change evidence:
+- Missing-SMTP outbox writes are now throttled by the two-hour reporting cadence instead of writing duplicate .eml files on every material-event check.
+- hourly_not_due and outbox_throttled no longer advance last_hourly_epoch.
+- Direct tdi_status_monitor.py --once import path now works from script execution.
+- Direct monitor --once verification returned sent=false reason=hourly_not_due and did not increase outbox count.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- No lingering python.exe monitor process after verification.
+- Outbox count stayed at 258 after the patched monitor check; newest outbox file remained tdi_status_20260604T004001Z.eml from before/around the throttle patch.
+- python -m py_compile tools\tdi_status_reporter.py tools\tdi_status_monitor.py tools\koko_dry_observe_readiness.py: OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 19 OK.
+- python tools\tdi_status_reporter.py --mode hourly --event two_hour_summary --no-send --force: OK, sent=false, subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Fix the candle/cache dmid observe crash first so DRY observe can run long enough to build usable market coverage.
+- Continue bounded DRY observe until liquid>=10, dmid_liq_overlap>0, dmid_range_overlap/probe overlap, and green breadth can support actual dry opens.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:33:11Z
 
 RELAY_FILE_VISIBLE=yes
