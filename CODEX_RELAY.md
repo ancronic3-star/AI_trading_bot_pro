@@ -15,6 +15,81 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T02:56:23Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest reporter preview was --no-send; no email was sent.
+- Reporter subject preview: [TDI STATUS] Profit 24/100 | DRY=true LIVE=false | runtime near-miss ENA-USD blocked by spread.
+- Reporter reason: not_material:data_preflight_update, sent=false.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- DRY remains true and LIVE remains false.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current reporter blocker: runtime near-miss ENA-USD blocked by spread.
+- Latest runtime near evidence: ENA-USD failures=spread|market_breadth, qv=1294212, rdmid=287.30, spr=9.31/5.00, tob=3608.
+- Latest runtime-near forward outcome refresh loaded 10 latest samples, but all 10 are not mature yet for the 5-minute horizon.
+- Historical runtime-near forward evidence remains negative: signals=20, best_reason=dmid|market_breadth, avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+- Fresh open_count remains 0.
+- Timestamp coverage remains usable: timestamp_ratio=0.9771, timestamp_usable=384/393, timestamp_outside=9.
+- Runtime market/feed coverage remains usable: U=120, S=393, brf=80.
+- Liquid subset remains usable: liquid_subset=31, liquid_min=10.
+- Entry overlap remains nonzero: liquid_dmid_overlap=22 and liquid_dmid_spread_tob_overlap=4.
+- Runtime tick dmid warmed during verification: tick_diag_rows=20, tick_diag_dmid_nonzero=237, tick_diag_dmid_ready=112, tick_diag_warmed_seen=true.
+- Green breadth remains below target: latest_mbr=0.3583/0.8500, max_near_mbr=0.5500.
+- U=0 / stale feed is not the current cause.
+- Missing product/cache gap is not the current cause; cache_supported=true, cache_openable=true, diagnostic_worthwhile=true.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Updated forward evidence: C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_latest.json
+- Updated forward history: C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 24/100.
+- dry P&L: realized=-0.30192795 USD, unrealized=0.00000000 USD, net=-0.30192795 USD.
+- open/closed/wins/losses: open=0, closed=18, wins=4, losses=14.
+- Credible positive dry profitability evidence is not present yet.
+- Dry-open forward evidence remains thin: dry_open_forward signals=1, horizon_min=10, avg_net_close_bps=41.3940, positive_net_close_rate=1.0000.
+- Latest runtime-near samples are pending maturity; do not use them as positive evidence.
+
+Patch/change evidence:
+- Refreshed runtime-near forward outcomes from the latest readiness file.
+- Reporter now preserves latest runtime-near not_mature/failure evidence alongside historical runtime-near outcomes, instead of hiding the pending latest samples behind history.
+- No Profit Score tuning was done while opened=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 28 OK.
+- python -m py_compile tools\tdi_status_reporter.py tools\koko_paper_signal_forward_outcomes.py: OK.
+- python tools\koko_paper_signal_forward_outcomes.py --readiness-runtime-near logs\dry_observe_readiness_latest.json --horizon-min 5 ...: OK; latest failures not_mature=10.
+- python tools\tdi_status_reporter.py ... --no-send: OK, sent=false.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- TDI_REPORT_HOURLY_SEC remains 7200 so routine updates go to email once every two hours.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Wait for latest runtime-near samples to mature.
+- Continue DRY-only observe when spread and green breadth improve.
+- Do not tune score while opened=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined opens.
+- User action required: no.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T02:53:14Z
 
 RELAY_FILE_VISIBLE=yes
