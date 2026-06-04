@@ -15,6 +15,76 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T01:04:45Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local work completed in DRY-only supervisor preflight lane.
+- Preflight-only supervisor run returned before full observe because the current window is not actionable.
+- TDI status reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker remains green_breadth+liquid+dmid overlap=0 (liquid=23, dmid=27).
+- Supervisor preflight skip now reports the full gate stack instead of only green_breadth.
+- Latest preflight skip line: blocker=green_breadth+dmid_liquidity_overlap+candle_range_overlap+liquid_subset.
+- Current cache/preflight snapshot worsened after time passed: timestamp_ratio=0.2697, liquid=7, dmid_quote=0, dmid_quote_range=0.
+- Latest readiness remains no-open: signals=377, liquid=23, dmid=27, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Runtime-near forward history remains negative: signals_unique=20, best_reason=dmid|market_breadth, avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+
+Patch/change evidence:
+- Entry preflight now treats entry_liquid_dmid_overlap_gap as a stop condition, not only spread/top-book overlap gaps.
+- Entry preflight blocker key now dedupes liquid+dmid overlap gaps separately from spread/top-book gaps.
+- Supervisor preflight skip blocker now composes regime blocker plus dmid_liquidity_overlap, candle_range_overlap, and liquid_subset shortfalls from observe_trigger_gaps.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile tools\run_koko_dry_supervised.py tests\test_run_koko_dry_supervised_preflight.py: OK.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": 25 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 22 OK.
+- Preflight-only supervisor run with KOKO_SUPERVISOR_REQUIRE_OBSERVE_WINDOW=1 returned exit code 0 and logged preflight_observe_skip with combined blocker.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --no-send --force: OK, sent=false.
+- Outbox count stayed 260; newest outbox remained tdi_status_20260604T005201Z.eml.
+- No lingering python.exe process after checks.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Refresh/wait for a better preflight window before any longer DRY observe; current window lacks timestamp coverage, green breadth, liquid+dmid overlap, and range overlap.
+- Continue accumulating runtime-near forward evidence only when near misses mature.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:59:45Z
 
 RELAY_FILE_VISIBLE=yes
