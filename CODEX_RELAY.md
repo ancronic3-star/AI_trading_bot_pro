@@ -15,6 +15,58 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T19:06:45Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran a fresh 90-cycle bounded DRY observe after recovery timestamp repair, sent the current status to tdifactorToday@gmail.com through the Gmail connector, deleted a duplicate two-hour heartbeat automation, and updated the remaining cron automation to use Gmail connector instead of local SMTP.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Gmail connector send succeeded for the latest current-status report: message id 19e940a0467c81d2.
+- Local SMTP is still missing env user/password/sender, but the active reporting path is now the Gmail connector cron.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe is much closer to openability but still has no opens.
+- Latest readiness generated at 2026-06-04T19:06:20Z: signals=21908, liquid_dmid_overlap=81, liquid_dmid_spread_tob_overlap=52, quote_volume_usable=429, dmid_usable=2998, tick_dmid_ready=560, book_metric_source_present_ratio=0.9831.
+- Current blocker moved from trough to tick_dmid.
+- Closest final-gate candidate: HYPE-USD, failures=tick_dmid only, tick_dmid=9.742936 vs required 10.000000 bps, shortfall=0.257064 bps, spr=2.994909/5.000000 bps, tob=4574.73/500.00, trough=0.2397/0.3000.
+- This is not U=0, stale feed, missing product, or broad cache failure. U=120, S=354, brf=120 in the latest tick diagnostics.
+- Recovery positive-expectancy products remain VVV-USD, XLM-USD, and XRP-USD. They are fresh after the prior patch but not openable in the latest slice because dmid/tick/top-book alignment remains weak.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- No runtime source files changed during this observe/send step.
+- Codex automation changed: deleted duplicate heartbeat hourly-tdi-factor-gmail-status; updated cron tdi-koko-two-hour-email-status to use Gmail connector and explicit guardrails.
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Bounded DRY observe completed exit 0 with KOKO_SUPERVISOR_MAX_CYCLES=90 and LIVE=false.
+- P&L ledger tail shows no new blocked_open rows after the prior VVV-USD entries at 2026-06-04T18:23:57Z.
+- Reporter local SMTP attempt wrote an outbox .eml at 2026-06-04T18:56:14Z because SMTP env was missing; the latest current-status report was then sent successfully through Gmail connector.
+- Active two-hour automation is now a single cron: tdi-koko-two-hour-email-status, FREQ=HOURLY;INTERVAL=2, cwd=C:\ai_trading_bot_koko.
+
+Next action:
+- Continue DRY-only observe through tick_dmid alignment windows; HYPE missed the openability tick_dmid gate by only 0.257064 bps.
+- Keep recovery-product alignment under watch, but do not loosen gates or tune Profit Score while open_count=0.
+- Keep Coinbase/order path, live state, static TP/SL, and Gmail reporting guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T18:50:02Z
 
 RELAY_FILE_VISIBLE=yes
