@@ -15,6 +15,86 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T02:38:37Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local bounded DRY observes completed cleanly.
+- Latest reporter preview was --no-send; no email was sent.
+- Reporter subject preview: [TDI STATUS] Profit 24/100 | DRY=true LIVE=false | dry signal blocked by quarantine (NEAR-USD).
+- Reporter reason: not_material:patch_change, sent=false.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- DRY remains true and LIVE remains false.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current reporter blocker: dry signal blocked by quarantine (NEAR-USD).
+- Post-patch bounded observe had no new opens and one quarantined DRY signal.
+- Runtime market/feed coverage remains usable: U=120, S=393, brf=80.
+- Timestamp coverage remains usable: timestamp_ratio=0.9771, timestamp_usable=384/393.
+- Liquid subset remains usable: liquid_subset=31, liquid_min=10.
+- Liquid/dmid coverage remains usable: liquid_dmid_overlap=24.
+- Full entry overlap remains thin but nonzero: liquid_dmid_spread_tob_overlap=2.
+- Tick dmid warmed during verification: tick_diag_rows=8, tick_diag_dmid_nonzero=227, tick_diag_dmid_ready=63, tick_diag_warmed_seen=true.
+- Green breadth remains below target: latest_mbr=0.5167/0.8500, max_near_mbr=0.6250.
+- U=0 / stale feed is not the current cause.
+- Missing product/cache gap is not the current cause; cache_supported=true, cache_openable=true, diagnostic_worthwhile=true.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\run_settings.json
+- Updated readiness evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 24/100.
+- dry P&L: realized=-0.30192795 USD, unrealized=0.00000000 USD, net=-0.30192795 USD.
+- open/closed/wins/losses: open=0, closed=18, wins=4, losses=14.
+- XLM-USD positive evidence: closed by profit_protect for +51.1094 bps / +0.01533282 USD.
+- RENDER-USD negative evidence: opened under DRY observe probe with quote volume about 525538 USD, then closed by loss_trim for -72.3764 bps / -0.02171291 USD.
+- Credible positive dry profitability evidence is not present yet because net dry P&L remains negative and latest new entry lost more than the prior XLM win.
+
+Patch/change evidence:
+- Added DRY-only market-breadth-failure probe quote-volume floor:
+  DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_QUOTE_VOLUME_USD=1000000.0.
+- This blocks RENDER-style market-breadth-failure probe entries with weaker quote-volume evidence while preserving higher-liquidity observe candidates such as the prior XLM case.
+- Added regression coverage for the market-breadth probe quote-volume floor.
+- Added the new floor to DRY paper-signal metadata for explainability.
+- No Profit Score tuning was done while opened=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 28 OK.
+- python -m unittest discover -s tests -p "test_cloud_only_corrections.py": 9 OK.
+- python -m py_compile managers\run_manager\run_manager.py: OK.
+- Bounded DRY observe ticks=8 exited 0 with DRY=True, LIVE=False, TP=8.0, SL=0.8.
+- Post-patch bounded observe opened no new weak probe positions; latest DRY signal was blocked by quarantine.
+- python tools\koko_dry_observe_readiness.py ... --since-local-start "2026-06-03 21:36:40": OK; refreshed logs\dry_observe_readiness_latest.json.
+- python tools\tdi_status_reporter.py ... --no-send: OK, sent=false.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- TDI_REPORT_HOURLY_SEC remains 7200 so routine updates go to email once every two hours.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue DRY-only observe.
+- Do not tune score while opened=0.
+- Wait for high-quality non-quarantined candidates with stronger liquidity.
+- If future opened positions remain net negative, continue tightening DRY data/preflight and P&L quality gates only; do not enable LIVE and do not change order bodies.
+- User action required: no.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T02:26:07Z
 
 RELAY_FILE_VISIBLE=yes
