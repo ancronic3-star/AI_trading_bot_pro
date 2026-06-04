@@ -15,13 +15,13 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
-Timestamp: 2026-06-04T16:03:00Z
+Timestamp: 2026-06-04T16:02:00Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / unknown.
-- Latest local task completed: patched DRY readiness reporting to aggregate liquid+dmid early-skip evidence across the whole observe window, regenerated readiness from the latest 27-tick DRY observe window, and ran focused tests.
+- Latest local task completed: patched DRY readiness reporting to aggregate and rank liquid+dmid early-skip evidence across the whole observe window, regenerated readiness from the latest 27-tick DRY observe window, and ran focused tests.
 - DRY remains true and LIVE remains false.
 - Reporting destination remains tdifactorToday@gmail.com.
 - Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
@@ -31,11 +31,11 @@ Cloud task status:
 
 Current blocker:
 - Current blocker remains DRY entry openability, not Profit Score tuning.
-- Latest readiness at 2026-06-04T15:59:14Z from since_local_start 2026-06-04 10:51:21: current_blocker=trough, open_candidate_present=false, readiness_evidence="signals=7213, tick_diag_rows=27, liquid_dmid_overlap=0, runtime_near_misses=25, max_dry_open=0".
+- Latest readiness at 2026-06-04T16:01:43Z from since_local_start 2026-06-04 10:51:21: current_blocker=trough, open_candidate_present=false, readiness_evidence="signals=7213, tick_diag_rows=27, liquid_dmid_overlap=0, runtime_near_misses=25, max_dry_open=0".
 - Feed/preflight coverage is usable: quote_volume_usable=407, dmid_usable=519, tick_dmid_usable=133, spread_usable=694, tob_usable=1922, book_metric_source_present_ratio=0.9839.
 - The old U=0/stale-feed symptom is not the immediate blocker: tick diagnostics are live with U=120, S=354, max_book_refresh_count=120, and max_dry_open=0.
-- Window-level early-skip evidence now shows 25 liquid+dmid candidates hidden before paper signals; all failed actionable book quality at trough probe: probe_rejections spread=20, tob_usd=5, liquid_dmid_spread_tob_overlap=0.
-- Closest current early-skip example: ICP-USD, tick=19, qv=318603, rdmid=89.83, rejected by spread at spr=7.0746 vs max 5.0000.
+- Window-level early-skip evidence now shows 25 closest liquid+dmid candidates hidden before paper signals; all failed actionable book quality at trough probe: probe_rejections spread=25, liquid_dmid_spread_tob_overlap=0.
+- Closest current early-skip example: WLD-USD, tick=3, qv=7302230, rdmid=116.04, rejected by spread at spr=5.0071 vs max 5.0000.
 - Latest cache regime at 2026-06-04T15:51:07Z: openable=true, supported=true, timestamp_usable_ratio=0.8842, liquid_subset=16, dmid_quote=1, dmid_quote_range=1, green_ratio=0.3850, blocker=green_breadth.
 - Latest paper-row blockers: trough=3694, spread=2427, trough_wait=567, tob_usd=365, dmid=160.
 - Do not tune broad Profit Score while actual DRY opens remain 0.
@@ -61,7 +61,7 @@ Verification evidence:
 - Regenerated logs\dry_observe_readiness_latest.json from latest long observe window.
 
 Next action:
-- Keep data/preflight/openability focus: inspect why liquid+dmid early-skip candidates fail actionable book quality at trough-probe time, especially spread/tob alignment.
+- Keep data/preflight/openability focus: inspect why liquid+dmid early-skip candidates miss spread by tiny margins at trough-probe time, especially WLD-USD spr=5.0071 vs max 5.0000.
 - Continue DRY observe only; do not tune Profit Score until actual DRY opens resume.
 - Keep DRY=true and LIVE=false.
 
