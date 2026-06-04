@@ -15,6 +15,61 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T19:40:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched DRY entry-preflight continuation so near-openable runtime diagnostics can enter continuous DRY observe instead of stopping at `liquid_dmid_overlap=0`, ran focused tests, and verified with a bounded DRY observe.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No immediate duplicate email was sent; latest user cadence instruction is to keep status updates going into the two-hour email lane.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Data/preflight lane improved: the patched verification reached continuous observe instead of stopping at entry preflight.
+- Verification run: KOKO_SUPERVISOR_MAX_CYCLES=20, continuous=true, LIVE=false, exit 0.
+- Entry sample at 2026-06-04T19:37:25Z: signals=752, liquid_dmid_overlap=3, liquid_dmid_spread_tob_overlap=0, blocker=spread, then `continuous_start ticks=17`.
+- Continuous readiness generated at 2026-06-04T19:40:09Z: signals=4240, liquid_dmid_overlap=13, liquid_dmid_spread_tob_overlap=1, quote_volume_usable=50, dmid_usable=412, tick_dmid_ready=154, book_metric_source_present_ratio=0.9858.
+- Current blocker is trough/final-gate alignment with WLD-USD closest.
+- Closest final-gate candidate: WLD-USD, blocked_by=dry_pnl_guard, failures=trough|market_breadth, dmid=91.1079 bps, qv=4477732.7251, spr=3.5486/5.0000 bps, tob=547.93/500.00, tick_dmid=34.7191/10.0000 bps, trough=0.359712/0.300000, market_green_ratio=0.8417/0.8500.
+- Top near miss after continuous observe: WLD-USD, failures=spread only, dmid=91.1079 bps, qv=4477732.7251, tob=622.44, tick_dmid=17.02, trough=0.197842, spread=7.1544/5.0000 bps.
+- This is not U=0, stale feed, missing product, or broad cache failure. Latest tick diagnostics remain U=120, S=354, brf=120.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- python -m unittest tests.test_run_koko_dry_supervised_preflight: 46 OK.
+- python -m py_compile tools\run_koko_dry_supervised.py: OK.
+- Bounded DRY observe completed exit 0 and reached continuous_start/continuous_done with LIVE=false.
+- Safety settings remained DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+
+Next action:
+- Continue DRY-only observe through WLD/HYPE-style alignment windows now that entry preflight can reach continuous observe from near-openable runtime evidence.
+- Watch WLD spread/trough/green breadth and recovery products VVV-USD/XLM-USD/XRP-USD for natural alignment.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T19:06:45Z
 
 RELAY_FILE_VISIBLE=yes
