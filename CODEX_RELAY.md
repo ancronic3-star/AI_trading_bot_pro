@@ -15,6 +15,86 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T02:09:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local bounded DRY observe attempted after the current-tick breadth patch.
+- The observe produced usable preflight/feed evidence for five ticks, then exited nonzero through hang guard / TDI compute access-violation path.
+- Latest reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker is green_breadth.
+- The stale-breadth issue is corrected in runtime evidence: market_breadth_source=tick and msrc=tick in tick_diag.
+- Latest tick evidence: U=120, S=393, brf=80, drysig=0, dryopen=0, dryblk=0.
+- Current-tick breadth blocked opens as intended during weak/reversing market: latest_mbr=0.1250/0.8500, latest_mdmid=-13.03/0.00, market_breadth_n=120.
+- Earlier ticks in the same sample also stayed below green breadth: max_near_mbr=0.6083 vs 0.8500.
+- Tick dmid warmed during the sample: tick_diag_dmid_nonzero=289, tick_diag_dmid_ready=17, tick_diag_warmed_seen=true.
+- Cache/preflight evidence remains openable/supportive enough for diagnostics: cache_supported=true, cache_openable=true, diagnostic_worthwhile=true.
+- Timestamp coverage evidence: timestamp_ratio=0.9771, timestamp_usable=384/393, timestamp_outside=9, fresh_mtime_unusable=9.
+- Liquid/cache evidence: liquid_subset=31, liquid_min=10, liquid_dmid_overlap=18, liquid_dmid_spread_tob_overlap=3.
+- Green cache breadth is still below target: green_ratio=0.7176 vs green_min=0.8500, green_shortfall=0.1324.
+- U=0 / stale-feed is not the current cause; U=120.
+- Missing product/cache gap is not the current cause; S=393 and cache_openable=true.
+- Do not tune Profit Score while open_count is back to 0; current task is feed/preflight and TDI crash/hang stability.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- Updated readiness evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 22/100.
+- dry P&L: realized=-0.29554786 USD, unrealized=0.00000000 USD, net=-0.29554786 USD.
+- open/closed/wins/losses: open=0, closed=16, wins=3, losses=13.
+- Credible positive dry profitability evidence is not present yet.
+- Forward evidence remains negative/insufficient for runtime-near signals: runtime_near_forward signals=20, best_reason=dmid|market_breadth, avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+
+Patch/change evidence:
+- DRY market breadth now stays on tick source even when DRY_DMID_SOURCE remains recent_candle: DRY_MARKET_BREADTH_ALIGN_WITH_DRY_DMID_SOURCE=false.
+- DRY_MIN_MARKET_DMID_BPS is now 0.0 so current market dmid must be non-negative when the breadth gate is active.
+- Regression test added to ensure tick market breadth does not call recent candle metrics when explicit alignment is false.
+- Existing DRY-only book-pressure gate remains active from the previous patch.
+- No score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 26 OK.
+- python -m unittest discover -s tests -p "test_cloud_only_corrections.py": 8 OK.
+- run_settings.json parse check: DRY=True, LIVE=False, TDI_REPORT_HOURLY_SEC=7200, DRY_MARKET_BREADTH_SOURCE=tick, DRY_MARKET_BREADTH_ALIGN_WITH_DRY_DMID_SOURCE=False, DRY_MIN_MARKET_DMID_BPS=0.0, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Bounded DRY observe produced tick evidence with msrc=tick and no opens, then failed nonzero: hang_dump_13236.log shows timeout and TDI compute access violation.
+- python tools\koko_dry_observe_readiness.py ... --since-local-start "2026-06-03 21:06:52": OK; refreshed logs\dry_observe_readiness_latest.json.
+- python tools\tdi_status_reporter.py ... --no-send: OK, sent=false; subject [TDI STATUS] Profit 22/100 | DRY=true LIVE=false | green_breadth.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Investigate and fix the TDI compute crash/hang guard path from hang_dump_13236.log.
+- Keep DRY observe blocked until current-tick breadth recovers; do not tune score while open_count=0.
+- Continue data/preflight focus: timestamp coverage, liquid subset coverage, green breadth, U/stale-feed causes, and product/cache gaps.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T01:52:00Z
 
 RELAY_FILE_VISIBLE=yes
