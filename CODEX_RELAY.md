@@ -15,6 +15,103 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T09:29:58Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: third bounded DRY observe, explicit runtime candle cache refresh, runtime product coverage diagnostic, mature 5-minute recovery/dry_pnl_guard/runtime-near/all-reason forward refresh, ranked/threshold/gap refresh, validation, and reporter no-send preview.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered patch_applied with --no-send; no email was sent.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker is data/preflight plus market breadth/dmid, not Profit Score tuning.
+- The cache stale-feed lane improved materially after refresh: runtime candle cache went from 393 stale products to 355 present and 38 stale.
+- Cache refresh covered 391 of 393 runtime products; public candle fetch failed for ORCA-USD and ZAMA-USD.
+- U/stale feed is not the open blocker now: readiness shows U=120, S=393, brf=120, book_gap=false, timestamp_usable=355/393.
+- Liquid subset is usable: quote_volume_usable=486 and liquid_min evidence remains satisfied.
+- Green breadth is not usable: latest_mbr=0.0333/0.8500 in readiness, cache-regime green_ratio=0.0822/0.8500, and market_dmid=-104.95.
+- Runtime near-miss now surfaces NEAR-USD blocked by dmid; readiness also shows dmid|market_breadth as the current runtime-near blocker.
+- Third DRY observe opened no candidates: drysig=0, dryopen=0, dryblk=0 for the latest tick diagnostics, and no new ledger blocked_open rows were added after the second window.
+- Forward gap is still sparse exact-window coverage: products_checked=10, classifications=sparse_exact_window:10.
+- Runtime product coverage now reports repeat_sparse_in_runtime=15, led by DRIFT-USD=4, CBETH-USD=3, DRV-USD=3, ENS-USD=3, and KTA-USD=3.
+- Fresh all-reason forward evidence remains negative overall: signals=376, no_forward_candles=124, dmid avg_net_close_bps=-36.5690, spread avg_net_close_bps=-75.5684.
+- Recovery-forward remains negative: signals=10, best_reason=recovery|dmid|tob_usd|book_pressure, avg_net_close_bps=-12.1750, positive_net_close_rate=0.0000.
+- Runtime-near latest remains negative: signals=10, best_reason=dmid|market_breadth, avg_net_close_bps=-41.2666, positive_net_close_rate=0.0000.
+- Ranked forward remains unsupported: supported_ranked_modes=0, best_ranked mode=liquidity_desc, avg_net_close_bps=-32.9954.
+- Threshold sweep remains unsupported: configs=231, supported=0, best_avg_net_close_bps=-25.0738.
+- Interpretation: DRY observe now has usable timestamp/cache coverage, but the current window is red breadth/negative dmid with repeat sparse-product gaps. Do not tune Profit Score while opened=0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_runtime_product_coverage.py
+- C:\ai_trading_bot_koko\tests\test_koko_runtime_product_coverage.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_recovery_5m.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_dry_pnl_guard_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_all_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=130.
+- Third observe added no opens and no new positive dry P&L evidence.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- Added tools\koko_runtime_product_coverage.py to report runtime product count, cache status counts, repeat sparse products still in the runtime universe, and top problem products.
+- Added tests\test_koko_runtime_product_coverage.py.
+- Updated tools\tdi_status_reporter.py so status emails include runtime_product_coverage evidence.
+- Updated tests\test_tdi_status_reporter.py for runtime product coverage reporting.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python tools\koko_runtime_product_coverage.py --out logs\runtime_product_coverage_latest.json: completed, products=393, present=355, stale=38, repeat_sparse_in_runtime=15.
+- python -m unittest tests.test_koko_runtime_product_coverage tests.test_koko_forward_gap_diagnostics tests.test_koko_paper_signal_forward_outcomes tests.test_tdi_status_reporter: PASS, 60 tests.
+- python -m py_compile tools\koko_runtime_product_coverage.py tools\koko_forward_gap_diagnostics.py tools\koko_paper_signal_forward_outcomes.py tools\tdi_status_reporter.py: PASS.
+- python -m json.tool on refreshed readiness, forward, ranked, threshold, gap, history, and runtime coverage artifacts: PASS.
+- python tools\tdi_status_reporter.py --mode event --event patch_applied ... --no-send: rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | runtime near-miss NEAR-USD blocked by dmid; sent=false reason=no_send.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Do not tune broad Profit Score.
+- Keep DRY-only data/preflight work focused on repeat sparse products and current breadth/dmid causes.
+- Consider product-universe deprioritization for repeat sparse products only after preserving guardrails and without touching Coinbase/order path.
+- Wait for a green breadth/dmid window before judging open/profitability behavior again.
+- Do not enable LIVE.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T09:08:50Z
 
 RELAY_FILE_VISIBLE=yes
