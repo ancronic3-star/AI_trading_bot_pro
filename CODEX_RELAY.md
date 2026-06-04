@@ -15,6 +15,86 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T07:10:46Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local patch/change completed: DRY observe readiness and TDI reporter now include positive-expectancy recovery-candidate coverage.
+- DRY remains true and LIVE remains false.
+- Reporter rendered the material patch-change email and correctly did not send because the two-hour report cadence was not due: reason=report_cadence_not_due.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe is usable, but current eligible recovery products have no complete high-quality recovery window.
+- Positive-expectancy products detected from dry P&L state: VVV-USD, XLM-USD, XRP-USD.
+- Recovery candidate coverage over the latest readiness slice: signals=34, all_recovery_metrics=0.
+- Recovery gate failures: tick_dmid=33, book_pressure=29, tob_usd=24, spread=15.
+- Best recovery row is XRP-USD with only tick_dmid missing: tdmid=1.68 bps, press=0.9718, tob=721, score=0.9981.
+- U/stale feed is not active: latest readiness shows U=120, S=393, brf=120.
+- Timestamp/cache/feed coverage is usable enough to observe: timestamp_ratio=0.9669, timestamp_usable=380/393, book_metric_source_present_ratio=0.9842.
+- Liquid/dmid coverage exists but is sparse at the full entry stack: signals=5254, liquid=442, dmid=1871, tick_dmid_ready=190, liquid_dmid_overlap=289, liquid_dmid_spread_tob_overlap=51.
+- Market breadth is passing in runtime drynear context: latest_mbr=0.8917/0.8500 and latest_mdmid=69.16/0.00.
+- Current runtime near miss remains NEAR-USD blocked by spread.
+- No credible positive dry profitability evidence yet; net dry P&L remains negative.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- Credible positive dry profitability evidence is not present yet because net P&L remains negative and recovery coverage has all_recovery_metrics=0.
+
+Patch/change evidence:
+- Added recovery_candidate_coverage to readiness output.
+- Readiness now derives positive-expectancy products from DRY_PNL_STATE_PATH using the configured expectancy thresholds.
+- Reporter readiness evidence now includes recovery_products, recovery all-metric count, top recovery failures, and best recovery candidate.
+- This is not Profit Score tuning; it is preflight/feed/reporting coverage for why DRY observe is not opening while opened=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 27 tests.
+- python -m unittest tests.test_tdi_status_reporter: PASS, 38 tests.
+- python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: PASS.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 01:57:50" --out logs\dry_observe_readiness_latest.json: completed.
+- python tools\tdi_status_reporter.py --mode event --event patch_change ...: rendered status; sent=false reason=report_cadence_not_due.
+- No observe run was started after this patch because recovery all_recovery_metrics=0; running observe now would be waiting on market conditions, not testing a code fix.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Wait for a high-quality DRY recovery window where positive-expectancy products satisfy tick_dmid >= 10 bps, book_pressure >= 0.9, spread <= 5 bps, tob >= 500 USD, and current dry gates.
+- Do not tune Profit Score while opened=0.
+- Resume dry P&L improvement only after market coverage can actually open candidates.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T07:01:45Z
 
 RELAY_FILE_VISIBLE=yes
