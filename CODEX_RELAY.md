@@ -15,6 +15,60 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T15:30:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched DRY entry preflight coverage so observe no longer starves on one-tick samples, then ran bounded DRY-only observe blocks.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent; latest user cadence says updates should go into the two-hour email lane.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- The preflight/feed lane improved materially: entry preflight now warms for configurable bounded ticks and distinguishes a true liquid+dmid data gap from a liquid+dmid candidate hidden by early-skip.
+- Bounded DRY run at 2026-06-04T15:25Z reached continuous observe: entry preflight used ticks=3, then continuous_start ticks=17, completed exit 0.
+- The old U=0/tick-warm symptom is no longer the immediate blocker in tick diagnostics: latest observe ticks show U=120, S=354, tdmidnz up to 176, tdmidok up to 19, and dryopen=0.
+- Latest cache regime at 2026-06-04T15:25:24Z: openable=true, timestamp_usable_ratio=0.7966, liquid_subset=13, dmid_quote=1, green_ratio=0.2817, blocker=timestamp_coverage.
+- Latest runtime coverage at 2026-06-04T15:24:50Z: runtime_products=354, present=315, stale=39, repeat_sparse_in_runtime=12, repeat_sparse_watchlist_in_runtime=12.
+- Latest continuous-window readiness rebuilt at 2026-06-04T15:29:15Z from since_local_start 2026-06-04 10:25:36: paper signals=0 for that short continuous window, but tick diagnostics were live.
+- Current actual openability blocker: no DRY open candidate yet; closest liquid+dmid evidence is still ONDO-USD early-skip with qv=765217, rdmid=89.86, rejected by trough probe on tob_usd=122.3557 vs min 500.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Focused tests: python -m unittest tests.test_run_koko_dry_supervised_preflight: 37 OK.
+- Syntax check: python -m py_compile tools\run_koko_dry_supervised.py.
+- Bounded DRY supervisor run completed exit 0 with DRY=true and LIVE=false; continuous_done elapsed_sec=143.0 after 17 continuous ticks.
+
+Next action:
+- Keep running DRY observe on usable market windows now that preflight can reach continuous.
+- Continue data/preflight focus: timestamp coverage, stale cache products, liquid subset, and ONDO-style top-book/trough early-skip causes.
+- Watch for an actual DRY open before resuming Profit Score tuning.
+- Keep DRY=true and LIVE=false.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T15:12:00Z
 
 RELAY_FILE_VISIBLE=yes
