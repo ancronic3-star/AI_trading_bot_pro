@@ -15,6 +15,78 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T00:59:45Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local work completed in DRY-only reporting/evidence lane.
+- TDI status reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker is now reported as green_breadth+liquid+dmid overlap=0 (liquid=23, dmid=27).
+- This keeps green breadth visible while preserving the actionable openability blocker instead of collapsing everything to green_breadth.
+- Latest readiness remains: signals=377, liquid=23, dmid=27, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Tick diagnostics remain improved but not sufficient: tick_diag_rows=8, max_tick_dmid_nonzero=230, max_tick_dmid_ready=114, tick_dmid_warmed_seen=true.
+- Market breadth remains red: latest_mbr=0.1667/0.8500, latest_mdmid=-32.17/-999999.00.
+- Runtime near miss remains ETH-USD/HYPE-style dmid|market_breadth failures, not an openable dry candidate.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Refreshed local evidence: C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_latest.json
+- Updated accumulated evidence: C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Fresh runtime-near forward latest batch: signals=10, horizon_min=5, avg_net_forward_close_bps=-37.0502, positive_net_close_rate=0.0000.
+- Accumulated runtime-near forward history now has signals_unique=20; best_reason=dmid|market_breadth avg_net_close_bps=-50.5678, positive_net_close_rate=0.0000.
+- This remains negative evidence and argues against loosening gates just to force opens.
+
+Patch/change evidence:
+- TDI reporter main blocker now composes cache-regime blockers with entry-openability blockers.
+- Subject/body now report green_breadth+liquid+dmid overlap=0 (liquid=23, dmid=27) when both conditions are true.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile tools\tdi_status_reporter.py tests\test_tdi_status_reporter.py: OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 22 OK.
+- python tools\koko_paper_signal_forward_outcomes.py --readiness-runtime-near logs\dry_observe_readiness_latest.json --horizon-min 5 --granularity 60 --limit 10 --tp-pct 8.0 --sl-pct 0.8 --out logs\runtime_near_forward_outcomes_latest.json --history-out logs\runtime_near_forward_outcomes_history.json: OK, history_signals_unique=20.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --no-send --force: OK, sent=false, subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth+liquid+dmid overlap=0 (liquid=23, dmid=27).
+- No lingering python.exe process after checks.
+- Outbox count stayed 260; newest outbox remained tdi_status_20260604T005201Z.eml.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Keep observing only when cache/breadth suggests a plausible openability window; current breadth/overlap evidence is negative.
+- Continue accumulating runtime-near forward evidence once near misses mature.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:55:30Z
 
 RELAY_FILE_VISIBLE=yes
