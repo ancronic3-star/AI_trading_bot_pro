@@ -15,6 +15,92 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T03:44:01Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest reporter preview was --no-send for event=data_preflight_update; no email was sent.
+- Reporter subject preview: [TDI STATUS] Profit 26/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (25; top VVV-USD).
+- Reporter reason: not_material:data_preflight_update, sent=false.
+- Gmail reporting environment blocker remains: SMTP user/password/sender env is missing, so automatic delivery cannot complete yet.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- DRY remains true and LIVE remains false.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Do not tune Profit Score while opened/open_count is 0.
+- Refreshed candle cache before observe: 391/393 products refreshed; CBETH-USD and THQ-USD public candle fetches failed this pass.
+- Cache/preflight is usable: cache_supported=true, cache_openable=true, diagnostic_worthwhile=true.
+- Timestamp coverage remains usable: timestamp_ratio=0.9338, timestamp_usable=367/393, timestamp_outside=26.
+- Cache liquid subset remains usable: liquid_subset=24, liquid_min=10.
+- Current_order green breadth is below target: green_ratio=0.7000/0.8500, green_shortfall=0.1500.
+- Ranked cache evidence remains usable: best_ranked=dmid_desc, best_ranked_green=1.0000, best_ranked_liquid=10, best_ranked_dmid_liq_overlap=10.
+- Best probe evidence is nearly green enough and liquid: best_probe=timestamp_liquidity_dmid_desc, best_probe_green=0.8487, best_probe_liquid=24, best_probe_dmid_liq_overlap=14.
+- Latest bounded DRY observe produced no new open: opened stayed 19, closed stayed 19, wins stayed 5, losses stayed 14, open_count stayed 0, blocked_open moved to 88.
+- Market/feed was not U=0 or stale: U=120, S=393, brf=80.
+- Tick diagnostics warmed: tick_diag_rows=24, max_tick_dmid_nonzero=226, max_tick_dmid_ready=77, tick_dmid_warmed_seen=true.
+- At the latest tick, green breadth was usable: latest_mbr=0.8667/0.8500 and latest_mdmid=57.37/0.00.
+- New drygate breakdown shows the latest blocker is not market_breadth: latest_drygate=dmid:21, quote_volume:20, spread:19, tob:18, score:16, book_pressure:1.
+- Normal PAPER signal overlap remains zero: liquid=0, dmid=126, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Early cache-liquid candidates exist but fail spread/top-book: early_skip_top=5, early_liquid=5, early_dmid=5, early_liquid_dmid=5, early_spread_tob=0, early_probe_rej=spread:4,tob_usd:1.
+- Top early-skip candidate is VVV-USD: qv=1326281, rdmid=215.71, score=0.9879, rejected by top-book with tob=22/500.
+- Runtime near miss is PAXG-USD blocked by tob_usd|dmid|book_pressure: qv=370088, rdmid=-8.70, spr=0.02/5.00, tob=47/500.
+
+Files changed in current local runtime lane:
+- Updated diagnostics: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- Updated reporter evidence: C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- Updated readiness tests: C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- Updated reporter tests: C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Updated cache evidence: C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- Updated readiness evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Updated runtime activity/P&L evidence: C:\ai_trading_bot_koko\logs\activity_ticker.log and C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- open/closed/wins/losses: open=0, closed=19, wins=5, losses=14.
+- No positive dry profitability evidence is present yet.
+- Forward evidence still does not prove positive profitability: runtime_near_forward signals=30, best_reason=spread|dmid|market_breadth, avg_net_close_bps=-3.9673, positive_net_close_rate=0.4286.
+- Dry-open forward evidence remains thin: dry_open_forward signals=1, horizon_min=10, avg_net_close_bps=41.3940, positive_net_close_rate=1.0000.
+
+Patch/change evidence:
+- Added parsing of latest tick_diag drygate combo counts to readiness.
+- Added latest_drygate evidence to reporter output.
+- Regenerated dry_observe_readiness_latest.json over the latest bounded observe window.
+- No Profit Score tuning was done while open_count=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 23 tests.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": PASS, 30 tests.
+- python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: PASS.
+- python tools\refresh_koko_recent_candle_cache.py ...: refreshed=391, failed=2.
+- python tools\run_koko_dry_supervised.py with KOKO_SUPERVISOR_MAX_CYCLES=24: OK; completed bounded DRY block.
+- python tools\koko_dry_observe_readiness.py ... --since-local-start "2026-06-03 22:38:22" --out logs\dry_observe_readiness_latest.json: OK.
+- python tools\tdi_status_reporter.py ... --no-send: OK, sent=false.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- TDI_REPORT_HOURLY_SEC remains 7200 so routine updates go to email once every two hours when SMTP env exists.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight repair around spread/top-book/dmid/score overlap now that latest market breadth can clear.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+- User action required: yes, for SMTP credential/sender env only.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T03:33:43Z
 
 RELAY_FILE_VISIBLE=yes
