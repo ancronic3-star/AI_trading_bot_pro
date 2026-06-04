@@ -15,6 +15,103 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T10:55:10Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: refreshed DRY runtime products after mature sparse evidence, removed newly promoted 3-run sparse products from runtime, ran bounded entry preflight sample, refreshed readiness and runtime coverage, and rendered reporter no-send preview.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered cloud_completed with --no-send; no email was sent because cadence was not due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains data/preflight/openability, not Profit Score tuning.
+- Runtime universe is now products=375.
+- Confirmed repeat_sparse >=3 products are absent from logs\dry_runtime_products_latest.json.
+- Newly excluded from runtime after current mature evidence: ACX-USD, ARKM-USD, ARPA-USD.
+- Remaining repeat-sparse products in runtime are 2-run watchlist products only: ACH-USD, ALT-USD, AMP-USD, AUCTION-USD, AVT-USD, BADGER-USD, BARD-USD, CAKE-USD, CVX-USD, GTC-USD, IMX-USD, INV-USD.
+- Runtime product coverage improved to products=375, present=359, stale=16, missing=0, empty=0, repeat_sparse_in_runtime=12.
+- Latest readiness: signals=340, quote_volume_usable=24, dmid_usable=15, liquid_dmid_overlap=1, liquid_dmid_spread_tob_overlap=0.
+- Latest tick diagnostics show U=120, S=375, brf=120, drysig=0, dryopen=0, dryblk=0.
+- U=0 is not the blocker.
+- Missing product/cache gap is not the blocker.
+- Cache preflight is supported/openable: timestamp_ratio=0.9093, timestamp_usable=341/375, liquid_subset=19, timestamp_shortfall=0, liquid_shortfall=0.
+- Current market blocker is weak green breadth and negative market dmid: latest_mbr=0.0833/0.8500, latest_mdmid=-43.18/0.00.
+- Current reporter blocker: cache-liquid candidates blocked by trough (1; top OPN-USD).
+- Current named early skip: OPN-USD qv=287,584, rdmid=171.23, but trough probe rejected spread 37.79/5.00 and top-book prefetch about 109.
+- Current closest liquid+dmid spread/top-book shortfall: TRAC-USD with spread_excess=41.09 bps and tob_shortfall=363.47 USD.
+- Do not tune Profit Score while actual DRY observe opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_all_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- opened=28 historically; open_count=0 now.
+- blocked_open=131.
+- Latest bounded sample added no opens and did not improve dry net P&L.
+- Credible positive dry profitability evidence is not present yet.
+
+Forward evidence:
+- Latest matured all-reason 5-minute evidence since 2026-06-04T10:40:08Z: loaded_signals=298, matured_signals=158, no_forward_candles=140.
+- dry_pnl_guard forward evidence: signals=1, avg_net_forward_close_bps=-32.2486, positive_net_close_rate=0.0000.
+- Ranked forward remains unsupported: best mode=liquidity_desc, best top slice avg_net_forward_close_bps=-51.9853, supported=false.
+- Threshold sweep remains unsupported: configs=1342, supported_count=0, best_avg_net_forward_close_bps=-42.0620.
+- Forward gap diagnostics found sparse_exact_window=10 and promoted ACX-USD, ARKM-USD, and ARPA-USD to 3-run exclusions.
+- Runtime-near latest for the new 10:53 sample is not mature yet: loaded=10, signals=0, failures=not_mature:10.
+
+Patch/change evidence:
+- No code patch was applied in this update.
+- Operational data/preflight repair applied: mature forward outcomes updated sparse history, then bounded continuous entry preflight regenerated runtime products from 378 to 375.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- Bounded entry preflight sample completed exit 0 and wrote runtime products=375, ranked_rows=375, discovered=393, repeat_sparse_excluded=18, repeat_sparse_skipped=36.
+- Confirmed repeat_sparse >=3 products are absent from logs\dry_runtime_products_latest.json.
+- Runtime coverage check wrote products=375, present=359, stale=16, repeat_sparse_in_runtime=12 with only 2-run watchlist products inside runtime.
+- Readiness refresh wrote signals=340 with U=120, S=375, dryopen=0.
+- Reporter no-send preview rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (1; top OPN-USD); sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Do not tune broad Profit Score.
+- Let the 2026-06-04T10:53:55Z sample mature before refreshing runtime-near forward evidence.
+- Run longer warmed DRY observe only when market breadth/dmid improves enough to make data/preflight openability meaningful.
+- Continue tracking timestamp coverage, liquid subset coverage, green breadth, stale-feed/U causes, and product/cache gaps.
+- Do not enable LIVE.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T10:37:40Z
 
 RELAY_FILE_VISIBLE=yes
