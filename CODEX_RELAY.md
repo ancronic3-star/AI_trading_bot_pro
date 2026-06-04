@@ -15,6 +15,76 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T15:12:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: matured the 2026-06-04T15:01:23Z 5-minute forward window, refreshed ranked/threshold/gap diagnostics, found two new repeat-sparse exclusion misses, rebuilt the runtime universe, and reran DRY-only preflight/readiness.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent for this relay-only update.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains DRY entry openability, not Profit Score tuning.
+- Runtime sparse/cache lane improved: after forward-gap history promoted AWE-USD and BLUR-USD to 3-run repeat-sparse, runtime coverage briefly showed repeat_sparse_exclusion_miss=2; after supervisor rebuild, runtime_products=354 and repeat_sparse_exclusion_miss is cleared.
+- Latest runtime coverage at 2026-06-04T15:10:50Z: runtime_products=354, present=327, stale=27, repeat_sparse_in_runtime=12, repeat_sparse_watchlist_in_runtime=12.
+- Latest cache regime at 2026-06-04T15:10:33Z: files_present=354/354, timestamp_usable_ratio=0.8898, timestamp_usable_files=315/354, green_ratio=0.3375, avg_dmid_bps=-2.7163, liquid_subset=17, dmid_liquidity_overlap=1, dmid_liquidity_range_overlap=1, supported=true, openable=true.
+- Latest readiness at 2026-06-04T15:10:51Z: signals=238, dmid_usable=17, quote_volume_usable=0, spread_usable=10, tob_usable=57, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0, tick_dmid_usable=0, tick_dmid_warmed=0.
+- Dominant readiness blockers: trough=188, spread=27, trough_wait=20, tob_usd=3.
+- Closest liquid+dmid evidence is still early-skip ONDO-USD: qv=1,059,942, rdmid=89.86, rejected by trough probe on spread 6.6848 vs max 5.0000.
+- U=0 is not the blocker; latest ticks show U=120 and S=354.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Forward evidence:
+- Latest matured 5-minute forward window since 2026-06-04T15:01:23Z loaded 261 signals, matured 164, and had 97 no-forward-candle gaps.
+- Forward slices turned positive on this short rejected-signal window: spread avg_net=16.6833 bps, tob_usd avg_net=34.6581 bps, trough avg_net=23.8960 bps, dmid avg_net=46.1247 bps with only 1 signal.
+- Ranked forward is now supported on the short rejected-signal window: best_mode=trough_first, top_n=20, avg_net=73.2387 bps, train avg_net=30.6928 bps, validation avg_net=115.7845 bps, positive_net_close_rate=0.75.
+- Threshold sweep is supported on rejected-signal evidence: supported_count=137, best_avg_net_forward_close_bps=68.0308, best_positive_net_close_rate=1.0.
+- This is not yet credible positive dry profitability because real DRY opens remain 0 in the latest run; treat it as watch evidence only, not a Profit Score tuning trigger.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_all_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Supervisor Coinbase/order guardrail check found only PFID/COINBASE_KEY_FILE presence logging in tools\run_koko_dry_supervised.py.
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_forward_gap_diagnostics tests.test_koko_runtime_product_coverage: 38 OK.
+- Bounded DRY supervisor run completed exit 0 with DRY=true and LIVE=false.
+- Runtime product rebuild cleared the repeat_sparse_exclusion_miss from the coverage report.
+
+Next action:
+- Keep data/preflight/openability focus until DRY observe can actually open candidates.
+- Watch ONDO-style liquid+dmid early-skip names for spread/top-book improvement without weakening static safety gates.
+- Rebuild/prune again when 2-run watchlist names promote to 3-run repeat-sparse.
+- Do not tune Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No user action required for trading safety.
+- Yes only for unattended local SMTP email delivery; connector-based two-hour reporting remains the fallback.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T14:58:00Z
 
 RELAY_FILE_VISIBLE=yes
