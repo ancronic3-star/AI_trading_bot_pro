@@ -15,6 +15,61 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T21:13:24Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched the DRY readiness/reporting data lane to preserve prefetch top-book evidence when trough probe exits early on spread, and corrected reporter blocker priority without changing trading gates.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours; reporter preview returned sent=false with reason=report_cadence_not_due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe still has no new opens and no P&L movement.
+- Latest readiness remains signals=12299, quote_volume_usable=637, dmid_usable=765, tick_dmid_ready=254, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Reporter headline blocker after patch preview: runtime near-miss LINK-USD blocked by dmid.
+- Data/preflight detail now shows the hidden next blocker in early-skip diagnostics: early_skip_top=25, early_liquid=25, early_dmid=25, early_liquid_dmid=25, early_prefetch_tob=2/25, early_liquid_dmid_prefetch_tob=2, early_spread_only_after_prefetch_tob=2.
+- Closest spread-only preflight candidate: MON-USD had qv=784634, rdmid=55.66 bps, prefetch_tob=512.8397 USD, but spread=9.1954/5.0000 bps, spread_excess=4.1954 bps.
+- Probe rejections remain spread:25; no drysig/dryopen/dryblk.
+- This is not U=0, stale feed, missing product, or missing cache. U=120, S=354, brf=120 remain visible.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+  - C:\ai_trading_bot_koko\logs\tdi_status_patch_preview_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+- Forward/recovery evidence remains diagnostic only; actual DRY opens are still absent.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness: 82 OK.
+- python -m py_compile tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py: OK.
+- Regenerated readiness with since-ts-utc=2026-06-04T20:48:21Z to avoid the full-log timeout and preserve the latest observe window.
+- Safety settings remained DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+
+Next action:
+- Continue DRY-only observe through fresh market windows with chunked cache refresh enabled.
+- Watch whether spread-only-after-prefetch-TOB persists; if it does, treat spread/top-book preflight alignment as the real openability blocker before any Profit Score work.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T21:08:30Z
 
 RELAY_FILE_VISIBLE=yes
