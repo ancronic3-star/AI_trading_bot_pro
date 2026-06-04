@@ -15,6 +15,61 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T21:30:11Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: ran a fresh bounded DRY observe with chunked cache refresh after the prefetch top-book diagnostics patch.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours; reporter preview returned sent=false with reason=not_material:dry_observe_completed.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe still has no new opens and no P&L movement.
+- Latest bounded DRY observe completed exit 0.
+- Latest readiness: signals=12630, quote_volume_usable=586, dmid_usable=881, tick_dmid_ready=420, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Reporter headline blocker: runtime near-miss ETH-USD blocked by dmid.
+- Data/preflight detail: early_skip_top=25, early_liquid=25, early_dmid=25, early_liquid_dmid=25, early_prefetch_tob=1/25, early_liquid_dmid_prefetch_tob=1, early_spread_only_after_prefetch_tob=1.
+- Closest spread-only preflight candidate: OPN-USD had qv=595251, rdmid=42.08 bps, prefetch_tob=557.0548 USD, but spread=13.8026/5.0000 bps, spread_excess=8.8026 bps.
+- Probe rejections remain spread:25; no drysig/dryopen/dryblk.
+- This is not U=0, stale feed, missing product, or missing cache. U=120, S=354, brf=120 remain visible.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed:
+- No runtime code changed in this step.
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+  - C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+  - C:\ai_trading_bot_koko\logs\tdi_status_observe_preview_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+- Recovery-forward history increased to signals=33, but remains diagnostic only because actual DRY opens are still absent.
+
+Verification evidence:
+- Fresh bounded DRY observe completed exit 0.
+- Runtime printed MODE=DRY and PFID from env during the run.
+- Latest readiness active_gates: DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Latest P&L artifact unchanged with open_count=0 and net=-0.30033076.
+
+Next action:
+- Continue DRY-only observe through fresh market windows with chunked cache refresh enabled.
+- Watch whether spread-only-after-prefetch-TOB persists and whether liquid+dmid overlap moves above zero; do not tune Profit Score until actual opens resume.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T21:13:24Z
 
 RELAY_FILE_VISIBLE=yes
