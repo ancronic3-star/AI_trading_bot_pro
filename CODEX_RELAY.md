@@ -15,6 +15,66 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T21:46:56Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched TDI status reporting diagnostics to include a near-overlap ladder for liquid-but-low-dmid, dmid-but-low-liquid, and one-gate near-miss candidates.
+- Reporter preview was generated with `--no-send`; sent=false, reason=no_send, subject `[TDI STATUS] Profit 27/100 | DRY=true LIVE=false | runtime near-miss BTC-USD blocked by dmid`.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe still has no new opens and no P&L movement.
+- Latest readiness: signals=9890, quote_volume_usable=665, dmid_usable=406, tick_dmid_ready=145, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Reporter headline blocker: runtime near-miss BTC-USD blocked by dmid.
+- Latest market breadth remains weak: latest_mbr=0.3000/0.8500 and green_ratio=0.0868/0.8500.
+- U=0 / stale-feed is not the current cause: U=120, S=354, brf=120 remain visible.
+- Missing product/cache is not the current cause: runtime_product_coverage products=354, present=315, stale=39, missing=0, empty=0.
+- The current openability gap is alignment, not score: liquid names are short on dmid/spread and positive-dmid names are short on liquidity/spread/top-book.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+New data/preflight evidence now visible in status reporting:
+- liquid_missing_dmid_top starts with LIGHTER-USD: fail=spread|dmid|tick_dmid, qv=317001, rdmid=13.74, dmid_short=26.26, spr=13.70, tob=625, tdmid=0.00.
+- dmid_missing_liquid_top starts with DEGEN-USD: fail=spread|tob_usd|quote_volume|tick_dmid, qv=151920, rdmid=46.85, qv_short=98080, spr=53.91, tob=15, tdmid=0.00.
+- one_gate_near is NEAR-USD: fail=dmid, qv=2190872, rdmid=-8.85, spr=4.48, tob=917, tdmid=13.46.
+- runtime_near remains BTC-USD: failures=dmid|market_breadth, qv=76961536, rdmid=-35.27, spr=0.51, tob=943.
+- dryliqskip remains trough/spread-driven: dryliqskip=trough:17, dryliqskip_top=OPN-USD, qv=591907, rdmid=235.78, tprej=spread, pftob=108, spr=10.30/5.00.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\tdi_status_near_overlap_preview_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+- Forward/recovery evidence remains diagnostic only because actual DRY opens are absent.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_reporter: 50 OK.
+- python -m py_compile tools\tdi_status_reporter.py: OK.
+- Reporter preview generated with --no-send and included the new near-overlap ladder.
+- Latest reporter status confirms DRY=true, LIVE=false, Profit Score=27/100, open_count=0, net=-0.30033076.
+
+Next action:
+- Run another bounded DRY observe only if coverage remains usable, then continue data/preflight openability until candidates actually open.
+- Watch dmid-liquidity overlap, green breadth, spread/top-book, and whether early-skip spread candidates naturally align.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T21:40:44Z
 
 RELAY_FILE_VISIBLE=yes
