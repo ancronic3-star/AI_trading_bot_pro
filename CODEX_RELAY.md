@@ -15,6 +15,59 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T16:21:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: fixed TDI status reporter two-hour material-event cadence, added final-gate readiness evidence for entry-overlap candidates, regenerated latest readiness, and ran the full relevant test set.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent; latest user cadence says updates should go into the two-hour email lane.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains final DRY openability, not Profit Score tuning.
+- Latest readiness at 2026-06-04T16:19:53Z from since_local_start 2026-06-04 11:04:44: signals=15708, tick_diag_rows=57, liquid_dmid_overlap=2, liquid_dmid_spread_tob_overlap=2, runtime_near_misses=25, max_dry_open=0.
+- Final-gate evidence now explains the two entry-overlap candidates: liquid_dmid_spread_tob_final_gate_counts={book_pressure:1, market_breadth:2, trough:2}; combos={trough|market_breadth:1, trough|market_breadth|book_pressure:1}.
+- Closest final-gate block: WLD-USD tick=11, blocked_by=dry_pnl_guard, spr=3.3294, tob=520.5688, tick_dmid=60.2914, failures=trough|market_breadth, trough_pct=1.0.
+- Early-skip probe coverage remains useful: top_products=25, liquid_dmid_overlap=25, probe_rejections spread=24 and tick_dmid=1, tick_dmid_probe_present=1, tick_dmid_probe_usable=0.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open=131, opened=28 historically.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Full relevant tests: python -m unittest tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight: 114 OK.
+- Syntax check: python -m py_compile tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py.
+
+Next action:
+- Continue DRY-only final-gate/openability work: watch for WLD-style candidates when trough and market breadth align.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T16:18:00Z
 
 RELAY_FILE_VISIBLE=yes
