@@ -15,6 +15,88 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T05:45:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local data/preflight patch, cache regime regeneration, and bounded DRY observe completed.
+- DRY remains true and LIVE remains false.
+- Routine TDI/KOKO email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- The previous timestamp/missing-cache/liquid-subset coverage gap is improved enough for DRY observe.
+- Latest cache evidence: supported=true, worthwhile=true, openable=true, timestamp_ratio=0.9669, timestamp_missing_files=0, timestamp_outside_window_files=13.
+- Best ranked cache mode is now timestamp_liquidity_dmid_desc: green_ratio=0.9000, liquid_subset=24, dmid_liquidity_overlap=17, dmid_liquidity_range_overlap=16, probe_quote_overlap=40.
+- run_settings.json now uses DRY_CANDIDATE_RANK=timestamp_liquidity_dmid_desc so runtime top-120 coverage aligns with the cache evidence.
+- Latest bounded DRY observe still opened zero: opened_delta=0, closed_delta=0, signals=341, open_candidate=false.
+- Runtime overlap improved: liquid_dmid=17 and liquid_dmid_spread_tob=2.
+- Current blocker moved to entry confirmation/trough/tick/market-breadth, not timestamp coverage, missing products/cache, U=0 stale feed, or liquid subset coverage.
+- Latest readiness dominant_blocker=trough.
+- Closest liquid early skip: LTC-USD rejected on trough top-book USD, tob_usd=489.7011 versus min 500.0, prefetch_tob_usd=577.7793, qv=353956, rdmid=58.61.
+- Closest one-gate near miss: NEAR-USD fails tick_dmid only; rdmid=130.2803, qv=3009493.3413, spr=3.8782/5.0, tob=907.617/500, tick_dmid=0.0, tick_dmid_warmed=false.
+- Closest runtime near miss: NEAR-USD fails dmid/tick and market_breadth; market_green_ratio=0.6667/0.8500, market_dmid_bps=45.29/0.00, market_breadth_source=recent_candle.
+- U=0/stale feed is not the active blocker in this run; runtime products were present: products=393, ranked_rows=393, discovered=393.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Cache regime output now emits flat reporting/preflight fields at source: supported, worthwhile, diagnostic_worthwhile, openable, blocker, timestamp_ratio, liquid_subset, dmid_quote, dmid_quote_range, best_ranked, best_probe, and ranked overlap fields.
+- Cache promotion_hint now includes dmid_liquidity_overlap and dmid_liquidity_range_overlap so downstream status does not read null overlap evidence.
+- Runtime DRY candidate rank changed from dmid_desc to timestamp_liquidity_dmid_desc to fix liquid subset/top-120 coverage. This is a data/preflight coverage change, not Profit Score tuning.
+- Regenerated cache evidence after the patch shows top-120 ranked coverage passes configured regime: liquid_subset=24, dmid_liquidity_overlap=17, dmid_liquidity_range_overlap=16.
+- Bounded DRY observe with PAPER_SIGNAL_MIN_TICK_GAP=1 and KOKO_SUPERVISOR_MAX_CYCLES=8 completed; no dry open yet.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+- No Profit Score tuning was done while open_count=0.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_cache_market_regime.py": PASS, 23 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 35 tests.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": PASS, 32 tests.
+- python -m py_compile tools\koko_cache_market_regime.py tools\run_koko_dry_supervised.py managers\run_manager\run_manager.py tools\tdi_status_reporter.py: PASS.
+- python tools\koko_cache_market_regime.py ... --out logs\cache_market_regime_latest.json: completed; supported=true, worthwhile=true, best_ranked=timestamp_liquidity_dmid_desc.
+- python tools\run_koko_dry_supervised.py with bounded KOKO_SUPERVISOR_MAX_CYCLES=8 and PAPER_SIGNAL_MIN_TICK_GAP=1: completed; no dry open.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight diagnostics on entry confirmation: tick_dmid warmup/ready state, market breadth at runtime, and trough/top-book USD near misses.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+- No user action required for DRY/LIVE safety.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T05:37:00Z
 
 RELAY_FILE_VISIBLE=yes
