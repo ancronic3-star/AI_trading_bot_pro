@@ -15,6 +15,85 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T00:55:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Fresh local DRY feed/cache patch applied and bounded observe completed 8/8 ticks without the prior candle-cache hang/access violation.
+- Full recent-candle cache refresh completed for 120 runtime products: refreshed=120, failed=0, workers=4.
+- Latest status reporter previews and monitor checks did not send email; no Coinbase/order path was touched.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled.
+
+Current blocker:
+- Primary blocker remains preflight/feed/openability coverage plus red market breadth, not Profit Score tuning.
+- Crash blocker improved: the previous _trough_fetch_cached_candles / _dry_recent_candle_metrics / _dry_dmid_gate hang did not recur during the 8-tick observe.
+- Timestamp coverage improved at direct cache probe scope: 109/120 runtime products timestamp-usable after refresh.
+- Readiness from the bounded observe: signals=377, liquid=23, dmid=27, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Tick diagnostics improved but are still insufficient: tick_diag_rows=8, max_tick_dmid_nonzero=230, max_tick_dmid_ready=114, tick_dmid_warmed_seen=true.
+- Market breadth remains the dominant live blocker: latest_mbr=0.1667/0.8500, latest_mdmid=-32.17/-999999.00.
+- Runtime near miss remains ETH-USD: failures=dmid|market_breadth, qv=13,820,015, rdmid=10.36/40.00, spread=0.06/5.00, tob=686/500.
+- Best-ranked cache scope still cannot support opens: green=0.4667, liquid=1/10, dmid_liq_overlap=0, dmid_range_overlap=0, probe_quote_overlap=1, probe_range_overlap=0.
+- Still no opens: max_drysig=0, max_dryopen=0, open_count=0.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Refreshed cache evidence: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\logs\backtests\_cache\candles
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Runtime-near forward history remains negative: signals=10, horizon_min=5, best_reason=tob_usd|dmid|market_breadth, avg_net_close_bps=-65.2049, positive_net_close_rate=0.0000.
+
+Patch/change evidence:
+- Recent candle cache lookup now checks direct 1d/2d/7d cache file names before broad glob scanning and caches path misses briefly.
+- Recent candle metrics can use bounded stale cache rows when the strict recent window misses, with stale_cache_used surfaced for diagnostics instead of silently reporting dmid=0.
+- Missing-SMTP reporting now throttles against the newest existing outbox file if state lacks last_outbox_epoch.
+- A throttled outbox attempt restores last_hourly_epoch from last_outbox_epoch so the next one-shot monitor returns hourly_not_due.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile managers\run_manager\run_manager.py tools\tdi_status_reporter.py tests\test_tdi_status_reporter.py: OK.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": 24 OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 21 OK.
+- Bounded observe command run_manager.run_loop(console=False, ticks=8): completed with exit code 0.
+- Readiness regeneration for since-local-start 2026-06-03 19:49:27: OK.
+- TDI status reporter --no-send preview: sent=false, subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | green_breadth.
+- Monitor one-shot verification: outbox count stayed 260 -> 260; first pass reason=outbox_throttled, second pass reason=hourly_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Continue DRY observe only when cache/breadth conditions are likely to improve; current market breadth is too red for opens.
+- Keep collecting runtime-near forward evidence once candidates mature.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:45:00Z
 
 RELAY_FILE_VISIBLE=yes
