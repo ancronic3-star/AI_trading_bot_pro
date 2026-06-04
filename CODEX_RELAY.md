@@ -15,6 +15,69 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T20:22:30Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched the DRY supervisor/reporting data lane so readiness completion now refreshes recovery-candidate and runtime-near forward evidence, and patched the status reporter so recovery forward history remains visible when the latest candidates are not mature yet.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours. A Codex heartbeat automation is active: `tdi-gmail-status-every-two-hours`, `FREQ=HOURLY;INTERVAL=2`.
+- Reporter preview was generated with `--no-send`; no duplicate immediate email was sent because the latest user cadence instruction is to keep updates in the two-hour email lane.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe can run with usable coverage, but still has no new opens.
+- Latest bounded DRY observe completed exit 0 with KOKO_SUPERVISOR_MAX_CYCLES=20, continuous=true, LIVE=false.
+- Entry preflight waited through sparse entry slices, then entered continuous observe at 2026-06-04T20:17:45Z.
+- Continuous readiness generated after observe: signals=5013, liquid_dmid_overlap=34, liquid_dmid_spread_tob_overlap=1, quote_volume_usable=238, dmid_usable=323, tick_dmid_ready=123.
+- Current blocker is dry_pnl_guard recovery alignment: recovery-positive products are VVV-USD, XLM-USD, and XRP-USD; latest recovery coverage has signals=41 and all_recovery_metrics=0.
+- Recovery failure counts: dmid=41, tick_dmid=40, tob_usd=34, book_pressure=33, spread=13.
+- Closest recovery row: XRP-USD, failures=dmid|tick_dmid|book_pressure, tick_dmid=0.85 vs 10.00, press=0.7614 vs 0.9000, tob=3836, dmid=8.54 vs 40.00.
+- Closest final-gate non-recovery row: NEAR-USD, failures=tick_dmid, tick_dmid=-10.67 vs 10.00, spr=4.27/5.00, tob=1669/500, market_green_ratio=0.9667/0.8500.
+- This is not U=0, stale feed, missing product, or broad cache failure. Latest tick diagnostics remain U=120, S=354, brf=120.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+  - C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_recovery_5m.json
+  - C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_history_recovery_5m.json
+  - C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_latest.json
+  - C:\ai_trading_bot_koko\logs\runtime_near_forward_outcomes_history.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- blocked_open remains 133; opened remains 28.
+- No credible positive dry profitability evidence is present yet.
+- Recovery-forward history now remains report-visible: signals=7, horizon_min=5, best_reason=recovery|dmid|spread|tob_usd|tick_dmid|book_pressure, avg_net_close_bps=-8.4937, positive_net_close_rate=0.0000, best_net_close_bps=-6.0877.
+- Runtime-near history: signals=42, best_reason=spread|tick_dmid, avg_net_close_bps=93.4269, positive_net_close_rate=1.0000. This is useful diagnostic evidence, not recovery-approved dry P&L evidence.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 97 OK.
+- python -m py_compile tools\run_koko_dry_supervised.py tools\tdi_status_reporter.py: OK.
+- Bounded DRY observe completed exit 0 and logged `readiness_forward_evidence` plus `continuous_readiness ... forward_evidence=True`.
+- Safety settings remained DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+
+Next action:
+- Continue DRY-only observe until recovery-positive products align on dmid/tick/top-book/pressure enough to produce actual DRY opens.
+- Keep collecting recovery-forward history so reports distinguish immature latest candidates from historical evidence.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T19:40:30Z
 
 RELAY_FILE_VISIBLE=yes
