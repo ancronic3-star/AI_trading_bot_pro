@@ -15,6 +15,57 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T22:21:32Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: refreshed recent candle cache after the cache-regime tolerance patch and regenerated active-threshold regime evidence.
+- Cache refresh completed cleanly: products=354, refreshed=354, failed=0.
+- TDI monitor sampled current state; two-hour summary was not sent because cadence was not due.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains green_breadth.
+- The patched preflight coverage is holding: timestamp_ratio=0.8729, timestamp_usable=309/354, dmid_samples=224.
+- Product/cache gap is not the blocker: missing_files=0, empty_files=0, refresh failed=0.
+- Liquid subset coverage remains usable at 21, but liquid+dmid overlap remains zero: dmid_quote=0 and dmid_quote_range=0.
+- Green breadth remains far below threshold: green_ratio=0.0848/0.8500.
+- Market dmid remains negative: avg_dmid_bps=-39.7318.
+- Observe intentionally skipped because cache_openable=false; running DRY observe now would likely produce another zero-open window.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current step:
+- C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+  - C:\ai_trading_bot_koko\logs\tdi_status_monitor_once_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Cache refresh command completed exit 0 with refreshed=354/354 and failed=0.
+- Active-threshold regime regeneration completed exit 0.
+- Regime output: cache_openable=false, blocker=green_breadth, timestamp_ratio=0.8729, dmid_samples=224, liquid_subset=21, dmid_quote=0.
+- Monitor output: DRY=true, LIVE=false, current_blocker=green_breadth, next_action=wait for cache_openable=true; current blocker=green_breadth, notification sent=false reason=hourly_not_due.
+
+Next action:
+- Keep waiting for cache_openable=true or a material improvement in green breadth/liquid+dmid alignment before DRY observe.
+- Keep the two-hour Gmail cron as the reporting path; do not send duplicate immediate status emails while cadence is not due.
+- Continue data/preflight focus; do not tune Profit Score until actual DRY opens resume.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T22:18:07Z
 
 RELAY_FILE_VISIBLE=yes
