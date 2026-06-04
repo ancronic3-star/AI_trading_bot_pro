@@ -15,6 +15,95 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T07:39:10Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: bounded DRY observe refresh, reporter blocker-selection patch, test verification, and refreshed dry_pnl_guard forward evidence.
+- DRY remains true and LIVE remains false.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporter rendered the material patch-change status with subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | dry signal blocked by net_negative_low_tick_dmid (XRP-USD), and correctly did not send because the two-hour cadence was not due: reason=report_cadence_not_due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe is running with usable market coverage, but net-negative DRY P&L safety is preventing new opens until a positive-expectancy recovery product satisfies the full recovery stack.
+- Latest concrete blocked opens are XRP-USD; blocked_open increased from 101 to 112 in the latest bounded observe.
+- New latest blocked-open causes include net_negative_low_tick_dmid and net_negative_low_pressure.
+- Latest ledger blocked open: XRP-USD reason=net_negative_low_tick_dmid at 2026-06-04T07:32:11Z.
+- Positive-expectancy recovery products remain VVV-USD, XLM-USD, XRP-USD.
+- Recovery candidate coverage over the refreshed readiness slice: signals=69, all_recovery_metrics=0.
+- Recovery gate failures: tick_dmid=63, book_pressure=55, tob_usd=45, spread=11.
+- Best current recovery row is XRP-USD with tick_dmid=13.60 bps, spread=0.85 bps, tob=4667 USD, but book pressure=0.2863 below the required 0.9.
+- Other XRP recovery rows have pressure >= 0.9 but fail tick_dmid.
+- U/stale feed is not the current blocker: latest readiness shows U=120, S=393, brf=120.
+- Missing product/cache gap is not the current blocker: book_metric_source_present_ratio=0.9852, book_gap=false, cache_supported=true, cache_openable=true.
+- Liquid/full-stack coverage improved but remains sparse: signals=9602, quote_volume_usable=784, dmid_usable=3831, tick_dmid_ready=438, tick_dmid_warmed=9260, liquid_dmid_overlap=523, liquid_dmid_spread_tob_overlap=119.
+- Green breadth has a raw shortfall in the full universe, but the selected ranked slice is usable: green_ratio=0.7350/0.8500, best_ranked_green=0.9000, liquid_subset=24/10.
+- Fresh all-pass dry_pnl_guard forward evidence remains negative: signals=6, horizon=5m, avg_net_close_bps=-41.3445, positive_net_close_rate=0.0000, sl_touch_rate=0.5000.
+- No credible positive dry profitability evidence yet; net dry P&L remains negative.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_ledger.jsonl
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_dry_pnl_guard_5m.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=112 after the latest bounded observe.
+- Credible positive dry profitability evidence is not present yet because net P&L remains negative and recovery all_recovery_metrics remains 0.
+
+Patch/change evidence:
+- Patched tools\tdi_status_reporter.py so current blocker selection prefers a fresh DRY blocked-open ledger cause when the blocked-open timestamp falls inside the current readiness/tick window.
+- Added a regression test proving the reporter names dry signal blocked by net_negative_low_tick_dmid (XRP-USD) for a fresh observe-window blocked open.
+- Preserved the stale-ledger guard: old blocked_open rows are still ignored when the current readiness window does not include them.
+- This is not Profit Score tuning and does not loosen the DRY P&L guard.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- Bounded observe command completed DRY-only after 30 configured cycles; no lingering Python process remained.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 02:27:57" --out logs\dry_observe_readiness_latest.json: completed.
+- python tools\koko_paper_signal_forward_outcomes.py --reasons dry_pnl_guard --horizon-min 5 ...: completed; avg_net_forward_close_bps=-41.3445.
+- python -m unittest tests.test_tdi_status_reporter: PASS, 40 tests.
+- python -m py_compile tools\tdi_status_reporter.py: PASS.
+- Reporter blocker render now returns dry signal blocked by net_negative_low_tick_dmid (XRP-USD).
+- python tools\tdi_status_reporter.py --mode event --event patch_change ... --no-send: rendered status; sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Keep the DRY P&L guard in place.
+- Keep observing recovery coverage for VVV-USD, XLM-USD, and XRP-USD until tick_dmid >= 10 bps, book_pressure >= 0.9, spread <= 5 bps, tob >= 500 USD, and current DRY gates align.
+- Do not tune Profit Score while opened=0.
+- Resume dry P&L improvement only after eligible recovery coverage can actually open candidates and forward evidence is not negative.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T07:34:30Z
 
 RELAY_FILE_VISIBLE=yes
