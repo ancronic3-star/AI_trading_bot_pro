@@ -15,6 +15,93 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T09:42:09Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: moved DRY-only repeat-sparse exclusion from snapshot-only into actual dynamic universe ranking, regenerated one-tick DRY runtime universe, refreshed readiness/cache/coverage evidence, focused tests, and reporter no-send preview.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered patch_applied with --no-send; no email was sent because cadence was not due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Previous repeat-sparse change only filtered the runtime products snapshot; actual dynamic ranking still had 393 rows.
+- New patch applies the same DRY-only 3+ repeat-sparse exclusion inside managers\universe_manager\universe_dynamic.py before ranked candidates are stored or returned.
+- Actual ranked_rows now equals 388, matching logs\dry_runtime_products_latest.json.
+- Excluded actual DRY universe products remain DRIFT-USD, CBETH-USD, DRV-USD, ENS-USD, and KTA-USD.
+- One-tick DRY sample completed exit 0. Console top list no longer included the excluded 3+ sparse names.
+- Runtime product coverage remains products=388, present=367, stale=21, repeat_sparse_in_runtime=10.
+- Cache preflight remains openable: timestamp_usable=360/388, timestamp_ratio=0.9278, liquid_subset=20, dmid_liquidity_overlap=4, dmid_liquidity_range_overlap=4.
+- Current readiness after the actual-universe patch: signals=368, quote_volume_usable=22, dmid_usable=43, liquid_dmid_overlap=3, liquid_dmid_spread_tob_overlap=0.
+- Latest tick diagnostics now show S=388, U=120, brf=120, drysig=0, dryopen=0, dryblk=0.
+- Current blocker shifted from stale/feed to entry quality: cache-liquid candidates blocked by trough (3; top NEAR-USD), with spread/top-book/tick-dmid shortfalls still visible.
+- Market breadth/dmid are still not constructive enough for full observe: latest_mbr=0.5417/0.8500, latest_mdmid=-1.38/0.00.
+- Do not tune Profit Score while opened=0; next observe should wait for a green breadth/dmid window and then run on the filtered actual universe.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\universe_manager\universe_dynamic.py
+- C:\ai_trading_bot_koko\tests\test_universe_dynamic_repeat_sparse.py
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=130.
+- No new positive dry P&L evidence yet.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- managers\universe_manager\universe_dynamic.py now reads DRY_RUNTIME_EXCLUDE_REPEAT_SPARSE_MIN_RUNS and DRY_RUNTIME_REPEAT_SPARSE_HISTORY_PATH only when DRY=true, then filters repeat-sparse products from discovered/pricebook/ranked rows.
+- LAST_DIAG now records repeat_sparse_excluded and repeat_sparse skipped counts for dynamic universe verification.
+- tests\test_universe_dynamic_repeat_sparse.py covers DRY gating and product/row filtering.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- One-tick continuous DRY supervisor sample completed exit 0 and regenerated logs\dry_runtime_products_latest.json with products=388, ranked_rows=388, discovered=393, repeat_sparse_excluded=5, repeat_sparse_skipped=10.
+- Confirmed DRIFT-USD, CBETH-USD, DRV-USD, ENS-USD, and KTA-USD are absent from logs\dry_runtime_products_latest.json; ACH-USD remains present as a 2-run watchlist product.
+- python tools\koko_runtime_product_coverage.py --out logs\runtime_product_coverage_latest.json: products=388, present=367, stale=21, repeat_sparse_in_runtime=10.
+- Supervisor preflight report against filtered products: files_checked=388, timestamp_usable_files=360, timestamp_usable_ratio=0.9278, liquid_subset=20, dmid_liquidity_overlap=4, dmid_liquidity_range_overlap=4, openable=true, blocker=green_breadth.
+- python -m unittest tests.test_universe_dynamic_repeat_sparse tests.test_run_koko_dry_supervised_preflight tests.test_koko_runtime_product_coverage tests.test_tdi_status_reporter: PASS, 80 tests.
+- python -m py_compile managers\universe_manager\universe_dynamic.py tools\run_koko_dry_supervised.py tools\koko_runtime_product_coverage.py tools\tdi_status_reporter.py: PASS.
+- python -m json.tool on run_settings.json, logs\dry_runtime_products_latest.json, logs\runtime_product_coverage_latest.json, logs\cache_market_regime_latest.json, and logs\dry_observe_readiness_latest.json: PASS.
+- python tools\tdi_status_reporter.py --mode event --event patch_applied ... --no-send: rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (3; top NEAR-USD); sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Do not tune broad Profit Score.
+- Continue DRY-only data/preflight work.
+- Wait for green breadth/dmid window, then run bounded observe on the filtered actual universe and mature forward evidence.
+- Watch 2-run sparse products before tightening exclusion further.
+- Do not enable LIVE.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T09:38:05Z
 
 RELAY_FILE_VISIBLE=yes
