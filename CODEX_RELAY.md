@@ -15,6 +15,75 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T01:52:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local DRY observe completed after refreshed cache/preflight coverage.
+- Latest reporter preview was --no-send; no email was sent.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+
+Current blocker:
+- Current blocker is now dry signal blocked by quarantine (SUI-USD).
+- Data/preflight lane reached usable market coverage: cache_openable=true, diagnostic_worthwhile=true.
+- Timestamp coverage evidence: timestamp_ratio=0.9771, timestamp_usable=384/393, timestamp_outside=9, fresh_mtime_unusable=9.
+- Liquid/green evidence: liquid_subset=31, best_ranked=dmid_desc, best_ranked_green=1.0000, best_ranked_liquid=15, best_ranked_dmid_liq_overlap=15.
+- Latest bounded DRY observe reached an all-pass candidate and dry signal: max_drysig=1, max_dryopen=0, max_dryblk=1, drysig_without_open=true.
+- All-pass candidate evidence: SUI-USD at 2026-06-04T01:45:36Z, spread=1.25/5.00, tob=1044/500, qv=1296139/250000, rdmid=143.99/40.00, tdmid=17.54/10.00, market_green=0.9417/0.8500.
+- Ledger evidence shows the dry open was blocked by quarantine for SUI-USD.
+- Do not tune Profit Score while dryopen/open_count remains zero; next issue is DRY P&L quarantine/open eligibility, not score.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- Updated readiness evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- Credible positive dry profitability evidence is not present yet.
+- Forward evidence remains mixed/insufficient: dry_open_forward signals=1 horizon_min=10 avg_net_close_bps=41.3940 positive_net_close_rate=1.0000, while realized/net dry P&L remains negative.
+
+Patch/change evidence:
+- Readiness now preserves historical runtime all-pass candidates from tick_diag near-tail instead of only the latest tick.
+- Readiness now reports max_dry_blocked_open, dry_blocked_open_seen, and dry_signal_without_open.
+- TDI status reporter now includes max_dryblk, drysig_without_open, and latest dryblk evidence.
+- TDI status reporter now reads the latest dry P&L blocked_open ledger row and reports dry signal blocked by quarantine (SUI-USD) as the current blocker when cache_openable=true.
+- No score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 25 OK.
+- python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- python tools\tdi_status_reporter.py ... --no-send: OK, sent=false; subject [TDI STATUS] Profit 25/100 | DRY=true LIVE=false | dry signal blocked by quarantine (SUI-USD).
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence is two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Keep data/preflight evidence stable, but stop treating coverage as the current blocker now that cache_openable=true and drysig=1 occurred.
+- Investigate/clear DRY P&L quarantine/open eligibility for the all-pass candidate path before resuming dry P&L improvement.
+- Resume dry P&L improvement only after DRY opens can be recorded under guardrails.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T01:42:00Z
 
 RELAY_FILE_VISIBLE=yes
