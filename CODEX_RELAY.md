@@ -15,13 +15,13 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
-Timestamp: 2026-06-04T15:45:00Z
+Timestamp: 2026-06-04T15:48:00Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL: not configured locally / unknown.
-- Latest local task completed: patched DRY preflight/cache refresh coverage, added post-continuous readiness reporting, regenerated latest readiness evidence, and ran bounded DRY-only observe.
+- Latest local task completed: patched DRY preflight/cache refresh coverage, added post-continuous readiness reporting, reset the paper-signal throttle before continuous observe, regenerated latest readiness evidence, and ran bounded DRY-only observe.
 - DRY remains true and LIVE remains false.
 - Reporting destination remains tdifactorToday@gmail.com.
 - Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
@@ -32,11 +32,12 @@ Cloud task status:
 Current blocker:
 - Cache/preflight lane improved materially: when the runtime cache was non-openable with timestamp/liquid/dmid/range gaps but only tail refresh was flagged, supervisor now refreshes instead of skipping.
 - Bounded DRY run at 2026-06-04T15:37Z refreshed 354/354 cache files, failed=0, then reached continuous observe.
-- Latest cache regime at 2026-06-04T15:41:40Z: openable=true, supported=true, timestamp_usable_ratio=0.9322, liquid_subset=24, dmid_quote=2, dmid_quote_range=1, green_ratio=0.3449, blocker=green_breadth.
-- Latest continuous readiness at 2026-06-04T15:44:25Z: current_blocker=trough, open_candidate_present=false, readiness_evidence="signals=0, tick_diag_rows=3, liquid_dmid_overlap=0, runtime_near_misses=15, max_dry_open=0".
-- Continuous tick diagnostics are live: U=120, S=354, tdmidnz up to 68, tdmidok up to 4, dryopen=0.
-- Runtime near misses are now explicit even when paper-signal rows are suppressed by the entry sample: runtime_failure_combos={"dmid|market_breadth":15}; closest runtime near miss is XRP-USD with qv=4,976,809, spr=0.85/5.00, tob=1960/500, rdmid=0.85/40.00, market_green_ratio=0.375/0.850.
-- Closest dry liquid early-skip remains trough/spread constrained: WLD-USD qv=8,056,031, rdmid=116.04, rejected by trough probe on spread=5.1016 vs max=5.0000.
+- Paper/feed reporting lane improved materially: after resetting the paper-signal throttle before continuous observe, post-continuous readiness now captures continuous paper rows instead of a zero-signal shell.
+- Latest cache regime at 2026-06-04T15:47:11Z: openable=true, supported=true, timestamp_usable_ratio=0.8842, liquid_subset=16, dmid_quote=1, dmid_quote_range=1, green_ratio=0.3850, blocker=green_breadth.
+- Latest continuous readiness at 2026-06-04T15:47:42Z: current_blocker=trough, open_candidate_present=false, readiness_evidence="signals=806, tick_diag_rows=3, liquid_dmid_overlap=0, runtime_near_misses=15, max_dry_open=0".
+- Latest continuous signal coverage: quote_volume_usable=45, dmid_usable=57, tick_dmid_usable=2, spread_usable=77, tob_usable=186, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Latest blockers from continuous paper rows: trough=387, spread=303, trough_wait=63, tob_usd=33, dmid=18, quote_volume=2.
+- Continuous tick diagnostics are live: U=120, S=354, dryopen=0.
 - Do not tune broad Profit Score while actual DRY opens remain 0.
 
 Files changed in current local runtime lane:
@@ -61,10 +62,10 @@ Verification evidence:
 - Focused tests: python -m unittest tests.test_run_koko_dry_supervised_preflight: 41 OK.
 - Focused tests: python -m unittest tests.test_koko_dry_observe_readiness: 27 OK.
 - Syntax check: python -m py_compile tools\run_koko_dry_supervised.py tools\koko_dry_observe_readiness.py.
-- Bounded DRY supervisor run completed exit 0 with DRY=true and LIVE=false; continuous_done elapsed_sec=18.4 after 3 continuous ticks in the final short verification.
+- Bounded DRY supervisor run completed exit 0 with DRY=true and LIVE=false; final short verification logged paper_signal_throttle_reset count=354 before continuous, continuous_done elapsed_sec=19.7, and continuous_readiness signals=806.
 
 Next action:
-- Keep data/preflight/openability focus: green breadth, trough/spread near-miss, dmid+market_breadth runtime near misses, and paper-signal suppression during back-to-back entry/continuous runs.
+- Keep data/preflight/openability focus: green breadth, trough/spread near-misses, liquid+dmid overlap=0, and current dmid/market breadth near misses.
 - Continue DRY observe only; do not tune Profit Score until actual DRY opens resume.
 - Keep DRY=true and LIVE=false.
 
