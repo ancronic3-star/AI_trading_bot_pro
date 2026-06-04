@@ -15,6 +15,92 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T08:38:24Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: same-run and history sparse-window product tracking for forward gap diagnostics, focused tests, diagnostic regeneration, reporter no-send preview.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered patch_applied with --no-send and did not send because cadence was not due: reason=report_cadence_not_due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe has usable market coverage, but net-negative DRY P&L safety is still preventing new opens.
+- Latest blocker remains dry signal blocked by net_negative_low_tick_dmid (XRP-USD).
+- Latest dry P&L remains net negative: -0.30033076 USD.
+- Latest bounded observe still has opened=28, closed=28, wins=8, losses=20, open_count=0, blocked_open=123.
+- U/stale feed is not the current cause: U=120, S=393, brf=120, book_gap=false.
+- Timestamp/cache coverage remains usable: timestamp_ratio=0.9669, cache_supported=true, cache_openable=true.
+- Liquid subset remains usable: liquid_subset=24 against min 10.
+- Full-universe green breadth remains weak: green_ratio=0.7350 against min 0.8500, while best ranked green remains usable at 0.9000.
+- Forward gap diagnosis remains sparse exact-window coverage, not unsupported products: classification_counts sparse_exact_window=10.
+- Same-run sparse products now surface in reporter evidence: AGLD-USD=2, AMP-USD=2, APE-USD=2, BARD-USD=2, DRIFT-USD=2.
+- History tracking is initialized and currently has two diagnostic runs over the same forward artifact; repeat_sparse shows the same top products at runs=2, but this is not yet an independent second observe/forward window.
+- Reporter evidence now includes same_run_sparse and repeat_sparse fields in forward_gap.
+- All-reason forward evidence remains negative overall: signals=317, spread avg_net_close_bps=-98.0095, positive_net_close_rate=0.0246, sl_touch_rate=0.7336.
+- Runtime ranked-forward summary remains unsupported: signals=317, supported_slices=0, best mode=active_dmid_desc top_n=20, avg_net_close_bps=-74.7813.
+- Threshold sweep remains unsupported: configs_evaluated=4533, supported_count=0, best_avg_net_close_bps=-65.7130.
+- No credible positive dry profitability evidence yet.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_forward_gap_diagnostics.py
+- C:\ai_trading_bot_koko\tests\test_koko_forward_gap_diagnostics.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=123.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- tools\koko_forward_gap_diagnostics.py now writes same_run_sparse_products and bounded repeat_sparse_products history.
+- tools\tdi_status_reporter.py now includes same_run_sparse and repeat_sparse in forward_gap evidence.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest tests.test_koko_forward_gap_diagnostics tests.test_koko_paper_signal_forward_outcomes tests.test_tdi_status_reporter: PASS, 58 tests.
+- python -m py_compile tools\koko_forward_gap_diagnostics.py tools\koko_paper_signal_forward_outcomes.py tools\tdi_status_reporter.py: PASS.
+- python -m json.tool run_settings.json, logs\forward_gap_diagnostics_latest.json, logs\forward_gap_diagnostics_history.json: PASS.
+- python tools\koko_forward_gap_diagnostics.py --forward-outcomes logs\paper_signal_forward_outcomes_latest_all_5m.json --reason no_forward_candles --limit 10 --out logs\forward_gap_diagnostics_latest.json --history-out logs\forward_gap_diagnostics_history.json: completed.
+- python tools\tdi_status_reporter.py --mode event --event patch_applied ... --no-send: rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | dry signal blocked by net_negative_low_tick_dmid (XRP-USD); sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Collect an independent next observe/forward window and use repeat sparse-window diagnostics to filter or de-prioritize unreliable products before any Profit Score tuning.
+- Keep the DRY P&L guard in place.
+- Continue observe/data-preflight diagnostics only.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired and credentials are still absent: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T08:34:22Z
 
 RELAY_FILE_VISIBLE=yes
