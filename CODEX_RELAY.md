@@ -15,6 +15,84 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T05:10:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local bounded DRY observe completed at 2026-06-04T05:05Z after data/preflight coverage setting changes.
+- DRY remains true and LIVE remains false.
+- Routine report cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- SMTP delivery remains blocked locally because sender/user/password env is missing.
+- No Coinbase/order placement path was touched.
+
+Current blocker:
+- Active blocker remains data/preflight/openability coverage, not Profit Score tuning.
+- Missing product/cache gap is not the active blocker: timestamp_missing_files=0 in latest cache evidence.
+- U=0/stale feed is not the active blocker: latest observe had U=120, S=393, top=393, chk=393.
+- Actionable book refresh coverage now reaches the full DRY universe: DRY_ACTIONABLE_BOOK_REFRESH_TOP_N=120 and max brf=120.
+- Tick feed warmed during observe: tick_diag_rows=12, max_tick_dmid_nonzero=247, max_tick_dmid_ready=31.
+- DRY still did not open: max_dry_signal=0, max_dry_open=0, max_dry_blocked_open=0.
+- Green breadth remains deeply below target: runtime mbr examples 0.1667/0.8500 and 0.1333/0.8500.
+- Liquid+dmid overlap remains too thin: quote_volume_usable=18, dmid_usable=17, liquid_dmid_overlap=1, liquid_dmid_spread_tob_overlap=0.
+- Latest drygate counts show true market/gate overlap, not just stale coverage: dmid=261, market_breadth=261, quote_volume=253, spread=242, tob=181, score=106.
+- Runtime near-miss combos: dmid|market_breadth=17, tob_usd|dmid|market_breadth=7, quote_volume|dmid|market_breadth=1.
+- Closest runtime near miss: BTC-USD blocked by dmid+market_breadth, qv=42783295, spr=0.00, tob=568, rdmid=-4.60/40.00, tdmid=-6.91/10.00, mbr=0.1667/0.8500.
+- Closest liquid+dmid entry candidate: ZEC-USD qv=3064498.7346, rdmid=59.5424/40.00, but spread=6.0281/5.00, tob=147.31/500.00, tick_dmid=0.00/10.00.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\activity_ticker.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Lowered DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_QUOTE_VOLUME_USD from 1000000.0 to 50000.0 so DRY observe market-breadth/quote-volume probes use the same quote floor as DRY_OBSERVE_PROBE_MIN_QUOTE_VOLUME_USD.
+- Increased DRY_ACTIONABLE_BOOK_REFRESH_TOP_N from 80 to 120 to refresh book metrics across the full DRY universe.
+- Bounded DRY observe confirmed brf=120 and warmed tick diagnostics, but no dry signal/open occurred under current market breadth/dmid conditions.
+- No Profit Score tuning was done while open_count=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 31 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 24 tests.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": PASS, 32 tests.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": PASS, 32 tests.
+- python tools\run_koko_dry_supervised.py with KOKO_SUPERVISOR_MAX_CYCLES=12: completed bounded DRY observe twice; no new open.
+- python tools\koko_dry_observe_readiness.py --since-local-start "2026-06-04 00:03:40" --out logs\dry_observe_readiness_latest.json: OK.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight repair around market breadth/dmid overlap and positive-dmid candidates that pass spread, top-book, and tick confirmation.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T04:55:30Z
 
 RELAY_FILE_VISIBLE=yes
