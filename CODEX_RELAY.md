@@ -15,6 +15,92 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T04:30:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local bounded DRY observe completed after the data/preflight patch; no live trading was enabled.
+- Latest reporter event send was attempted for patch_change and returned sent=false because SMTP env is missing: user, password, sender.
+- Routine report cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+
+Current blocker:
+- Do not tune Profit Score while opened/open_count is 0.
+- Active blocker remains data/preflight/openability, not profit scoring.
+- Runtime DRY observe still produced no new open after the latest patch: dryopen=0, dryblk=0, blocked_open remained 91.
+- P&L-quarantined candidates no longer consume probe-driven dry-open attempts; dry_pnl_guard is logged and skipped before recording blocked dry opens.
+- Runtime market/feed is not U=0 or stale: latest tick evidence has U=120, S=393, brf=80.
+- Runtime green breadth improved but remains below the configured target: max latest observed near-miss mbr=0.7250/0.8500; later ticks around 0.7083/0.8500.
+- Tick dmid warmed but is often insufficient on current candidates: tick_dmid_nonzero reached 183 and tick_dmid_ready reached 17 in the latest observe sample, but latest candidate rows still frequently fail dmid/tick_dmid.
+- Top-book/spread/trough remain active openability gaps: liquid_dmid_overlap=1, liquid_dmid_spread_tob_overlap=0.
+- Latest near dry candidate remains NEAR-USD, but it is P&L-quarantined and now skipped by dry_pnl_guard rather than counted as blocked_open.
+- Other visible near candidates fail top-book, spread, dmid, or market breadth before safe DRY open.
+- Cache/preflight coverage is mixed but useful: best_ranked=dmid_desc for top 120 passes configured regime with timestamp_ratio=1.0000, green_ratio=1.0000, liquid_subset=11, dmid_liquidity_overlap=8.
+- Full 393-product cache view is blocked by timestamp_coverage and green_breadth: timestamp_ratio=0.8321, green_ratio=0.6555.
+- Liquid subset coverage is present in cache: quote_volume_ge_min=16, timestamp_usable_and_quote_volume_ge_min green_ratio=0.8750.
+- Missing product/cache gap is not the main blocker: timestamp_missing_files=0; 66 files are outside the current freshness window.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\activity_ticker.log
+- C:\ai_trading_bot_koko\logs\dry_cycle18_pnl_score.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Set DRY_MARKET_BREADTH_ALIGN_WITH_DRY_DMID_SOURCE=true so runtime breadth aligns with recent-candle dmid source.
+- Added a DRY P&L preview guard before probe-driven dry-open handoff so quarantined products are skipped with dry_pnl_guard evidence instead of consuming blocked_open attempts.
+- Applied the same preview guard pattern around other dry-open handoff paths without changing Coinbase/order code.
+- Refreshed public candle cache for the current runtime product set: 391/393 products refreshed; two public candle requests failed but old cache files still exist.
+- Ran bounded DRY observe after the patch; blocked_open did not increase, confirming the P&L quarantine skip is working.
+- No Profit Score tuning was done while open_count=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 28 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": PASS, 24 tests.
+- python -m unittest discover -s tests -p "test_cloud_only_corrections.py": PASS, 9 tests.
+- python -m py_compile managers\run_manager\run_manager.py: PASS.
+- python tools\refresh_koko_recent_candle_cache.py ...: refreshed=391, failed=2.
+- python tools\run_koko_dry_supervised.py with KOKO_SUPERVISOR_MAX_CYCLES=16: completed bounded DRY observe; no new open.
+- python tools\tdi_status_reporter.py --mode event --event patch_change ... --force: sent=false because SMTP user/password/sender env is missing.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight repair around timestamp freshness, green breadth, liquid subset/openability overlap, top-book/spread, tick-dmid warmup, and P&L-quarantine-aware candidate selection.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+
+User action required:
+- Yes for unattended Gmail delivery: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or equivalent supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T03:44:01Z
 
 RELAY_FILE_VISIBLE=yes
