@@ -15,6 +15,75 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T06:47:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local patch/change completed: TDI reporter now keeps real email/outbox updates on the two-hour cadence even if the CLI is called with --force.
+- Forced previews still work only with --no-send; real sends/outbox writes must wait for TDI_REPORT_HOURLY_SEC=7200.
+- Patch-change reporter event was rendered but not delivered or written to outbox because the existing two-hour cadence was not due: reason=missing SMTP env ['user', 'password', 'sender']; outbox_throttled.
+- Reporting destination remains tdifactorToday@gmail.com.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current runtime blocker remains runtime near-miss NEAR-USD blocked by tick_dmid.
+- Latest monitor snapshot did not send a summary: reason=hourly_not_due.
+- U/stale feed is not active: latest readiness shows U=120, S=393, brf=120.
+- Market breadth is currently passing: latest_mbr=0.8917/0.8500 and latest_mdmid=69.16/0.00.
+- Coverage remains usable but strict entry overlap is narrow: timestamp_ratio=0.9669, liquid_subset=24, liquid_dmid_overlap=17, liquid_dmid_spread_tob_overlap=3 in latest reporter evidence.
+- No credible positive dry profitability evidence yet; net dry P&L remains negative.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 28/100.
+- dry P&L: realized=-0.28643482 USD, unrealized=0.00000000 USD, net=-0.28643482 USD.
+- opened/closed/wins/losses: opened=26, closed=26, wins=8, losses=18.
+- open_count=0.
+- Credible positive dry profitability evidence is not present yet because net P&L remains negative.
+
+Patch/change evidence:
+- maybe_send now passes force through to should_send only when no_send is true.
+- This keeps manual preview/test rendering available without allowing forced real emails to bypass the two-hour reporting cadence.
+- Added regression tests proving forced real sends obey cadence and forced no-send previews remain available.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_reporter: PASS, 37 tests.
+- python -m py_compile tools\tdi_status_reporter.py: PASS.
+- python tools\tdi_status_monitor.py --once: completed; summary sent=false reason=hourly_not_due.
+- python tools\tdi_status_reporter.py --mode event --event patch_change ...: rendered status; sent=false reason=missing SMTP env ['user', 'password', 'sender']; outbox_throttled.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue DRY observe and collect profitability evidence without tuning Profit Score while open_count=0.
+- Keep reporting updates to email/outbox at most once every two hours.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only for real unattended Gmail delivery if SMTP delivery is desired: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T06:35:17Z
 
 RELAY_FILE_VISIBLE=yes
