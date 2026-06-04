@@ -15,6 +15,79 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T06:22:38Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local patch/change completed: TDI/KOKO outbound email reporting is now capped at one update every two hours.
+- DRY remains true and LIVE remains false.
+- Routine TDI/KOKO email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Material-event email attempts now also respect the two-hour report cadence unless explicitly forced for a manual preview/test.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporter forced no-send preview rendered subject "[TDI STATUS] Profit 28/100 | DRY=true LIVE=false | runtime near-miss NEAR-USD blocked by market_breadth".
+- No email/outbox write was created by the preview.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- DRY observe can open candidates; latest opened count remains 26 with open_count=1.
+- Current runtime blocker remains market breadth: latest near miss is NEAR-USD blocked by market_breadth.
+- U/stale feed is not active: latest tick_diag shows U=120, S=393, brf=120, drysig=0, dryopen=0.
+- Latest readiness evidence remains usable: signals=7156, book_metric_source_present_ratio=0.9852, tick_dmid_warmed=6843, tick_dmid_ready=609.
+- Liquid/dmid overlap remains present: liquid_dmid_overlap=179, liquid_dmid_spread_tob_overlap=31.
+- Latest market breadth is just below gate: latest_mbr=0.8417/0.8500, latest_mdmid=64.17/0.00.
+- Net-negative P&L guard remains active; do not tune Profit Score blindly.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 28/100.
+- dry P&L: realized=-0.28242463 USD, unrealized=0.00075191 USD, net=-0.28167272 USD.
+- opened/closed/wins/losses: opened=26, closed=25, wins=8, losses=17.
+- open_count=1, positive_open_count=1, negative_open_count=0.
+- Current open position remains XRP-USD with small positive unrealized P&L in latest state.
+- Credible positive dry profitability evidence is not present yet because net P&L remains negative.
+
+Patch/change evidence:
+- should_send now checks the latest report attempt epoch across last_report_epoch, last_hourly_epoch, and last_outbox_epoch before allowing material-event emails.
+- Event skips caused by the cadence cap return report_cadence_not_due.
+- Cadence skips do not mark the material fingerprint, so the event can still appear when the next two-hour report is due.
+- Actual send/outbox attempts update last_report_epoch and material-event dedupe.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": PASS, 35 tests.
+- python -m py_compile tools\tdi_status_reporter.py tools\tdi_status_monitor.py: PASS.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --force --no-send: rendered current status; sent=false reason=no_send.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue DRY-only observe/P&L recovery after cadence guard verification.
+- Let positive-expectancy recovery continue while net P&L remains negative.
+- Do not enable LIVE.
+
+User action required:
+- No for cadence and DRY/LIVE safety.
+- Yes only for unattended Gmail delivery if SMTP delivery is desired: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T06:18:10Z
 
 RELAY_FILE_VISIBLE=yes
