@@ -15,6 +15,59 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T22:04:20Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched TDI status monitor reporting so monitor/two-hour summaries defer to the reporter's regime-aware default next action instead of hard-coding "continue DRY observe."
+- Real monitor sample now reports next_action=wait for cache_openable=true; current blocker=green_breadth.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Local SMTP delivery is still blocked by missing SMTP env user/password/sender; monitor returned sent=false with reason `missing SMTP env ['user', 'password', 'sender']; outbox_throttled`.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains green_breadth.
+- Current regime is not openable: green_ratio=0.0848/0.8500, avg market dmid=-39.7318 bps.
+- Timestamp coverage passes: timestamp_ratio=0.8729, timestamp_usable=309/354, missing_files=0, empty_files=0.
+- Liquid subset is present at 21, but liquid+dmid overlap remains zero: dmid_quote=0 and dmid_quote_range=0.
+- KEYCAT-USD public refresh failed once, but it is not a missing/cache gap; the cache file exists and has recent rows.
+- Do not spend another observe window until cache_openable=true or the regime evidence improves.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_monitor.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_monitor.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\tdi_status_monitor_once_latest.json
+  - C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_monitor tests.test_tdi_status_reporter: 51 OK.
+- python -m py_compile tools\tdi_status_monitor.py tools\tdi_status_reporter.py: OK.
+- Real monitor sample confirmed current_blocker=green_breadth and next_action=wait for cache_openable=true; current blocker=green_breadth.
+- Monitor did not send a duplicate email; sent=false with outbox throttled due missing local SMTP credentials.
+
+Next action:
+- Keep DRY-only monitoring on the data/preflight lane.
+- Wait for cache_openable=true or improved green breadth/liquid+dmid alignment before running another observe window.
+- Keep Coinbase/order path, live state, static TP/SL, and Profit Score guardrails intact.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only if direct local SMTP delivery is required: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or keep using the Gmail connector/report relay path.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T21:46:56Z
 
 RELAY_FILE_VISIBLE=yes
