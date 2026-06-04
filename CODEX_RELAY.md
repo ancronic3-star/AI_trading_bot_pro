@@ -15,6 +15,90 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T05:50:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local rank-alignment patch, bounded DRY observe, and full activity-log readiness regeneration completed.
+- DRY remains true and LIVE remains false.
+- Routine TDI/KOKO email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Data/preflight coverage is now usable; zero-open blocker is no longer timestamp coverage, missing cache/products, U=0 stale feed, or liquid subset coverage.
+- Runtime candidate rank now aligns with cache/preflight semantics for DRY_CANDIDATE_RANK=timestamp_liquidity_dmid_desc.
+- Latest readiness from actual activity log since 2026-06-04 00:47:43: signals=2350, book_metric_source_present=2319, book_metric_source_missing=31, max_book_refresh_count=120.
+- U/stale feed is not active: tick_diag rows show U=120, S=393, brf=120, top=393, chk=393.
+- Liquid/dmid coverage improved: liquid_dmid_overlap=109 and liquid_dmid_spread_tob_overlap=25.
+- Market breadth is now passing on near-misses: market_green_ratio=0.8833/0.8500 and market_dmid_bps=60.46/0.00.
+- Tick-dmid is warmed but rarely usable: tick_dmid_warmed=2012/2350, tick_dmid_ready=37/2350, max_tick_dmid_ready=28.
+- No all-pass candidates and no dry opens yet: max_dry_signal=0, max_dry_open=0.
+- Dominant remaining blockers are entry confirmation: spread=1520, trough=425, trough_wait=216, tob_usd=155, dmid/tick_dmid=33, quote_volume=1.
+- Closest top near miss: NEAR-USD fails only tick_dmid; rdmid=130.2803, qv=2496131.4674, spr=3.9116/5.0, tob=502.1058/500, tick_dmid=3.9131/10, tick_dmid_warmed=true, market breadth passes.
+- Closest liquid+dmid spread/top-book shortfall: ADA-USD fails spread by 0.0826 bps and tick_dmid; rdmid=40.8163, tob=7670.94/500, tick_dmid=5.0852/10, tick_dmid_warmed=true.
+- Dry liquid early skips remain trough-probe rejections: spread=2 and tob_usd=2.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Runtime timestamp_liquidity_dmid_desc rank now prioritizes timestamp and recent-candle liquidity/dmid before spread/top-book tie-breakers, matching the cache/preflight rank model. Hard spread/top-book gates still run unchanged.
+- Added regression coverage so timestamp_liquidity_dmid_desc cannot drift back to book-first ranking.
+- Cache regime flat reporting fields remain in place and current cache evidence remains supported/openable.
+- Bounded DRY observe with PAPER_SIGNAL_MIN_TICK_GAP=1 and KOKO_SUPERVISOR_MAX_CYCLES=8 completed; no dry open yet.
+- Corrected readiness regeneration to use logs/activity_ticker.log, the active ACTIVITY_LOG_PATH.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+- No Profit Score tuning was done while open_count=0.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_cache_market_regime.py": PASS, 23 tests.
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 36 tests.
+- python -m unittest discover -s tests -p "test_run_koko_dry_supervised_preflight.py": PASS, 32 tests.
+- python -m py_compile tools\koko_cache_market_regime.py tools\run_koko_dry_supervised.py managers\run_manager\run_manager.py tools\tdi_status_reporter.py: PASS.
+- python tools\run_koko_dry_supervised.py with bounded KOKO_SUPERVISOR_MAX_CYCLES=8 and PAPER_SIGNAL_MIN_TICK_GAP=1: completed; no dry open.
+- python tools\koko_dry_observe_readiness.py --activity-log logs\activity_ticker.log --settings run_settings.json --since-local-start "2026-06-04 00:47:43": completed; signals=2350.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight diagnostics on tick_dmid ready thresholds, spread near-misses, trough_wait, and top-book USD near misses.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+- No user action required for DRY/LIVE safety.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T05:45:00Z
 
 RELAY_FILE_VISIBLE=yes
