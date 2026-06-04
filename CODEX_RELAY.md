@@ -15,6 +15,76 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T05:13:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local cache/preflight refresh completed after public candle cache refresh and cache-regime CLI reporting patch.
+- DRY remains true and LIVE remains false.
+- Routine report cadence is every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Material event reports still trigger immediately.
+- Reporting destination remains tdifactorToday@gmail.com.
+- SMTP delivery remains blocked locally because sender/user/password env is missing.
+- No Coinbase/order placement path was touched.
+
+Current blocker:
+- Active blocker remains data/preflight/openability coverage, not Profit Score tuning.
+- Missing product/cache gap is cleared in latest cache evidence: files_present=393/393, missing_files=0.
+- Timestamp coverage is now usable: timestamp_usable_files=371/393, timestamp_usable_ratio=0.944 versus min 0.850.
+- U=0/stale feed is not the active blocker in latest observe evidence: max brf=120, tick_diag_rows=12, max_tick_dmid_nonzero=247, max_tick_dmid_ready=31.
+- Liquid subset coverage exists: quote_volume_ge_min=23 versus min_liquid_subset_products=10.
+- Current blocker is real market/entry overlap: green_ratio=0.0429 versus 0.8500, avg_dmid_bps=-80.3034 versus min 0.0, and dmid+quote+range candidates=0.
+- Only one timestamp-usable dmid+quote candidate exists under main thresholds: DEGEN-USD, but range_bps=2472.3247 exceeds max 600.0.
+- Probe evidence now uses the real configured quote floor: observe_probe_min_quote_volume_usd=50000 and observe_probe_min_quote_failure_dmid_bps=40.
+- Probe quote candidates exist but do not make a supported observe window under current breadth/market-dmid/range conditions: probe_quote_volume_overlap=3, probe_quote_volume_range_overlap=2, best_probe_observe is empty.
+- Latest readiness artifact still shows max_dry_signal=0 and max_dry_open=0; current readiness dominant blocker remains spread/runtime gate overlap.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- Added CLI support to tools\koko_cache_market_regime.py for --observe-probe-min-quote-volume-usd and --observe-probe-min-quote-failure-dmid-bps so manual/relay cache evidence matches supervisor DRY observe probe thresholds.
+- Reran cache-regime evidence with the configured 50000 quote-volume probe floor.
+- Did not tune Profit Score while open_count=0.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_cache_market_regime.py": PASS, 22 tests.
+- python tools\koko_cache_market_regime.py ... --observe-probe-min-quote-volume-usd 50000 --observe-probe-min-quote-failure-dmid-bps 40: OK.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Wait for a timestamp-usable market window with liquid positive-dmid candidates that also pass range/spread/top-book/tick confirmation, then resume bounded DRY observe.
+- Continue data/preflight diagnostics around entry overlap; do not tune Profit Score while open_count=0.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T05:10:00Z
 
 RELAY_FILE_VISIBLE=yes
