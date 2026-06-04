@@ -15,6 +15,98 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T14:25:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: refreshed runtime coverage, refreshed DRY observe readiness from the 09:15 local warmed run, matured the 14:15 UTC 5-minute forward window, reran ranked/threshold forward summaries, and verified reporter/supervisor compile.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- SMTP/Gmail env for unattended local delivery is still missing by name; no status email was sent from the local reporter.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker is DRY openability/market breadth, not Profit Score tuning.
+- Data/preflight coverage is usable enough to observe: latest warmed run had U=120, S=364, brf=120, drysig=0, dryopen=0, dryblk=0.
+- Runtime coverage refreshed at 2026-06-04T14:22:12Z: products=364, present=343, stale=21, repeat_sparse_in_runtime=10, missing/empty not reported as current blockers.
+- Remaining top repeat-sparse watchlist products: AERGO-USD, AMP-USD, ANKR-USD, AWE-USD, AXL-USD, CAKE-USD, CVX-USD, GTC-USD, IMX-USD, INV-USD.
+- Readiness refreshed at 2026-06-04T14:22:12Z from latest observe marker: signals=255; dmid_usable=25; quote_volume_usable=5; spread_usable=10; tob_usable=67; liquid_dmid_overlap=0; liquid_dmid_spread_tob_overlap=0.
+- Dominant blockers remain trough/spread/top-book churn: trough=201, spread=32, trough_wait=18, tob_usd=3, dmid=1.
+- Latest near miss remains NEAR-USD blocked by tick_dmid and market_breadth: qv=2,442,339, rdmid=97.09/40.00, spread=4.18/5.00, tob=908/500, tick_dmid=-12.52/10.00, market_breadth=0.6083/0.8500, market_dmid=23.34/0.00.
+- U=0 is not the blocker.
+- Missing product/cache gap is not the current blocker.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\paper_signal_forward_outcomes_latest_all_5m.json
+- C:\ai_trading_bot_koko\logs\runtime_ranked_forward_outcomes_latest.json
+- C:\ai_trading_bot_koko\logs\forward_threshold_sweep_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_latest.json
+- C:\ai_trading_bot_koko\logs\forward_gap_diagnostics_history.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- opened=28 historically; blocked_open=131; current open_count=0.
+- Credible positive dry profitability evidence is not present yet.
+
+Forward evidence:
+- Latest matured 5-minute evidence since 2026-06-04T14:15:36Z: loaded_signals=255, matured_signals=142, no_forward_candles=113.
+- Reason slices were mostly negative after costs: dmid signals=1 avg_net=-31.6301 bps; spread signals=18 avg_net=-56.3028 bps; trough signals=116 avg_net=-80.2473 bps; trough_wait signals=4 avg_net=-60.2267 bps.
+- Only tob_usd was positive, but with a tiny sample: signals=3, avg_net=115.6690 bps, positive_net_close_rate=0.6667.
+- Ranked forward support is now false on the latest matured window: best_mode=active_dmid_desc, best_top_n=20, signals=142, reason=requires positive net forward close in full/train/validation.
+- Threshold forward support is false: configs_evaluated=90, supported_count=0, best_avg_net_forward_close_bps=-49.5167, best_positive_net_close_rate=0.0000.
+- This reinforces no Profit Score tuning while dryopen=0.
+
+Patch/change evidence:
+- Reporter material-event handling was patched in C:\ai_trading_bot_koko\tools\tdi_status_reporter.py so configured material event aliases are recognized and material events are not blocked by the two-hour summary cadence.
+- Routine summaries still stay on the two-hour cadence.
+- Local delivery remains blocked by missing SMTP env names: TDI_REPORT_SMTP_USER/SMTP_USER/GMAIL_USER, TDI_REPORT_SMTP_PASSWORD/SMTP_PASSWORD/GMAIL_APP_PASSWORD, and sender via TDI_REPORT_FROM/SMTP_FROM or user.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- run_settings.json verified: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Env presence verified: PFID present, COINBASE_KEY_FILE present.
+- Supervisor Coinbase/order guardrail check found only PFID/COINBASE_KEY_FILE presence logging in tools\run_koko_dry_supervised.py.
+- python -m py_compile tools\tdi_status_reporter.py tools\run_koko_dry_supervised.py passed.
+- Runtime coverage refresh completed exit 0.
+- Latest forward/ranked/threshold diagnostics completed exit 0 and wrote current JSON outputs.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Keep data/preflight/openability focus until DRY observe can actually open candidates.
+- Refresh stale/sparse runtime cache pockets, then run another bounded DRY observe only under DRY=true and LIVE=false.
+- Watch market breadth and near misses; do not tune Profit Score while dryopen=0.
+- Resolve unattended Gmail delivery by supplying SMTP/Gmail sender env values or using an authenticated Gmail connector path.
+- Do not enable LIVE.
+
+User action required:
+- Yes for unattended local email delivery: provide SMTP/Gmail sender env values or authorize connector-based sending.
+- No user action required for trading safety; DRY remains true and LIVE remains false.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T11:28:30Z
 
 RELAY_FILE_VISIBLE=yes
