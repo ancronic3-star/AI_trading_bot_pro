@@ -15,6 +15,63 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T17:20:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched TDI status reporter blocker wording to name the dry_pnl_guard recovery lane, ran focused tests, and completed another 60-cycle bounded DRY observe.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No manual duplicate email was sent; reporter previews were no-send only.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Latest reporter subject blocker: cache-liquid candidates blocked by trough (216; top ALLO-USD).
+- The previous ZEC final-gate candidate was technically probe-eligible, but because dry net P&L is negative, the practical path is the dry_pnl_guard recovery lane: positive-expectancy products VVV-USD, XLM-USD, and XRP-USD.
+- Latest bounded DRY observe completed exit 0 with 57 continuous diagnostic ticks after entry preflight.
+- Latest readiness generated at 2026-06-04T17:17:14Z: signals=15139, U=120, S=354, brf=120, max_drysig=0, max_dryopen=0, max_dryblk=0.
+- Latest overlap regressed during the new market slice: liquid_dmid_overlap=0 and liquid_dmid_spread_tob_overlap=0, explained by cache-liquid trough early skips.
+- Market breadth improved but still fails broad gate: latest_mbr=0.5667/0.8500, latest_mdmid=12.17/0.00.
+- Recovery lane is close but still not openable: recovery_products=VVV-USD|XLM-USD|XRP-USD, signals=66, all_metrics=0.
+- Recovery shortfalls: XLM dmid shortfall=0.7022 bps, XLM tick_dmid shortfall=1.248137 bps, closest tob_usd shortfall=4.1405 USD, book_pressure shortfall=0.074706, spread shortfall=0.1082 bps.
+- The old U=0/stale-feed symptom is not the immediate blocker.
+- Missing product/cache gap is not the current cause.
+- Do not tune Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\tdi_status_reporter_state.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Safety settings rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Focused relevant tests: python -m unittest tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight: 119 OK.
+- Syntax check: python -m py_compile tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py: OK.
+- Reporter preview: python tools\tdi_status_reporter.py --no-send --force showed the improved blocker wording before the second observe: dry_pnl_guard needs recovery; recovery blocked by tob_usd; closest gate market_breadth (ZEC-USD).
+- Reporter preview after the second observe returned subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (216; top ALLO-USD).
+
+Next action:
+- Continue DRY-only observe/openability work on the recovery lane, especially XLM/VVV top-book, dmid, tick_dmid, spread, and book-pressure alignment.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+- Resume dry P&L improvement only after DRY observe produces actual opens.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T17:05:00Z
 
 RELAY_FILE_VISIBLE=yes
