@@ -15,6 +15,66 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T14:46:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: pruned repeat-sparse runtime products, force-refreshed DRY candle cache, reran runtime coverage, ran bounded DRY observe, applied a local preflight alignment patch, and verified the supervisor now skips full observe when the entry sample has no liquid+dmid overlap.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- No duplicate status email sent for this relay-only update.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker is entry openability: `liquid_dmid_overlap=0` after the entry sample, explained by early liquid skips, with hostile market breadth still present.
+- Cache/feed coverage improved materially after force refresh: timestamp_usable_ratio 0.8212 -> 0.9330, liquid subset 14 -> 25, dmid_liquidity_overlap 0 -> 3, dmid_liquidity_range_overlap 0 -> 3.
+- Runtime universe was rebuilt to 358 products with 35 repeat-sparse exclusions and 70 skipped sparse entries.
+- Latest runtime coverage at 2026-06-04T14:42:32Z: runtime_products=358, present=339, stale=19, repeat_sparse_in_runtime=10.
+- Latest cache regime at 2026-06-04T14:45:20Z: timestamp_usable_ratio=0.8575, timestamp_usable_files=307/358, green_ratio=0.2800, avg_dmid_bps=-10.9643, liquid_subset=18, dmid_liquidity_overlap=3, dmid_liquidity_range_overlap=3.
+- Latest readiness at 2026-06-04T14:45:41Z: signals=258, dmid_usable=16, quote_volume_usable=8, spread_usable=15, tob_usable=59, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Latest bounded supervisor result: entry_preflight_observe_skip blocker=liquid_dmid_overlap, open=0, closed=28, wins=8, losses=20.
+- U=0 is not the blocker; latest tick shows U=120 and S=358.
+- Do not tune broad Profit Score while actual DRY opens remain 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\codex_latest_observe_start.txt
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100 from prior dry_cycle18 evidence.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Credible positive dry profitability evidence is not present yet.
+
+Verification evidence:
+- run_settings.json rechecked: DRY=true, LIVE=false, TDI_REPORT_TO=tdifactorToday@gmail.com, TDI_REPORT_HOURLY_SEC=7200, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Force candle cache refresh completed: refreshed=358, failed=0.
+- Runtime product rebuild completed: products=358, repeat_sparse_excluded=35, repeat_sparse_skipped=70.
+- Preflight test suite passed: `python -m unittest tests.test_run_koko_dry_supervised_preflight` ran 34 tests OK.
+- Post-patch bounded supervisor run completed exit 0 and skipped full observe at entry blocker instead of burning cycles with opened=0.
+
+Next action:
+- Keep monitoring for a true entry overlap: liquid+dmid candidate with spread/top-book/tick_dmid usable and market breadth less hostile.
+- If repeated sparse history grows again, rebuild/prune the runtime universe before observing.
+- Keep data/preflight/openability focus; do not tune Profit Score while dryopen=0.
+- Keep DRY=true and LIVE=false.
+
+User action required:
+- No user action required for trading safety.
+- Yes only for unattended local SMTP email delivery; connector-based two-hour reporting remains the fallback.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T14:30:00Z
 
 RELAY_FILE_VISIBLE=yes
