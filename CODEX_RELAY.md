@@ -15,6 +15,94 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T09:38:05Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: DRY-only runtime repeat-sparse product exclusion, runtime product snapshot regeneration, filtered candle cache refresh, cache-regime refresh, runtime coverage refresh, focused tests, and reporter no-send preview.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter rendered patch_applied with --no-send; no email was sent because cadence was not due.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains data/preflight plus market breadth/dmid, not Profit Score tuning.
+- Added conservative DRY-only repeat-sparse exclusion at 3+ sparse forward-gap runs.
+- Runtime product snapshot dropped from 393 to 388 products.
+- Excluded current 3+ repeat sparse products from the runtime products file: DRIFT-USD, CBETH-USD, DRV-USD, ENS-USD, KTA-USD.
+- Runtime coverage repeat_sparse_in_runtime improved from 15 to 10; remaining watchlist is 2-run products such as ACH-USD, AGLD-USD, AMP-USD, APE-USD, and BARD-USD.
+- Filtered cache refresh covered 386 of 388 products; SAND-USD and BOBA-USD failed public candle fetch.
+- Timestamp coverage restored after refresh: timestamp_usable=360/388, timestamp_ratio=0.9278.
+- Liquid subset is usable: liquid_subset=20 against min 10.
+- Dmid/liquidity overlap is now present in cache preflight: dmid_liquidity_overlap=4 and dmid_liquidity_range_overlap=4.
+- Cache preflight is openable again, but broad green breadth remains below configured threshold: green_ratio=0.4680/0.8500.
+- Latest one-tick readiness still shows no opens: drysig=0, dryopen=0, dryblk=0.
+- Latest readiness runtime near-miss is BTC-USD blocked by dmid|market_breadth; market_dmid remains negative in readiness.
+- Do not tune Profit Score while opened=0; next observe should wait for a green breadth/dmid window.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\logs\dry_runtime_products_latest.json
+- C:\ai_trading_bot_koko\logs\runtime_product_coverage_latest.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- opened/closed/wins/losses: opened=28, closed=28, wins=8, losses=20.
+- open_count=0, positive_open_count=0, negative_open_count=0.
+- blocked_open=130.
+- No new positive dry P&L evidence yet.
+- Credible positive dry profitability evidence is not present yet.
+
+Patch/change evidence:
+- tools\run_koko_dry_supervised.py now excludes repeat-sparse products from the DRY runtime products snapshot when DRY_RUNTIME_EXCLUDE_REPEAT_SPARSE_MIN_RUNS is set.
+- run_settings.json enables DRY_RUNTIME_EXCLUDE_REPEAT_SPARSE_MIN_RUNS=3 and DRY_RUNTIME_REPEAT_SPARSE_HISTORY_PATH=logs/forward_gap_diagnostics_history.json.
+- tests\test_run_koko_dry_supervised_preflight.py covers the repeat-sparse exclusion path and verifies 2-run products remain included.
+- No score tuning, no gate loosening, no DRY P&L guard changes.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact.
+
+Verification evidence:
+- One-tick continuous DRY supervisor sample completed exit 0 and regenerated logs\dry_runtime_products_latest.json with products=388, repeat_sparse_excluded=5, repeat_sparse_skipped=15.
+- python tools\refresh_koko_recent_candle_cache.py against logs\dry_runtime_products_latest.json: refreshed=386, failed=2, products=388.
+- Supervisor preflight report against filtered products: files_checked=388, timestamp_usable_files=360, timestamp_usable_ratio=0.9278, liquid_subset=20, dmid_liquidity_overlap=4, dmid_liquidity_range_overlap=4, openable=true, blocker=green_breadth.
+- python tools\koko_runtime_product_coverage.py --out logs\runtime_product_coverage_latest.json: products=388, present=367, stale=21, repeat_sparse_in_runtime=10.
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_runtime_product_coverage tests.test_tdi_status_reporter: PASS, 78 tests.
+- python -m py_compile tools\run_koko_dry_supervised.py tools\koko_runtime_product_coverage.py tools\tdi_status_reporter.py: PASS.
+- python -m json.tool on run_settings.json, logs\dry_runtime_products_latest.json, logs\runtime_product_coverage_latest.json, and logs\cache_market_regime_latest.json: PASS.
+- python tools\tdi_status_reporter.py --mode event --event patch_applied ... --no-send: rendered subject [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | runtime near-miss BTC-USD blocked by dmid; sent=false reason=report_cadence_not_due.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine/report email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Do not tune broad Profit Score.
+- Continue DRY-only data/preflight work.
+- Wait for green breadth/dmid window, then run bounded observe and mature forward evidence on the filtered runtime universe.
+- Monitor 2-run sparse watchlist before tightening exclusion further.
+- Do not enable LIVE.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T09:29:58Z
 
 RELAY_FILE_VISIBLE=yes
