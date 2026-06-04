@@ -15,6 +15,59 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T18:12:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: refreshed the DRY recent-candle cache for runtime products, rebuilt cache/preflight coverage, ran an 80-cycle bounded DRY observe, regenerated readiness, and previewed the TDI reporter.
+- DRY remains true and LIVE remains false.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Reporting cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporter send was suppressed by cadence: reason=report_cadence_not_due. No duplicate email was sent.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Feed/preflight coverage is now usable again.
+- Cache/preflight latest: supported=true, worthwhile=true, timestamp_usable_ratio=0.9209, liquid_subset=22, dmid_quote=15, dmid_quote_range=15.
+- Best ranked preflight mode evidence: best_ranked=timestamp_liquidity_dmid_desc, best_ranked_green=0.8750, best_ranked_liquid=22, best_ranked_dmid_liq_overlap=15.
+- Latest readiness generated at 2026-06-04T18:10:09Z: signals=23794, liquid_dmid_overlap=1012, liquid_dmid_spread_tob_overlap=267, quote_volume_usable=1522, dmid_usable=12283, tick_dmid_ready=704.
+- Runtime found open_candidate=true; closest all-pass candidate was HYPE-USD with dmid=45.1196, qv=5446542, spr=1.51, tob=2048, tick_dmid=20.37, trough=0.0, but it was blocked by dry_pnl_guard because basket net P&L remains negative and HYPE does not have positive expectancy.
+- Current blocker has moved from stale/preflight coverage to recovery-candidate alignment: VVV-USD/XLM-USD/XRP-USD are positive-expectancy/recovery names but recovery_all_metrics=0; main recovery failures are tick_dmid, tob_usd, book_pressure, and spread.
+- Do not tune Profit Score while dryopen=0; next work should observe/diagnose recovery-product tick_dmid/topbook alignment.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\logs\cache_market_regime_current.json
+- C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- C:\ai_trading_bot_koko\logs\dry_supervised_loop.log
+- C:\ai_trading_bot_koko\logs\activity_ticker.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- Public candle cache refresh completed: 352/354 products refreshed; 2 public candle fetches failed.
+- Bounded DRY observe completed exit 0.
+- Reporter preview subject: [TDI STATUS] Profit 27/100 | DRY=true LIVE=false | recovery candidates blocked by tick_dmid (VVV-USD|XLM-USD|XRP-USD; all_metrics=0).
+- Reporter send attempt was blocked by cadence, preserving the two-hour email rule.
+
+Next action:
+- Continue DRY observe through recovery-candidate windows and watch VVV-USD/XLM-USD/XRP-USD for tick_dmid/topbook alignment.
+- If recovery candidates remain all_metrics=0 across favorable windows, inspect topbook/tick-dmid refresh coverage for those products.
+- Do not loosen Coinbase/order path, live state, static TP/SL, or Profit Score while dryopen=0.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T17:51:00Z
 
 RELAY_FILE_VISIBLE=yes
