@@ -15,6 +15,82 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T00:21:35Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Latest local DRY diagnostic sample completed cleanly with DRY=true and LIVE=false.
+- Latest readiness evidence was regenerated from the 2026-06-03 19:19:00 local DRY-only diagnostic sample.
+- No live trading was enabled and no Coinbase/order placement path was touched.
+- Routine status email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- No status email was sent during this relay update.
+
+Current blocker:
+- Primary blocker remains preflight/feed market coverage, specifically green breadth plus recent/tick dmid alignment, not Profit Score tuning.
+- U=0 / stale feed is not the current cause: tick_diag shows U=120, S=393, brf=80.
+- Missing product/cache gap is not the current cause: S=393 and latest readiness signals=343.
+- Timestamp/tick coverage is usable enough to observe: tick_diag_rows=3, max_tick_dmid_nonzero=59, max_tick_dmid_ready=20, tick_dmid_warmed_seen=true.
+- Liquid subset is too thin against dmid: quote_volume_usable=6, dmid_usable=3, liquid_dmid_overlap=0, liquid_dmid_spread_tob_overlap=0.
+- Green breadth is the clearest runtime blocker: latest_mbr=0.3500/0.8500 and latest_mdmid=6.28/-999999.00.
+- Still no opens: max_drysig=0, max_dryopen=0, all_pass_candidates=0.
+- Closest runtime near miss: ETH-USD had mid=1815.415, qv=4,584,462, spr=0.06/5.00, tob=3439/500, rdmid=10.36/40.00, tdmid=4.90/10.00, twarm=1, but failed dmid and market_breadth.
+- Runtime near miss mids are now plausible per product: BTC around 64203-64241, ETH around 1814-1815, ADA around 0.20095-0.20125, DOGE around 0.09154-0.09160, NEAR around 2.827-2.8325.
+- Do not tune Profit Score while dryopen/open_count remains zero.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- Regenerated local evidence: C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Runtime evidence updated by fresh manual DRY observe: C:\ai_trading_bot_koko\logs\activity_ticker.log
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 25/100.
+- dry P&L: realized=-0.0647515 USD, unrealized=0.0000000 USD, net=-0.0647515 USD.
+- open/closed/wins/losses: open=0, closed=12, wins=3, losses=9.
+- opened=12 historically; blocked_open=50; quarantined=8.
+- Credible positive dry profitability evidence is not present yet.
+- Latest 3-tick diagnostic sample did not change dry P&L and did not create any open dry position.
+
+Patch/change evidence:
+- Added and corrected mid= diagnostics in drynear/drynear_top so runtime near misses use the candidate metric mid rather than a stale loop value.
+- Readiness parser now retains mid and entry_mid from drynear diagnostics.
+- Status evidence keeps structured market breadth/dmid fields so two-hour emails can distinguish green breadth failure from stale/missing feed coverage.
+- No Profit Score thresholds were tuned.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py: OK.
+- python -m unittest discover -s tests -p "test_koko_dry_observe_readiness.py": 20 OK.
+- python -m unittest discover -s tests -p "test_tdi_status_reporter.py": 13 OK.
+- Latest readiness file generated_at_utc=2026-06-04T00:19:32Z.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting cadence remains two-hour routine email summaries; no duplicate/no-fluff emails.
+
+Next action:
+- Keep DRY observe focused on usable market coverage and candidate openability.
+- Add timestamped near-miss evidence for runtime candidates now that drynear mids are reliable.
+- Resume dry P&L improvement only after candidates can open under usable market coverage.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T00:13:26Z
 
 RELAY_FILE_VISIBLE=yes
