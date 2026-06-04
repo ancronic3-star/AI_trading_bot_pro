@@ -15,6 +15,82 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T05:37:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local DRY diagnostic patch and bounded DRY observe completed.
+- DRY remains true and LIVE remains false.
+- Routine TDI/KOKO email cadence remains every two hours: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Material event report rendered but was not delivered: sent=false because SMTP user/password/sender env is missing and the local outbox was throttled.
+- No Coinbase/order placement path was touched.
+
+Current blocker:
+- Preflight/feed coverage remains usable enough to observe; no Profit Score tuning was done.
+- Latest bounded diagnostic observe used PAPER_SIGNAL_MIN_TICK_GAP=1 via env only for fresh per-tick paper-signal coverage.
+- Latest readiness evidence: signals=1817, book_metric_source_present=1797, book_metric_source_missing=20, tick_dmid_warmed=1454, tick_dmid_ready=28.
+- U=0/stale feed is not active: U=120, S=393, brf=120, tick_diag_rows=6.
+- Liquid+dmid overlap exists but still does not pass spread/top-book/tick together: liquid_dmid_overlap=5, liquid_dmid_spread_tob_overlap=0, all_pass_candidates=0, max_dry_signal=0, max_dry_open=0.
+- Current closest liquid+dmid shortfall is WLD-USD: failures=spread|tob_usd|tick_dmid, spr_bps=6.0502 versus max 5.0, tob_usd=198.126333 versus min 500, tick_dmid not usable.
+- Latest dryliqskip_top remains ZEC-USD: trough probe rejected on spread, qv=1670882, rdmid=79.97, spread=11.40/5.00.
+- Runtime near miss has top-book but insufficient dmid and market breadth: HYPE-USD qv=2882929, rdmid=28.82/40.00, spr=2.75, tob=1176, latest market breadth about 0.1750/0.8500 and market dmid about -36.88/0.00.
+- The current blocker is real liquid+dmid spread/top-book/tick/market-breadth overlap, not timestamp coverage, missing products/cache, or U=0 stale feed.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py
+- C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.29854210 USD, unrealized=0.00000000 USD, net=-0.29854210 USD.
+- opened/closed/wins/losses: opened=19, closed=19, wins=5, losses=14.
+- open_count=0, blocked_open=91, quarantined=13.
+- Last P&L event timestamp: 2026-06-04T04:16:19Z.
+- No credible positive dry profitability evidence is present yet.
+
+Patch/change evidence:
+- PAPER_BUY_SIGNAL now defaults book_metric_source from the metric source whenever DRY metrics provide one, so top-book/spread failures like WLD no longer appear as unlabeled book-source gaps.
+- PAPER_SIGNAL_MIN_TICK_GAP can now be overridden by env for bounded diagnostic runs without changing run_settings.json.
+- Bounded diagnostic observe with PAPER_SIGNAL_MIN_TICK_GAP=1 produced fresh per-tick evidence and confirmed zero opens under current gates.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+- No Profit Score tuning was done while open_count=0.
+
+Verification evidence:
+- python -m unittest discover -s tests -p "test_koko_dry_candidate_rank.py": PASS, 35 tests.
+- python -m py_compile managers\run_manager\run_manager.py: PASS.
+- python tools\run_koko_dry_supervised.py with bounded KOKO_SUPERVISOR_MAX_CYCLES=6 and PAPER_SIGNAL_MIN_TICK_GAP=1: completed; no dry open.
+- python tools\koko_dry_observe_readiness.py --since-local-start "2026-06-04 00:35:03": OK, readiness refreshed.
+- python tools\tdi_status_reporter.py --mode event --event patch_change --force: rendered subject "[TDI STATUS] Profit 26/100 | DRY=true LIVE=false | cache-liquid candidates blocked by trough (1; top ZEC-USD)" but sent=false due missing SMTP env and outbox throttling.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Routine emails should be every two hours, not hourly: TDI_REPORT_HOURLY_SEC=7200.
+- Reporting destination remains tdifactorToday@gmail.com.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Stay out of website/app/mobile/native lanes.
+
+Next action:
+- Continue data/preflight coverage around liquid+dmid spread/top-book/tick overlap.
+- Use bounded PAPER_SIGNAL_MIN_TICK_GAP=1 diagnostics only when fresh per-tick entry evidence is needed.
+- Do not tune Profit Score while open_count=0.
+- Resume dry P&L improvement only after usable market coverage produces safe non-quarantined dry opens.
+
+User action required:
+- Yes for unattended Gmail delivery only: provide SMTP sender credentials/env values such as TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM, or supported aliases.
+- No user action required for DRY/LIVE safety.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T05:29:00Z
 
 RELAY_FILE_VISIBLE=yes
