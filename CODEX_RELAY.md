@@ -15,6 +15,60 @@ Use this file for approved instructions, report requests, and status handoffs re
 
 ## Codex relay status update
 
+Timestamp: 2026-06-04T22:18:07Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / unknown.
+- Latest local task completed: patched cache market regime preflight timestamp/dmid coverage to match runtime recent-candle tolerance.
+- The regime tool now uses lookback + 3*granularity for recent candle rows, matching runtime behavior and preventing dmid coverage from collapsing when Coinbase 15m candles lag just past a boundary.
+- Added regression coverage for a latest closed candle lagging the wall-clock boundary while still preserving two-row dmid evidence.
+- DRY remains true and LIVE remains false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Current blocker remains green_breadth.
+- Before the patch, the same refreshed cache could report timestamp_ratio=0.6836 and dmid_samples=0 under a strict one-candle lookback boundary.
+- After the patch, the active-threshold 900s regime command reports timestamp_ratio=0.8729, timestamp_usable=309/354, dmid_samples=224.
+- Product/cache gap is not the current blocker: missing_files=0 and empty_files=0.
+- Liquid subset coverage is usable at 21, but liquid+dmid overlap remains zero.
+- Green breadth remains far below threshold: green_ratio=0.0848/0.8500.
+- Market dmid remains negative: avg_dmid_bps=-39.7318.
+- Observe intentionally skipped because cache_openable=false; running DRY observe now would likely produce another zero-open window.
+- Do not tune Profit Score while dryopen/open_count remains 0.
+
+Files changed in current local runtime lane:
+- C:\ai_trading_bot_koko\tools\koko_cache_market_regime.py
+- C:\ai_trading_bot_koko\tests\test_koko_cache_market_regime.py
+- Runtime evidence refreshed:
+  - C:\ai_trading_bot_koko\logs\cache_market_regime_latest.json
+  - C:\ai_trading_bot_koko\logs\tdi_status_monitor_once_latest.json
+
+Dry Profit Score evidence:
+- Current Profit Score: 27/100.
+- dry P&L unchanged: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- No credible positive dry profitability evidence is present yet.
+
+Verification evidence:
+- python -m unittest tests.test_koko_cache_market_regime: 24 OK.
+- python -m py_compile tools\koko_cache_market_regime.py: OK.
+- Cache refresh completed with products=354, refreshed=353, failed=1; only BAT-USD failed.
+- Active-threshold regime regeneration completed exit 0 and restored timestamp/dmid coverage with the original 900s command.
+- Monitor output: DRY=true, LIVE=false, current_blocker=green_breadth, next_action=wait for cache_openable=true; current blocker=green_breadth, notification sent=false reason=hourly_not_due.
+
+Next action:
+- Keep waiting for cache_openable=true or a material improvement in green breadth/liquid+dmid alignment before DRY observe.
+- Keep the two-hour Gmail cron as the reporting path; do not send duplicate immediate status emails while cadence is not due.
+- Continue data/preflight focus; do not tune Profit Score until actual DRY opens resume.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T22:13:18Z
 
 RELAY_FILE_VISIBLE=yes
