@@ -8376,3 +8376,70 @@ Next action:
 
 User action required:
 - No.
+## Codex relay status update
+
+Timestamp: 2026-06-07T22:05:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local DRY supervised runner is active in the background with hidden window: pid=76156.
+- DRY=true and LIVE=false.
+- Latest local run reached continuous_start at 2026-06-07T22:02:15Z and is running continuous chunks.
+- No visible CMD window is required for the active runner.
+
+Current blocker:
+- Previous blocker fixed: repeated entry-preflight samples no longer self-suppress paper signals.
+- Evidence: before patch, repeated entry-preflight samples dropped from signals=750 to signals=0 and skipped observe.
+- Evidence after patch: first fresh sample signals=753; second fresh sample signals=749 after paper_signal_throttle_reset count=354 reason=before_entry_preflight_sample.
+- Previous blocker fixed: entry preflight no longer skips full observe when refreshed cache says the market probe window is supported.
+- Evidence: latest run had timestamp_ratio=0.9096, liquid=12, ranked_probe=True, signals=729, then entered continuous_start.
+- Current blocker is live candidate openability, not stale feed and not Profit Score tuning.
+- Latest readiness blocker: tob_usd with liquid_dmid_overlap=0 and liquid_dmid_spread_tob_overlap=0.
+- Latest readiness coverage: signals=729, quote_volume_usable=2, dmid_usable=49, spread_usable=33, tob_usable=186, tick_dmid_ready=1.
+- Latest near evidence: FIDA-USD has green breadth passing at market_green_ratio=0.925 and market_dmid_bps=53.87, but still fails spread, quote_volume, and tick_dmid.
+- U=0 / stale feed is not the current cause: latest tick evidence shows U=120 and cache refresh completed 354/354 with failed=0.
+- Missing product/cache gap is not the current cause: runtime products file has 354 products and cache refresh is supported.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current displayed dry Profit Score source remains logs/dry_cycle18_pnl_score.json.
+- Current Profit Score evidence remains weak/negative: opened=28, closed=28, wins=8, losses=20.
+- dry P&L: realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open_count=0.
+- No score tuning was done while opened/open_count is 0.
+
+Patch/change evidence:
+- Added per-entry-preflight `_reset_paper_signal_throttle("before_entry_preflight_sample")`.
+- Added explicit `entry_signal_coverage_gap` / `paper_signal_coverage` classification when tick/runtime evidence exists but the paper-signal slice is empty.
+- Changed entry-preflight continuation so refreshed cache support (`preflight_ranked_probe_supported` or `preflight_observe_worthwhile`) can allow continuous DRY observe even when a narrow three-tick sample has no liquid+dmid overlap.
+- Kept Coinbase/order placement path untouched.
+- Kept static TP/SL safety untouched.
+- Kept DRY on and LIVE off.
+
+Verification evidence:
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_observe_readiness: 88 OK.
+- python -m py_compile tools\run_koko_dry_supervised.py tools\koko_dry_observe_readiness.py: OK.
+- Hidden DRY runner restarted after patch and reached continuous_start.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Let continuous DRY observe keep running and collect/open-test candidates under the fixed preflight lane.
+- Continue data/preflight focus on live openability: top-of-book, quote-volume, liquid+dmid overlap, and tick_dmid readiness.
+- Do not tune Profit Score while opened/open_count remains 0.
+
+User action required:
+- No.
