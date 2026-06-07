@@ -66,6 +66,60 @@ User action required:
 
 ## Codex relay status update
 
+Timestamp: 2026-06-07T21:46:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL: not configured locally / not visible from this workspace.
+- Local DRY supervised observe lane was stale since 2026-06-04T21:57:38Z.
+- Restarted DRY supervised observe lane hidden in background on 2026-06-07 at 16:41 Central.
+- Active local process: python tools\run_koko_dry_supervised.py.
+- DRY=true and LIVE=false.
+- Reporter scheduled task now runs hidden and last result is 0.
+
+Current blocker:
+- Stale feed/runtime was a major blocker; fresh June 7 cache refresh is now running.
+- Cache refresh evidence: refreshed=354 failed=0 supported=True timestamp_ratio=0.9124 liquid=15 blocker=blank.
+- Entry preflight sample evidence: ticks=3, signals=750, opened_delta=0, open_candidate=False, liquid_dmid=0, liquid_dmid_spread_tob=0, blocker=liquid_dmid_overlap.
+- Follow-up entry sample evidence: signals=0, opened_delta=0, blocker=liquid_dmid_overlap.
+- Current readiness blocker is tick_dmid/liquid_dmid_overlap, not score display.
+- Runtime near miss example: XRP-USD failures=dmid|market_breadth, rdmid=-21.27 vs 40, tick_dmid=0.00 vs 10, market_green_ratio=0.4333 vs 0.85.
+- Current cache openability is supported/worthwhile, but market-wide configured green_ratio remains low at 0.1679 and full-cache avg_dmid_bps=-31.3218.
+- Immediate next blocker is no candidate satisfying liquid + recent-candle dmid + spread/top-book/tick_dmid together.
+
+Files changed:
+- C:\ai_trading_bot_koko\tools\run_tdi_status_monitor_hidden.vbs
+- Windows Scheduled Task: TDI KOKO Status Reporter action now runs hidden via wscript.exe.
+- CODEX_RELAY.md updated with this status.
+- No Coinbase/order files touched.
+- Static TP/SL safety untouched.
+
+Dry Profit Score evidence:
+- Current Profit Score remains 27/100 by reporter fallback math.
+- Dry P&L: realized=-0.30033076 USD, unrealized=0.0 USD, net=-0.30033076 USD.
+- open/closed/wins/losses: open=0, closed=28, wins=8, losses=20.
+- Profit Score reason: negative net P&L plus 8/28 win rate; not a scoring-display bug.
+- Offline replay over 40139 recent snapshot rows showed baseline 240m net_last_ret_pct=-481.761 with 1797 admitted samples, 164 tp_first, 1158 sl_first, 475 censored.
+- Existing spread-fraction clones did not produce a credible fix; best clone axis still net negative with 610 samples and net_last_ret_pct=-269.9026.
+
+Action taken:
+- Stopped stuck TDI KOKO Status Reporter task instance.
+- Verified reporter task now returns Last Result 0 and stays hidden.
+- Started DRY supervised observe in the background with DRY=true, LIVE=false, KOKO_SUPERVISOR_CONTINUOUS=1, KOKO_SUPERVISOR_MAX_CYCLES=120.
+- Confirmed fresh June 7 preflight cache refresh completed and entry preflight sampling resumed.
+- Did not tune Profit Score while opened_delta remains 0.
+
+Next action:
+- Continue monitoring background DRY observe for liquid_dmid/tick_dmid overlap.
+- If overlap remains 0, inspect rank/filter alignment between liquid subset, dmid_desc probe candidates, and tick_dmid warming before changing any gate.
+- Only patch DRY-only data/preflight ranking if evidence shows candidates are being missed due stale metrics or ranking, not due real negative dmid/green breadth.
+
+User action required:
+- No.
+
+## Codex relay status update
+
 Timestamp: 2026-06-04T22:18:07Z
 
 RELAY_FILE_VISIBLE=yes
