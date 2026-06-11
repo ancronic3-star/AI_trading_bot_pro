@@ -8443,3 +8443,73 @@ Next action:
 
 User action required:
 - No.
+## Codex relay status update
+
+Timestamp: 2026-06-11T12:23:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner is active: pid=91668.
+- DRY=true and LIVE=false.
+- Latest local loop is running continuous chunks.
+
+Current blocker:
+- The speed bottleneck was silent DRY runtime staleness plus slow feedback from waiting on full live observe loops.
+- Implemented an auto-restart watchdog in the existing TDI status monitor.
+- Implemented rapid diagnostics that summarizes runtime-near and recovery forward evidence before changing gates.
+- Current rapid diagnostic action: keep_gates_collect_more_targeted_evidence.
+- Current rapid diagnostic evidence did not support loosening tick/spread/top-book gates: positive_evidence_count=0.
+- Latest rapid diagnostic coverage snapshot: signals=722, liquid_dmid_overlap=3, liquid_dmid_spread_tob_overlap=0, tick_dmid_ready=0, tick_dmid_warmed=480.
+- Current blocker from rapid diagnostics: tob_usd / final openability, with no positive forward evidence from the current near-miss sample.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\tools\tdi_status_monitor.py
+- C:\ai_trading_bot_koko\tools\tdi_rapid_diagnostics.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_monitor.py
+- C:\ai_trading_bot_koko\tests\test_tdi_rapid_diagnostics.py
+- C:\ai_trading_bot_koko\run_settings.json
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score remains 27/100.
+- dry P&L remains realized=-0.30033076 USD, unrealized=0.00000000 USD, net=-0.30033076 USD.
+- open/closed/wins/losses remain open_count=0, opened=28, closed=28, wins=8, losses=20.
+- No score tuning was done.
+
+Patch/change evidence:
+- TDI status monitor now auto-restarts hidden DRY supervised loop when runtime_stale is detected.
+- Restart is throttled by TDI_MONITOR_DRY_RESTART_THROTTLE_SEC to avoid duplicate process spam.
+- Restart environment forces DRY=true and LIVE=false.
+- Added rapid diagnostics tool that runs runtime-near/recovery forward outcome checks and writes logs/rapid_diagnostics_latest.json.
+- TDI status monitor now runs rapid diagnostics on blocker changes or stale runtime, throttled by TDI_MONITOR_RAPID_DIAG_THROTTLE_SEC.
+- Added visible run_settings.json controls for the watchdog and rapid diagnostics.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+
+Verification evidence:
+- python -m unittest tests.test_tdi_status_monitor tests.test_tdi_rapid_diagnostics tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 115 OK.
+- python -m unittest tests.test_tdi_status_monitor tests.test_tdi_rapid_diagnostics: 8 OK.
+- python -m py_compile tools\tdi_status_monitor.py tools\tdi_rapid_diagnostics.py tools\run_koko_dry_supervised.py: OK.
+- python -m json.tool run_settings.json: OK.
+- Manual monitor tick returned restart reason=runtime_not_stale while pid=91668 was active.
+- Manual rapid diagnostic wrote logs\rapid_diagnostics_latest.json and recommended keep_gates_collect_more_targeted_evidence.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Let watchdog prevent future overnight stale runtime gaps.
+- Use rapid diagnostics to identify only positive-expectancy gate changes.
+- Keep live DRY observe running while targeting final openability: tob_usd, spread, tick_dmid, dry_pnl_guard.
+- Do not tune Profit Score while open_count remains 0.
+
+User action required:
+- No.
