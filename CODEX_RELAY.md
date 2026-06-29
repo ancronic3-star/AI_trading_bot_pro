@@ -1,83 +1,3 @@
-
-## Codex Relay Update - 2026-06-29T06:36:55Z
-RELAY_FILE_VISIBLE=yes
-
-Cloud task status: local hidden DRY runner active; popup guard active; Cloud task URL not configured locally. Hidden process chain is pythonw keep-working + pythonw dry supervisor; duplicate independent supervisors were cleaned up and single-instance lock patched.
-
-DRY/LIVE: DRY=true, LIVE=false. Static dry TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8. Coinbase/order path not touched.
-
-Current blocker: dry_pnl_guard. Feed/preflight coverage is usable: timestamp usable ratio 1.0, latest U=120, U=0 rows 0, book source present ratio 1.0, market green 0.8824. Approved recovery products observed: AVAX-USD and TAO-USD. Current approved blockers: TAO tdi_shadow/basket negative; AVAX loss_cooldown plus quote_volume shortfall (70772 vs 75000) after latest loss-trim.
-
-Dry Profit Score evidence: current repo status monitor reports Profit Score 40/100. This is not a feed coverage block now; opened count has advanced and dry positions are opening/closing.
-
-Dry P&L evidence: latest dry state closed=252, opened=252, wins=136, losses=111, open_count=0, realized=-0.21105048, unrealized=0.0, net=-0.21105048. AVAX stats remain positive overall (closed=57, wins=40, losses=17, pnl_usd=0.22533881, pnl_bps=751.1295) but the latest AVAX close at 2026-06-29T06:36:08Z was loss_trim and worsened net.
-
-Files changed: tools/run_koko_dry_supervised.py; tools/koko_keep_working_loop.py; tests/test_run_koko_dry_supervised_preflight.py; tests/test_koko_keep_working_loop.py.
-
-Patch/change applied: fixed Windows single-instance locking by acquiring initial mutex ownership for run_koko_dry_supervised.py, added older-instance guard that ignores its own pythonw launcher parent, and added focused regression tests for supervisor/keep-working mutex ownership. This is automation/background-only; no Coinbase/order code, no LIVE, no TP/SL change.
-
-Tests run: py_compile for tools/run_koko_dry_supervised.py, tools/koko_keep_working_loop.py, tests/test_run_koko_dry_supervised_preflight.py, tests/test_koko_keep_working_loop.py. Focused unittest passed: supervisor lock rejection, supervisor Windows mutex ownership, keep-working Windows mutex ownership.
-
-Next action: continue DRY-only loop but stop treating the blocker as feed coverage; next evidence-backed repair should address why AVAX positive-stat recovery re-enters after loss_trim into weak quote-volume/loss-cooldown conditions, without tuning Profit Score and without touching Coinbase/order paths.
-
-User action required: no.
-## Codex Relay Update - 2026-06-29T06:26:12Z
-RELAY_FILE_VISIBLE=yes
-
-Cloud task status: local hidden DRY runner active; popup guard active. No LIVE trading. One visible cmd.exe in process list is Chrome native messaging, not KOKO automation.
-DRY/LIVE: DRY=true LIVE=false. Static dry TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
-Current blocker: not missing feed coverage. Runtime blocker is dry_pnl_guard/quarantine while AVAX position is already open; next open waits for close/re-entry eligibility. Latest readiness primary blocker for approved subset: tick_dmid; secondary: tdi_shadow,tick_dmid,book_pressure,quarantine.
-Feed coverage: timestamp usable ratio=1, latest_U=120, U_zero_rows=0, book source ratio=1, quote usable ratio=0.5583, liquid_dmid_overlap=0.3738, green ratio=0.9048, approved products observed=True.
-Current dry Profit Score evidence: score file still reports score lane around 40; realized=-0.18427628, unrealized=0.00454201, net=-0.17973427, opened=250, closed=249, wins=135, losses=109, open_count=1, positive_open_count=1, last_event=06/29/2026 06:22:31, last_mark=06/29/2026 06:26:03.
-Open dry position: AVAX-USD open entry=6.605 last=6.615 unrealized_bps=15.14 unrealized_usd=0.00454201 entry_ts=06/29/2026 06:22:31 last_mark=06/29/2026 06:26:03.
-P&L accounting note: repeated realized value is cumulative realized P&L and remains unchanged while a position is open; only unrealized changes until a close event posts to the ledger. This is not repeated new loss realization.
-Files changed locally in this work lane: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
-Action taken: refreshed readiness; verified hidden runner and popup guard; verified feed coverage is usable; updated relay with latest AVAX dry state and P&L explanation.
-Next action: keep monitoring the open AVAX outcome; after close, analyze whether re-entry is blocked by guard/quarantine versus true feed/data gaps. Do not tune score while openability is constrained by open position/guard state.
-User action required: no.
-
-## Codex Relay Update - 2026-06-29T06:18:48Z
-RELAY_FILE_VISIBLE=yes
-
-Cloud task status: local hidden DRY keep-working runner active via pythonw; popup guard active; no LIVE trading enabled.
-DRY/LIVE state: DRY=true, LIVE=false. Static dry TP/SL preserved at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
-Current blocker: not timestamp/feed/cache. Latest coverage has timestamp usable ratio 1.0, latest_U=120, book metric coverage 1.0, quote usable ratio 0.7541, liquid dmid overlap 0.6066. Current observe lane opened one AVAX dry position after fixes; next blocker is post-open dry P&L outcome/quality monitoring.
-Action taken: fixed DRY entry guard to honor configured positive-stats loss-cooldown bypass for sim-approved products; added AVAX-only DRY TDI grace with effective floor so 70 can relax to 52 but never below 52; kept AVAX quote floor 75000 and book pressure 0.1; restarted hidden runner.
-Files changed locally: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
-Dry Profit Score evidence: current score 40; dry P&L summary opened=247 closed=246 wins=132 losses=109 open_count=1 positive_open_count=1 realized=-0.19248173 unrealized=0.0; latest open event 2026-06-29T06:16:35Z AVAX-USD.
-Openability evidence: loss cooldown no longer suppresses AVAX when approved positive stats support bypass; AVAX stats closed=51 wins=36 losses=15 pnl_usd=0.24390756 pnl_bps=813.0254. AVAX tdi evidence with pressure>=0.1 and qv>=75000: n=45 wins=31 pnl_usd=0.17363796 avg=12.8621 bps for tdi>=52. New AVAX open used qv=80862.8208, press=0.5113849499, tdi=83.12, effective TDI floor=52.
-P&L accounting evidence: dry_cycle18_pnl_ledger.jsonl has 246 closes, duplicate close keys=0, ledger sum realized=-0.19248173 matching summary; repeated realized P&L reports are cumulative status snapshots, not repeated close events.
-Tests: py_compile passed for managers/run_manager/run_manager.py and tests/test_cloud_only_corrections.py; focused unittest passed for loss-cooldown bypass, cooldown age expiry, and TDI effective floor.
-Coinbase/order guardrail: not touched. DRY remains true and LIVE remains false.
-User action required: no.
-Next action: monitor the open AVAX dry position to close, then use realized outcome evidence for next repair; do not tune Profit Score while openability/P&L outcome evidence is pending.
-RELAY_FILE_VISIBLE=yes
-
-## Latest Codex Relay Update - 2026-06-29T06:05:59Z
-- Cloud/local task status: hidden KOKO keep-working runner active via pythonw.exe; popup guard active via hidden PowerShell; status monitor running hidden; Cloud task URL/status not configured locally / unknown.
-- DRY/LIVE: DRY=True, LIVE=False; static TP/SL preserved at DRY_PNL_TP_PCT=8 and DRY_PNL_SL_PCT=0.8.
-- Current blocker: dry P&L guard / approved-product openability, not timestamp/cache. Latest readiness snapshot has current_blocker=dry_pnl_guard, current_open_candidate_present=False, latest_U=120, latest_U_zero=False, timestamp_usable=True.
-- Coverage evidence: signals=67, quote_volume_usable_ratio=0.5373, liquid_dmid_overlap_ratio=0.3881, tick_dmid_warmed_ratio=0.8507, book_metric_source_present_ratio=1.
-- Dry Profit Score evidence: profit_score=40; dry P&L realized=-0.19248173, unrealized=0, net=-0.19248173; opened=246, closed=246, wins=132, losses=109, open_count=0, blocked_open=289.
-- P&L explanation evidence: ledger audit reports duplicate_close_count=0 and summary/ledger match; repeated stale realized totals were fixed locally by ledger-authoritative reconciliation. Latest AVAX sequence had one small win then one lower-pressure loss, leaving net still negative.
-- Action taken: set AVAX-USD dry book-pressure floor to 0.1 in DRY_MIN_BOOK_PRESSURE_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_BOOK_PRESSURE_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_BOOK_PRESSURE_BY_PRODUCT based on ledger evidence that press>=0.1 keeps 50/51 AVAX closes, removes the newest low-pressure loss, and removes no AVAX winners.
-- Files changed locally: run_settings.json. Existing local changed files from prior fixes remain: managers/run_manager/run_manager.py, tools/tdi_status_reporter.py, tests/test_cloud_only_corrections.py, tests/test_tdi_status_reporter.py, tools/koko_dry_observe_readiness.py, tests/test_koko_dry_observe_readiness.py, tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py.
-- Verification: run_settings.json parses; DRY=true, LIVE=false, TP/SL unchanged; hidden runner restarted with pythonw.exe; foreground readiness snapshot completed without visible window.
-- Next action: let hidden DRY observe collect fresh post-change ticks; if open_count stays 0, continue data/preflight/openability fixes only. Do not tune profit scoring while openability is blocked.
-- User action required: no.
-RELAY_FILE_VISIBLE=yes
-
-## Latest Codex Relay Update - 2026-06-29T05:52:16Z
-- Cloud/local task status: hidden KOKO keep-working runner active via pythonw.exe; popup guard active via hidden PowerShell; no visible bot cmd runner found.
-- DRY/LIVE: DRY=true, LIVE=false; static TP/SL preserved at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
-- Current blocker: approved TAO-USD recovery is observed but not openable; latest readiness blocker dry_pnl_guard with TAO failures quote_volume, score, dry_pnl_guard. Data feed coverage is usable: timestamp ratio 1.0, latest_U=120, latest tick timestamp usable, no U=0 stale-feed blocker.
-- Files changed locally: tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py, tools/koko_dry_observe_readiness.py, tests/test_koko_dry_observe_readiness.py, managers/run_manager/run_manager.py, tests/test_cloud_only_corrections.py, tools/tdi_status_reporter.py, tests/test_tdi_status_reporter.py.
-- Patch evidence: ledger P&L summary reconcile added so stale workers cannot keep republishing old realized totals; readiness drynear false-positive fixed; ledger probation can now use threshold support when active preview is empty under existing config flags.
-- Test evidence: py_compile passed for changed Python files; focused unittest sets passed for P&L reconcile, status reporter ledger audit, readiness suppressed dry_pnl_guard, and ledger probation active-missing fallback.
-- Dry Profit Score evidence: profit_score=40; dry P&L realized=-0.19068862, unrealized=0.0, net=-0.19068862; opened=244, closed=244, wins=131, losses=108, open_count=0, blocked_open=289.
-- Approval/openability evidence: run_settings currently has DRY_PNL_SIM_APPROVED_PRODUCTS=[TAO-USD]; approved observed candidate count=1; current_open_candidate_present=false; open_candidate_present=false.
-- Next action: continue DRY-only observe/readiness loop, wait for/repair TAO openability blockers (quote_volume, score, dry_pnl_guard) and only then resume dry P&L improvement.
-- User action required: no.
 # KOKO Cloud Engine Relay
 
 This file is the fallback relay when issue comments are unavailable.
@@ -92,6 +12,1269 @@ Standing state:
 - Stay out of website/app/mobile/native lanes.
 
 Use this file for approved instructions, report requests, and status handoffs related to KOKO Cloud engine work.
+
+## Latest Status - 2026-06-29T06:44:29Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw and hidden supervised DRY runner active via pythonw; popup guard active; current local cloud-equivalent pid=10556 at 2026-06-29T06:44:22Z. Not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume_then_dry_pnl_guard_then_score. Feed/preflight is not dead: latest monitor evidence shows U=120, S=359, brf=56, timestamp_usable=298/359, timestamp_ratio=0.9967, U-zero not present, cache_supported=true, cache_openable=true, max_drysig=1, max_dryopen=1. The active issue is dry recovery quality after a loss-trim, not profit-score math.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.21105048 USD, unrealized=0.0, opened=252, closed=252, wins=136, losses=111, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: added an AVAX-only fresh loss-trim cooloff for sim-approved loss-trim quarantine bypass while global dry net PnL is negative. This blocks immediate AVAX re-entry for 120 seconds after a fresh loss_trim, preventing the latest damaging pattern where AVAX reopened seconds after a loss_trim and closed -90.8403 bps. Readiness now reports loss_trim_fresh_cooldown as a loss-cooldown gate instead of hiding it under generic dry_pnl_guard. Restarted hidden DRY loop/supervisor in the background.
+Validation: py_compile passed for run_manager, readiness, and both patched test files. Focused unittest coverage passed: test_sim_loss_trim_override_waits_for_fresh_loss_trim_age, test_net_negative_guard_reports_fresh_loss_trim_cooldown, test_net_negative_recovery_allows_configured_sim_loss_trim_quarantine_override, and test_net_negative_guard_can_bypass_loss_cooldown_for_positive_approved_stats. DRY=true LIVE=false TP=8.0 SL=0.8 verified after patch.
+Next action: continue hidden DRY observe/sim/repair. Do not tune Profit Score while open_count=0; next target is actionable recovery quality/quote-volume/guard clearance, with AVAX immediate post-loss re-entry now throttled. Do not enable LIVE.
+User action required: no for DRY execution.
+
+## Latest Status - 2026-06-27T16:41:55Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loops active via pythonw; popup guard active; accelerated hidden DRY supervisor chunk completed 6/6 cycles with patched code; not ready for LIVE.
+Current blocker: market_breadth. Feed/preflight is healthy: latest_U=120, latest_S=359, latest_brf=120, timestamp usable ratio=1.0, book_metric_source_missing=0, approved_missing_products=[], approved observed=AERO-USD|ETH-USD|ONDO-USD|TAO-USD. Latest green breadth remains short: market_green_ratio=0.5278 vs 0.8500.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.228697 USD, unrealized=0.0, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: patched runtime market-breadth candidate sampling so DRY breadth uses the same approved-recovery product inclusion path as DRY candidate checking; added regression tests; validation passed 290 focused tests plus py_compile; hidden 6-cycle supervisor run completed with no opens because breadth still failed.
+Next action: continue hidden DRY observe/sim-repair; do not tune Profit Score while open_count=0 and market_breadth remains the gate; next evidence-backed target is product-quality recovery once breadth improves or a supported product-specific pocket appears.
+User action required: no for DRY execution.
+
+## Codex Relay Update - 2026-06-27T15:31:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY keep-working runner remains active under pythonw, popup guard remains active, and the current local cloud-equivalent run has no configured Cloud task URL. DRY=true LIVE=false.
+Current blocker: market_breadth. I fixed the readiness/preflight false-openability report: raw runtime market-breadth probes no longer count as current/openable unless the approved-probe path is allowed and forward-supported. Latest regenerated readiness now correctly reports open_candidate_present=false, current_open_candidate_present=false, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
+Coverage evidence: timestamp coverage is healthy with latest_U=120, latest_S=359, latest tick timestamp usable=true, signal_timestamp_usable_ratio=1.0, and window_U_zero_rows=0. Product/cache coverage is not the blocker: approved_missing_products=[], approved observed products=AERO-USD,ETH-USD,ONDO-USD,SUI-USD,TAO-USD,UNI-USD,XLM-USD, book_metric_source_present_ratio=1.0. Liquid subset coverage remains partial: liquid_dmid_overlap_ratio=0.4787 and liquid_dmid_spread_tob_overlap_ratio=0.3809. Green breadth is the active blocker: latest_green_ratio=0.4286 vs min 0.85, latest_market_dmid_bps=9.64, signals_green_ok_ratio=0.0034.
+Dry Profit Score evidence: score remains around 40/100 from the active dry cycle evidence; opened=191 closed=191 wins=102 losses=84 open_count=0 blocked_open=289 realized_usd=-0.22535746 unrealized_usd=0.0 net_usd=-0.22535746. Latest material P&L event remains SUI-USD profit_protect close at 2026-06-27T15:11:36Z with pnl_bps=82.0057 and pnl_usd=0.02460171.
+Action taken: patched C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py to separate raw runtime probe presence from actually openable probes during market-breadth wait blocks; added regression tests in C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; regenerated logs\dry_observe_readiness_latest.json. Coinbase/order path untouched. Static TP/SL unchanged.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Validation: python -m py_compile tools/koko_dry_observe_readiness.py tests/test_koko_dry_observe_readiness.py passed. python -m unittest tests.test_koko_dry_observe_readiness passed 93 tests. python -m unittest tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections tests.test_koko_keep_working_loop passed 191 tests.
+Next action: continue DRY observe/sim/repair with DRY=true LIVE=false. Do not tune score while open_count=0. Next repair lane is evidence-backed market-breadth/openability and liquid_dmid_spread_tob coverage, not Coinbase/order code and not LIVE deployment.
+User action required: none for DRY repair.
+
+## Codex Relay Update - 2026-06-27T15:16:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY keep-working runner is active under pythonw, popup guard is active, and the current phase is sim_repair_start. Cloud task URL is not configured for this local run. DRY=true LIVE=false.
+Current blocker: market_breadth. Data/preflight coverage is usable: timestamp_ratio=1.0, latest_U=120, latest_U_zero=false, cache_liquid_subset=11 vs min 10, current_open_candidate_present=true, observe_probe_candidate_present=true. Green breadth remains below gate: cache_green_ratio=0.4018 vs min 0.85, latest market_green_ratio around 0.50 vs min 0.85. The approved recovery closest candidate is TAO-USD with only market_breadth failing, but fresh forward evidence for market-breadth entries is still negative: avg_net_close_bps=-25.41, positive_rate=0.0314, signals=1690. Do not loosen market breadth from this sample.
+Dry Profit Score evidence: score=40/100; opened=191 closed=191 wins=102 losses=84 open_count=0 blocked_open=287 realized_usd=-0.22535746 unrealized_usd=0.0 net_usd=-0.22535746. Latest material P&L event: SUI-USD opened at 2026-06-27T15:03:17Z and closed at 2026-06-27T15:11:36Z by profit_protect with pnl_bps=82.0057 and pnl_usd=0.02460171. This improved net from about -0.25017209 to -0.22535746.
+Action taken: repaired DRY observe probe parsing for readiness-shaped payloads, allowing valid approved recovery candidates to open; then tightened active-open mark cadence from 180s default to 60s default so profitable DRY positions are marked and protected faster. SUI-USD subsequently closed as a DRY win. Current sim/threshold sweep is refusing promotion because supported_configs is empty and best recent 5m threshold sweep remains negative, so the runner is collecting evidence rather than forcing unsafe opens.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tools\koko_keep_working_loop.py; C:\ai_trading_bot_koko\tests\test_koko_keep_working_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Validation: python -m unittest tests.test_cloud_only_corrections passed 53 tests; python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_koko_keep_working_loop passed 228 tests; python -m unittest tests.test_koko_keep_working_loop passed 45 tests; python -m unittest tests.test_cloud_only_corrections tests.test_koko_keep_working_loop passed 98 tests. Py_compile passed for patched runtime/test files.
+Next action: continue DRY observe/sim/repair with DRY=true LIVE=false. Focus on evidence-backed market breadth and approved recovery openability, not Profit Score tuning while open_count=0. Do not enable LIVE until dry net is credibly positive and deployment evidence is stable.
+User action required: none for DRY repair. Gmail delivery is only to be used if configured by repo automation; no manual status email was sent from this relay update.
+
+## Codex Relay Update - 2026-06-19T09:47:25Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 9032, hidden no-console sim/repair loop PID 27016, and hidden status monitor PID 44640 are running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. RE-USD remains the only actionable approved recovery product. The lane now models all observed runtime blockers: product trough cap synced to 1.0, product candle-range cap synced to 600 bps, spread max remains 5 bps, and market breadth is still below threshold. Latest evidence shows closest RE final block is market_breadth only with trough=1.0/1.0, mbr=0.6667/0.8500, press=0.9781/0.0400, tick_dmid=107.43, spread=1.69, tob=8. Later runtime rows show RE sometimes blocks on spread/candle_range while market breadth remains weak. No DRY position is open.
+Files changed: C:\ai_trading_bot_koko\tools\koko_forward_threshold_sweep.py; C:\ai_trading_bot_koko\tests\test_koko_forward_threshold_sweep.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\run_settings.json. Branch copy synced for threshold/sim-loop changes on codex/cloud-ready-koko-bot. Coinbase/order path untouched.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: added dry_recent_candle_range_bps to recovery threshold sweep configs and auto-sync to DRY_MAX_RECENT_CANDLE_RANGE_BPS_BY_PRODUCT; forced repair pass synced RE-USD candle range cap to 600 bps; restarted hidden sim/repair loop. This prevents approving a product on evidence that did not model the live candle-range gate.
+Validation: runtime `python -m unittest tests.test_koko_forward_threshold_sweep tests.test_koko_sim_repair_loop` passed 70 tests. Runtime py_compile passed for tools\koko_forward_threshold_sweep.py and tools\koko_sim_repair_loop.py. Branch copy `python -m unittest tests.test_koko_forward_threshold_sweep tests.test_koko_sim_repair_loop` passed 70 tests.
+Next action: continue hidden DRY observe/sim/repair. RE-USD must clear spread, candle-range, and market breadth before DRY opens. After a DRY open/close, use the realized outcome to continue P&L repair. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials are still missing, so material status was written to C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T094725Z.eml instead of sent.
+
+## Codex Relay Update - 2026-06-19T09:39:42Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 9032, hidden no-console sim/repair loop PID 96280, and hidden status monitor PID 44640 are running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. RE-USD remains the only actionable approved recovery product. Product-scoped trough cap is now synced into both run_settings and runtime/readiness gates: TROUGH_PCT_MAX_BY_PRODUCT.RE-USD=1.0. Latest runtime/readiness evidence shows RE no longer blocked by the stale generic trough cap; closest RE final block is market_breadth only with trough=1.0/1.0, mbr=0.6667/0.8500, press=0.9781/0.0400, tick_dmid=107.43, spread=1.69, tob=8. No DRY position is open.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\run_settings.json. Same code/test files synced to C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work on branch codex/cloud-ready-koko-bot. Coinbase/order path untouched.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: patched auto-sync to write TROUGH_PCT_MAX_BY_PRODUCT from supported recovery threshold configs; patched readiness and run_manager runtime trough gates to honor product-scoped trough caps; restarted hidden supervisor and hidden sim/repair loop on patched code. Latest market-breadth forward evidence remains negative, so market breadth is not being bypassed.
+Validation: runtime focused `python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_dry_candidate_rank` passed 160 tests. Runtime py_compile passed for run_manager/readiness/sim-loop. Branch copy `python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness` passed 116 tests.
+Next action: continue hidden DRY observe/sim/repair. Let RE-USD open only if market breadth/spread and runtime guards clear; then evaluate the DRY close outcome and repair again. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials are still missing, so material status was written to C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T093942Z.eml instead of sent.
+
+## Codex Relay Update - 2026-06-19T09:34:01Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 67384, hidden no-console sim/repair loop PID 42220, and hidden status monitor PID 44640 are running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: market_breadth. The repair loop synced DRY recovery approval to RE-USD only. Readiness now observes RE-USD but blocks entry because market breadth is weak and current gates are not all clear: latest_mbr=0.4000/0.8500, latest_mdmid=-7.19/0.00, RE dryrank qv=1182273, rdmid=21.43, spread=1.73, tob=2. No DRY open is active.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; plus prior guard files C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py. Branch copy synced for sim loop and test. Coinbase/order path untouched.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Recovery approval evidence: approved=HYPE-USD,JTO-USD,ONDO-USD,RE-USD,TAO-USD,UNI-USD,WLD-USD,XLM-USD; actionable=RE-USD; settings_approved=RE-USD. Excluded by quarantine=HYPE,JTO,ONDO,TAO,UNI,XLM. Excluded by negative ledger=HYPE,JTO,WLD,XLM. RE evidence: threshold support 9 signals, avg_net_forward_close_bps=29.7283, positive_net_close_rate=0.8889, sl_touch_rate=0.0, validation avg=47.188 and validation positive_rate=1.0.
+Action taken: added strict strong-validation probation for threshold-supported recovery products and forced a sim/repair pass. The pass found RE-USD as the non-quarantined, non-negative-ledger actionable recovery product and auto-synced run_settings.json while preserving DRY=true, LIVE=false, TP=8.0, SL=0.8. Restarted the hidden sim/repair loop on patched code.
+Validation: runtime `python -m unittest tests.test_koko_sim_repair_loop` passed 65 tests. Runtime `python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections` passed 201 tests. Runtime py_compile for tools\koko_sim_repair_loop.py passed. Branch copy `python -m unittest tests.test_koko_sim_repair_loop` passed 65 tests.
+Next action: continue hidden DRY observe/sim/repair. Let RE-USD open only if market breadth/trough/spread and runtime guards clear; then evaluate the close outcome and repair again. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials are still missing, so material status was written to C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T093401Z.eml instead of sent.
+
+## Codex Relay Update - 2026-06-19T09:26:37Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 67384, hidden no-console sim/repair loop PID 84524, and hidden status monitor PID 44640 are running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine. Feed/preflight coverage is usable enough to find candidates: latest readiness evidence includes U=120, S=356, brf=120, cache_supported=true, cache_openable=true, timestamp_usable=309/356, missing=0, liquid_subset=11 vs min 10. Green breadth remains weak: latest_mbr=0.4167/0.8500 and latest_mdmid=-3.51/0.00. Recovery approval has supported products HYPE/JTO/ONDO/TAO/UNI/WLD/XLM but no actionable products because quarantine and negative-ledger safety exclude them.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py. Same files synced to C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work on branch codex/cloud-ready-koko-bot. Coinbase/order path untouched.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. Last DRY event was ONDO-USD loss_trim at 2026-06-19T09:22:41Z. ready_to_deploy_live=false.
+Action taken: blocked DRY observe probes when tick_dmid and market_breadth fail together unless tick signal is warm and market dmid meets the hard DRY market floor. This prevents a repeat of the ONDO entry that opened with failures=tick_dmid|market_breadth, tick_dmid_warmed=false, market_green_ratio=0.4083, market_dmid_bps=-8.4054, then closed at -28.9386 bps. Restarted all workers hidden so CMD windows do not pop up.
+Validation: runtime `python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections` passed 200 tests. Runtime py_compile passed for managers\run_manager\run_manager.py and tools\koko_dry_observe_readiness.py. Branch copy `python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness` passed 94 tests.
+Next action: continue hidden DRY observe/sim/repair. Do not tune Profit Score while open_count=0. Next repair lane is to safely clear recovery quarantine/negative-ledger exclusions only where forward evidence supports it, while keeping static TP/SL and Coinbase/order guardrails intact. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials are still missing, so material status was written to C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T092637Z.eml instead of sent.
+
+## Codex Relay Update - 2026-06-19T08:19:12Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 5544, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_ready_for_approval. Post-WLD-close repair kept DRY in recovery mode and approved ONDO-USD plus WLD-USD. The approval is not LIVE-ready; it is DRY recovery only. WLD remains supported by strong fresh threshold probation after one old loss plus one new profit-protect close. ONDO is threshold-supported and has positive ledger but is still DRY-only.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest sim/repair state updated_at_utc=2026-06-19T08:19:12Z, profit_score=38, net_pnl_usd=-0.37056271, opened=112, closed=112, wins=55, losses=52, open_count=0, forward_signals=187, ready_to_deploy_live=false. Approved products: ONDO-USD,WLD-USD.
+Action taken: adjusted the strong-threshold negative-ledger probation guard so a product can remain eligible after exactly one stale loss and one fresh recovery win only when win_rate>=0.5 and threshold evidence remains strong. Re-ran sim/repair; approval set is now ONDO-USD,WLD-USD.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK, 60 tests. python -m py_compile tools\koko_sim_repair_loop.py OK. DRY=true LIVE=false. Static TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: continue DRY observe for ONDO-USD/WLD-USD; monitor opens/closes and rerun sim/repair after material outcome. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T08:13:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 5544, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: WLD-USD DRY recovery position closed profitably; sim/repair is being rerun against the realized outcome. WLD close at 2026-06-19T08:13:10Z: exit_reason=profit_protect, entry_mid=0.6436, exit_mid=0.64665, peak_mid=0.6472, peak_pnl_bps=55.9354, pnl_bps=47.3897, pnl_usd=0.0142169.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: dry score after close shows opened=112, closed=112, wins=55, losses=52, open_count=0, realized_pnl_usd=-0.37056271, unrealized_pnl_usd=0.0, realized_pnl_bps=-1235.209. Previous net before WLD close was -0.38477961, so dry net improved by +0.0142169.
+Action taken: monitored WLD-USD through close and verified profitable exit. Full focused validation passed after patch: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK, 148 tests.
+Validation: DRY=true LIVE=false. Static TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8. No Coinbase/order path touched.
+Next action: force sim/repair against the new profitable WLD close, keep WLD approval only if post-close evidence still supports it, and continue DRY recovery. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T08:12:01Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as PID 5544; hidden sim/repair wrapper PID 37492 and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_position_open. WLD-USD was approved through strong fresh threshold probation and opened in DRY at 2026-06-19T08:09:51Z. Entry evidence: entry_mid=0.6436, notional_usd=3.0, dry_effective_dmid_bps=7.7399, dry_min_dmid_bps=-20.0, market_green_ratio=0.6083, probe_failures=market_breadth, quote_volume=496982.2692, spread=3.1075, tob=144.6615, press=0.8812, trough_pct=0.198113.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest dry score at 2026-06-19T08:12:01Z shows opened=112, closed=111, wins=54, losses=52, open_count=1, realized_pnl_usd=-0.38477961, unrealized_pnl_usd=0.01048788, unrealized_pnl_bps=34.9596. Latest sim/repair state updated_at_utc=2026-06-19T08:11:04Z shows profit_score=38, net_pnl_usd=-0.3829151, blocker=dry_position_open, approved_products=WLD-USD.
+Action taken: added guarded strong-threshold negative-ledger probation support, with tests, so a single stale negative-ledger product can be approved only when fresh threshold evidence is strong. Forced sim/repair approved WLD-USD and DRY observe opened it. Restarted the DRY supervisor hidden so the running process uses current settings.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK, 60 tests. python -m py_compile tools\koko_sim_repair_loop.py OK. Forced sim/repair command exited 0. DRY=true LIVE=false. Static TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: monitor WLD-USD through close, then re-run sim/repair against the realized outcome and keep improving dry P&L. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T08:04:23Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 47556, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine. Feed/preflight is usable, not the blocker: latest readiness has U=120, S=356, brf=120, signal/tick timestamps usable at 2026-06-19T08:03:18Z, book source gap=0, and dry_open_seen=true. The blocker is no actionable approved recovery product after the TAO loss_trim close.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest sim/repair state updated_at_utc=2026-06-19T08:04:23Z, profit_score=38, net_pnl_usd=-0.38477961, opened=111, closed=111, wins=54, losses=52, open_count=0, forward_signals=205, ready_to_deploy_live=false.
+Recovery evidence: ledger-supported products are TAO-USD and UNI-USD, but both are quarantine-excluded. WLD-USD is threshold-supported but negative-ledger-excluded. XRP-USD is active-gate supported with 6 signals, avg_net_forward_close_bps=6.0136, positive_net_close_rate=0.8333, sl_touch_rate=0.0, but missing threshold/direct recovery confirmation and has negative ledger. ONDO-USD has positive ledger but current forward support is weak and not approved.
+Action taken: forced deep sim/repair sweep with lookback=240 and limit=5000 after the TAO close. It exited 0, kept DRY=true/LIVE=false, and kept approved products empty because all supported candidates are quarantined, negative-ledger excluded, or insufficiently cross-confirmed.
+Validation: forced sim/repair command exited 0. Background DRY supervisor and repair wrapper are running hidden. No Coinbase/order path touched. Static TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: keep sim/repair running; inspect and repair recovery approval logic only where evidence supports a non-quarantined, non-negative-ledger product. Do not tune score while open_count=0 and approval coverage is empty. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:59:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 47556, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: new dry loss outcome after successful openability fix. The TAO-USD DRY position opened at 2026-06-19T07:53:44Z and closed at 2026-06-19T07:59:13Z with exit_reason=loss_trim, pnl_bps=-12.0871, pnl_usd=-0.00362613. The entry used market-breadth probe with dry_effective_dmid_bps=21.1519, dry_min_dmid_bps=-6.5505, market_green_ratio=0.5583, press=0.7925, trough_pct=0.211957.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence before next repair pass: dry state opened=111, closed=111, wins=54, losses=52, open_count=0, realized_pnl_usd=-0.38477961, unrealized_pnl_usd=0.0. Latest prior Profit Score was 38/100.
+Action taken: monitored DRY TAO open through close. Since openability is fixed but this specific market-breadth probe lost, next action is to run sim/repair against the new ledger outcome and tighten/adjust only where evidence supports it.
+Validation: DRY/LIVE safety unchanged; TP/SL static. No Coinbase/order path touched.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: force sim/repair now; use the new loss outcome to update approved recovery/product gates and avoid repeating bad market-breadth probe conditions.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:55:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 47556, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_position_open. The corrected signed-floor runtime opened one DRY TAO-USD position at 2026-06-19T07:53:44Z. Open details: product=TAO-USD, notional_usd=3.0, entry_mid=227.515, dry_observe_probe=true, probe_failures=market_breadth, dry_effective_dmid_bps=21.1519, dry_min_dmid_bps=-6.5505, qv=188532.9592, spr=1.3186, tob=232.4234, press=0.7925, market_green_ratio=0.5583. Latest mark at 2026-06-19T07:55:02Z showed last_mid=227.21, unrealized_pnl_usd=-0.00402171, last_pnl_bps=-13.4057.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest sim state updated_at_utc=2026-06-19T07:55:01Z, profit_score=38, realized_pnl_usd=-0.38115348, unrealized_pnl_usd=-0.00402171, net_pnl_usd=-0.38517519, opened=111, closed=110, wins=54, losses=51, open_count=1, ready_to_deploy_live=false.
+Action taken: forced sim/repair pass after signed-floor patch; verified DRY observe can now open a TAO candidate with usable market/feed coverage. Static TP/SL remains active on the open DRY position.
+Validation: forced sim/repair command exited 0. Runtime state verified DRY=true LIVE=false TP=8.0 SL=0.8.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: monitor the open TAO DRY position through close; after close, resume dry P&L improvement based on realized outcome and continue sim/repair. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:53:27Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as PID 47556 after runtime gate patch; hidden sim/repair wrapper PID 37492 and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth plus TAO dry P&L preview pressure. Feed/preflight coverage is usable: latest readiness generated_at_utc=2026-06-19T07:51:55Z, U=120, S=356, brf=120, timestamp_usable_ratio=1.0, product/cache gaps not the blocker. TAO now shows signed floor correctly in runtime diagnostics: rdmid=21.15/-6.55 with qv=188533/50000, spr=1.32/5, tob=325/100; it is blocked by market_breadth plus dry_pnl_guard_reason=net_negative_low_pressure. Current market breadth was about 0.5917 vs min 0.85.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest sim state updated_at_utc=2026-06-19T07:47:10Z, profit_score=38, net_pnl_usd=-0.38115348, closed=110, wins=54, losses=51, open_count=0, ready_to_deploy_live=false. Latest forced state had forward_signals=119.
+Action taken: fixed ledger product gate fallback so TAO uses the actual positive-ledger signed dmid floor -6.5505 instead of clamping to 0.0; fixed runtime and readiness signed dmid handling so negative floors are enforced rather than treated as disabled; fixed false readiness dmid shortfall diagnostics; restarted DRY supervisor hidden so patched code is live.
+Validation: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK, 147 tests. python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py OK. Runtime settings verified DRY=true LIVE=false TP=8.0 SL=0.8.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: continue DRY observe and sim/repair; do not loosen pressure because TAO's six winning ledger opens had pressure 0.853-0.997 and the current near-miss is blocked for low pressure. Watch for TAO pressure/market breadth to align or for a non-quarantined, non-negative-ledger product to become supported. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:40:38Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 80484, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth plus TAO product-quality timing. Patch added ledger-derived product gate support for ledger-approved products whose threshold row is temporarily unsupported, then a follow-up sync corrected TAO into a product-scoped lane: qv=50000, max_spread=5, min_dmid=-20, min_tob=100, book_pressure=0.3. The live stream picked up the settings reload. TAO is no longer stuck at the old 40 bps dmid floor, but the latest TAO recent dmid dropped to about -39.58 and current market breadth dropped near 0.14, so DRY did not open. This is a current-market/product-quality block, not U=0/stale feed.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: latest state updated_at_utc=2026-06-19T07:39:44Z, profit_score=38, net_pnl_usd=-0.38115348, closed=110, wins=54, losses=51, open_count=0, ready_to_deploy_live=false. Latest DRY P&L score artifact still opened=110, closed=110, wins=54, losses=51, open_count=0.
+Action taken: added _ledger_product_gate_config and auto-sync fallback for approved ledger-supported products; fixed over-tight quote/spread sync so TAO uses qv=50000 and spread=5 instead of raising current product floors; forced two sim/repair passes to apply settings.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK, 59 tests. python -m py_compile tools\koko_sim_repair_loop.py OK. Forced sim/repair commands exited 0. Runtime settings verified DRY=true LIVE=false TP=8.0 SL=0.8.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: keep background DRY observe/sim repair running; watch for TAO dmid recovering above -20 while market-breadth probe remains allowed, or for a non-quarantined/non-negative-ledger product to become supported. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:30:16Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 80484, hidden sim/repair wrapper PID 37492, and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth. A deeper sim/repair pass with lookback=180 and limit=5000 completed at 2026-06-19T07:29:54Z. It did not find a clean non-quarantined/non-negative-ledger recovery product. TAO-USD remains the only approved product and is blocked by dmid plus market_breadth. WLD-USD is threshold-supported but negative-ledger excluded. UNI-USD is ledger-supported but quarantine-excluded. XLM/JTO/HYPE are visible in current runtime near-misses but blocked by quarantine and/or negative ledger.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38, net_pnl_usd=-0.38115348, closed=110, wins=54, losses=51, open_count=0, ready_to_deploy_live=false. Latest forward_signals=46.
+Action taken: forced deeper sim/repair sweep to search for a safe approved recovery candidate beyond the current TAO-only lane. Confirmed reporting cadence is two hours: TDI_REPORT_HOURLY_SEC defaults to 7200 and material events bypass cadence.
+Validation: deeper sim/repair command exited 0. Previous focused test run remains passing: 119 tests plus py_compile.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: continue background DRY observe and sim/repair; wait for a safe product to clear dmid/market-breadth/quarantine/ledger gates, or for new forward evidence to support a non-excluded product. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:23:15Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 80484 remains in continuous observe; hidden sim/repair wrapper PID 37492 and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth. Feed/preflight is usable: latest observe coverage has U=120, S=356, brf=120, current_open_candidate_present=false, dryopen=0, drysig=0. Current green breadth is about 0.54-0.60 versus the 0.85 gate. TAO-USD remains approved but is blocked by dmid plus market_breadth. XLM-USD now survives threshold merge as fresh threshold-supported, but is excluded by quarantine and negative dry ledger.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior active preflight changes remain in C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py and C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py. Coinbase/order path untouched.
+Dry Profit Score evidence: latest state updated_at_utc=2026-06-19T07:22:35Z, profit_score=38, net_pnl_usd=-0.38115348, closed=110, wins=54, losses=51, open_count=0, ready_to_deploy_live=false.
+Action taken: changed recovery threshold merge order so fresh threshold evidence has final precedence over broad unsupported detail rows; added regression coverage. Forced sim/repair pass completed and confirmed recovery_candidate_product_threshold_support.supported_products=[XLM-USD].
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight OK, 119 tests. python -m py_compile tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py OK.
+DRY/LIVE safety: DRY=true, LIVE=false. Static TP/SL verified: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Next action: continue DRY observe/sim repair against market breadth/openability; do not tune profit scoring while opened=0; do not touch Coinbase/order path.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:11:07Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 80484 remains in continuous observe; hidden sim/repair wrapper PID 37492 and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth with approved TAO-USD currently failing dmid and market breadth. Latest refreshed readiness at 2026-06-19T07:10:51Z: approved_products=[TAO-USD], TAO failures=[dmid,market_breadth], dry_pnl_guard_reason=net_negative_low_dmid, probe_reason=dmid_floor, rdmid=-40.12 vs min 40, qv=141689 vs min 50000, market_green=0.25 vs min 0.85. This is no longer a feed/preflight/U=0 issue.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior active changes in C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py and C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py remain. C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md updated. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Dry Profit Score evidence: estimated score remains 38/100; opened=110 closed=110 wins=54 losses=51 open_count=0 realized_usd=-0.38115348 unrealized_usd=0.0 net_usd=-0.38115348 last_event=2026-06-19T06:10:14Z. ready_to_deploy_live=false.
+Action taken: patched auto-sync product config logic so an approved product can sync from fresh supported threshold evidence when the merged/stale threshold report says unsupported. Added regression test. During validation, the TAO fresh support window moved away before sync: latest TAO rdmid fell to -40.12, so runtime correctly did not lower TAO's dmid floor and did not open.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight OK, 118 tests. python -m py_compile tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py OK. Forced sim/repair pass completed at 2026-06-19T07:10:35Z with ready=false score=38 blocker=approved_recovery_market_breadth.
+Next action: keep hidden continuous observe and sim/repair running; wait for a fresh approved recovery product/window where product-specific dmid, quote volume, and market breadth/probe evidence are simultaneously supported. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T07:04:06Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor PID 80484 is in continuous observe; hidden sim/repair wrapper PID 37492 and hidden status monitor PID 62692 remain running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth plus product runtime quality. Forced sim/repair at 2026-06-19T07:03:04Z kept ready_to_deploy_live=false and found a second actionable approved product, so DRY_PNL_SIM_APPROVED_PRODUCTS is now [RAVE-USD, TAO-USD]. Runtime coverage is usable: U=120 S=356 brf=120 mbn=120; latest market breadth rose to about 0.70-0.725 but remains below 0.85.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py; C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Dry Profit Score evidence: estimated score remains 38/100; opened=110 closed=110 wins=54 losses=51 open_count=0 realized_usd=-0.38115348 unrealized_usd=0.0 net_usd=-0.38115348 last_event=2026-06-19T06:10:14Z. ready_to_deploy_live=false.
+Action taken: forced a sim/repair pass after the preflight fix. Auto-sync approved RAVE-USD alongside TAO-USD and synced product-scoped floors for RAVE: min_quote_volume=50000, min_dmid=-20, min_tick_dmid=0, max_spread=20. The running supervisor picked up RAVE in dryrank_top without restart.
+Current runtime evidence: RAVE is visible but not openable now: qv about 14195 vs min 50000 and rdmid about -74.79. TAO is visible but still below dmid floor: qv about 133699 vs min 50000 and rdmid about 28.39 vs min 40. Market breadth remains below min. Do not lower global market breadth: latest market_breadth forward evidence is negative, avg_net_close_bps=-14.8043 with positive_net_close_rate=0.219.
+Validation: forced sim/repair command completed; run_settings verified DRY=true LIVE=false DRY_PNL_TP_PCT=8.0 DRY_PNL_SL_PCT=0.8. Existing focused tests for the preflight patch passed: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_candidate_rank OK, 103 tests.
+Next action: keep hidden continuous observe and sim/repair running; wait for RAVE quote volume/dmid or TAO dmid/market breadth to become openable, and continue product-scoped evidence repair only. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T06:57:32Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as PID 80484 after the preflight gate patch; hidden sim/repair wrapper remains running as PID 37492; hidden status monitor remains running as PID 62692. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: market_breadth / approved_recovery_market_breadth. The prior blocker was the supervisor preflight wait loop ignoring cache_market_regime_worthwhile when green breadth was short. That is fixed: the supervisor passed the old wait point and reached entry_preflight_sample_start at 2026-06-19T06:55:40Z. Current runtime evidence shows usable feed coverage, not U=0/stale feed: U=120 S=356 brf=120 mbn=120, timestamp_usable_ratio=0.8876, cache_market_regime_worthwhile=true, dry_observe_coverage_supported=true, green_ratio=0.251-0.3417 vs min 0.85, liquid_subset=7 vs min 10.
+Files changed: C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py; C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Dry Profit Score evidence: estimated score remains 38/100; opened=110 closed=110 wins=54 losses=51 open_count=0 realized_usd=-0.38115348 unrealized_usd=0.0 net_usd=-0.38115348 last_event=2026-06-19T06:10:14Z. ready_to_deploy_live=false.
+Action taken: patched _preflight_observe_worthwhile so cache_market_regime_worthwhile with no timestamp shortfall can enter DRY observe even when green breadth is short, while preserving the prior rejection of green-breadth-only weak windows. Updated preflight_wait_check diagnostic logging to report cache_market_regime_worthwhile. Added regression test coverage. Restarted hidden supervisor with WindowStyle Hidden.
+Validation: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_candidate_rank OK, 103 tests. python -m py_compile tools\run_koko_dry_supervised.py OK. Runtime activity after restart shows fresh tick diagnostics with mbn=120 and current blocker market_breadth, so preflight/feed coverage is no longer the stopping point.
+Next action: keep hidden DRY observe and sim/repair running; continue repairing openability from the real market_breadth/liquid-subset evidence without touching Coinbase/order guardrails or tuning Profit Score while opened=0.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## Codex Relay Update - 2026-06-19T06:50:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as PID 81244; hidden sim/repair wrapper running as PID 37492 with active child; hidden status monitor running as PID 62692. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Data/preflight fix applied: runtime market breadth now samples 120 products instead of 10. Evidence from activity_ticker after settings reload: mbn=120, U=120, S=356, brf=120, market_green_ratio about 0.2583-0.2667 vs min 0.85, market_dmid about -24 bps, so current broad market is genuinely red. Latest approved recovery product is TAO-USD; latest approved coverage shows TAO fails dmid_floor with recent_dmid=-45.35 and market_breadth. No new DRY open yet.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Branch config already had DRY_MARKET_BREADTH_TOP_N=120; branch supervisor file is an older lightweight runner and was not overwritten. Coinbase/order path untouched.
+Dry Profit Score evidence: estimated score remains 38/100; opened=110 closed=110 wins=54 losses=51 open_count=0 realized_usd=-0.38115348 unrealized_usd=0.0 net_usd=-0.38115348 last_event=2026-06-19T06:10:14Z. ready_to_deploy_live=false.
+Action taken: changed runtime DRY_MARKET_BREADTH_TOP_N from 10 to 120; reduced runtime KOKO_SUPERVISOR_OBSERVE_WINDOW_POLL_SEC from 300 to 30; added KOKO_SUPERVISOR_OBSERVE_WINDOW_REFRESH_EVERY_N=4; patched supervisor observe wait to use cached preflight reports between forced refreshes so it does not do a full 356-product network refresh every 30 seconds. Restarted hidden supervisor. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_candidate_rank OK, 102 tests. python -m py_compile tools\run_koko_dry_supervised.py managers\run_manager\run_manager.py OK. Runtime settings check confirmed DRY=True LIVE=False DRY_PNL_TP_PCT=8.0 DRY_PNL_SL_PCT=0.8.
+Next action: keep hidden DRY observe/sim/repair running; wait for a product-level approved recovery candidate with dmid above floor or market breadth recovery; continue data/openability lane only until DRY opens again, then resume dry P&L improvement. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP delivery remains blocked until credentials/connector auth are available.
+
+## 2026-06-18T21:43:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted; hidden sim/repair loop running; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=40492 sim_loop_pid=73512 status_monitor_pid=55040. Cloud task URL/status local pid=40492; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_recovery. The data/preflight lane can now open recovery candidates from a broader strict approved set, but live remains blocked until post-approval DRY closes recover net P&L and score. Current state updated_at=2026-06-18T21:41:51Z; loop_health healthy=true; failed_command_count=0.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=36; dry_pnl_net_usd=-0.36584555; realized=-0.36584555; unrealized=0.0; opened=75; closed=75; wins=34; losses=39; open=0; ready_to_deploy_live=false. Recovery approval supported_products=[ENA-USD,HYPE-USD,JTO-USD,NEAR-USD,ONDO-USD], reason=active_gate_and_direct_threshold_recovery_agree. Active gate support currently includes ENA-USD; direct recovery support includes ENA-USD,HYPE-USD,JTO-USD,NEAR-USD,ONDO-USD,XRP-USD; threshold support includes ENA-USD,HYPE-USD,JTO-USD,NEAR-USD,ONDO-USD,UNI-USD. XRP excluded because threshold support is missing; UNI excluded because direct support is missing.
+Action taken: applied strict product-scoped recovery gates from threshold evidence for ENA/HYPE/JTO/NEAR/ONDO; patched approval logic to union active/direct/threshold agreement with direct+threshold recovery agreement when the explicit recovery flag is enabled; auto-sync updated DRY_PNL_SIM_APPROVED_PRODUCTS=[ENA-USD,HYPE-USD,JTO-USD,NEAR-USD,ONDO-USD]. Restarted DRY supervisor hidden. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (69 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK; run_settings.json JSON parse OK; forced sim iteration OK in 159 seconds with failed_command_count=0.
+Next action: observe the expanded approved DRY recovery set for actual opens/closes; continue repair from post-approval P&L evidence. Do not enable LIVE until dry net P&L and score are deployable.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-19T00:54:43Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=56364 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: approved recovery blocked by quote_volume. Approved recovery products are NEAR-USD and ONDO-USD. Latest approved-product runtime coverage observed ONDO-USD but not NEAR-USD in the latest dryrank_top; ONDO-USD is below the supported quote-volume floor and top-of-book floor and market breadth is weak. Current ONDO evidence: qv=261494 vs min=500000, tob=15 vs min=50, market_green=0.20 vs min=0.85. This is not a Coinbase/order-path blocker and not a missing-cache blocker.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior active safety/config changes remain in C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, C:\ai_trading_bot_koko\run_settings.json, C:\ai_trading_bot_koko\managers\run_manager\run_manager.py, and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: Profit Score=36/100; opened=93; closed=93; wins=42; losses=46; open=0; realized_usd=-0.37016952; unrealized_usd=0.0; net_usd=-0.37016952. Score fell from 37 after the latest DRY close; it is not ready for live.
+Action taken: added approved recovery runtime coverage to the DRY observe readiness artifact so current blockers are diagnosed against DRY_PNL_SIM_APPROVED_PRODUCTS instead of unrelated top-ranked products; suppressed false low-pressure/tick-dmid failures when those fields are missing from dryrank_top; updated reporter blocker precedence so status subjects/emails use approved recovery blocker evidence ahead of generic final-gate blockers. Refreshed logs\dry_observe_readiness_latest.json from the current runtime window. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (189 tests); python -m py_compile tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; refreshed reporter preview subject is "[TDI STATUS] Profit 36/100 | DRY=true LIVE=false | approved recovery blocked by quote_volume; NEAR-USD not_in_latest_rank; ONDO-USD tob_usd|quote_volume|market_breadth".
+Next action: keep hidden DRY observe/sim running; do not go live. Continue repairing only the data/preflight/openability lane with forward evidence. The next actionable target is to keep approved-product coverage fresh and wait for ONDO quote volume/top-of-book plus market breadth to pass, or find a newly supported approved product from forward evidence without touching Coinbase/order guardrails.
+User action required: none for DRY repair. Gmail/SMTP outbound delivery still needs credentials or connector repair; otherwise status reports remain local/outbox-throttled. LIVE remains off.
+
+## 2026-06-19T01:02:27Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and restarted status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=56364 status_monitor_pid=81536; Cloud task URL not configured for this local run.
+Current blocker: approved recovery blocked by quote_volume on ONDO-USD. Forced sim/repair pass removed NEAR-USD from DRY_PNL_SIM_APPROVED_PRODUCTS after the NEAR loss_trim; current approved products are [ONDO-USD] only. Latest ONDO runtime evidence: qv=175059 vs min=500000, tob=25 vs min=50, market_green=0.10 vs min=0.85, rdmid=-65.52. Feed/cache coverage is present: U=120, S=356, brf=120, book_metric_source_present_ratio=1.0.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Code changes from the prior entry remain active in C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\tools\tdi_status_reporter.py, and C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py.
+Dry Profit Score evidence: Profit Score=36/100; opened=93; closed=93; wins=42; losses=46; open=0; realized_usd=-0.37016952; unrealized_usd=0.0; net_usd=-0.37016952. Latest damaging trade: NEAR-USD opened at 2026-06-19T00:49:24Z with trough_pct=1.0 and closed loss_trim at 2026-06-19T00:51:24Z for -22.2173 bps / -0.00666519 USD.
+Action taken: forced one sim/repair iteration after the NEAR loss; auto-sync excluded NEAR-USD via loss-trim quarantine while net P&L is negative and left only ONDO-USD approved. Refreshed dry_observe_readiness_latest.json from the current runtime window. Restarted the status monitor hidden so future two-hour/status emails use the patched reporter subject. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: forced sim/repair pass completed; run_settings.json JSON parse OK; DRY=true LIVE=false TP=8.0 SL=0.8 verified; hidden processes confirmed supervisor=69036 sim_loop=56364 status_monitor=81536.
+Next action: keep hidden DRY observe/sim running; do not go live. Do not approve NEAR again while its loss-trim quarantine is active and net P&L is negative. Continue only with ONDO if quote volume/top-of-book/market breadth recover under supported thresholds, or wait for the sim loop to find fresh forward-supported non-quarantined recovery evidence.
+User action required: none for DRY repair. Gmail/SMTP outbound delivery still needs credentials or connector repair; local reporting/outbox remains active. LIVE remains off.
+
+## 2026-06-18T21:33:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with profit-protect modeled support; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=59920 sim_loop_pid=95116 status_monitor_pid=55040. Cloud task URL/status local pid=59920; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_recovery_ready_for_approval / waiting for an approved JTO recovery window; not live-ready. Feed/preflight is usable: latest readiness generated_at=2026-06-18T21:26:21Z, signals=2169, book_metric_source_present_ratio=1.0, quote_volume_usable_ratio=0.7552, dmid_usable_ratio=0.6298, tick_dmid_usable_ratio=0.4403, trough_seeded_ratio=1.0. Current open blocker remains candidate quality/trough/market/recovery guard, not U=0 or missing product cache.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=36; dry_pnl_net_usd=-0.36584555; realized=-0.36584555; unrealized=0.0; opened=75; closed=75; wins=34; losses=39; open=0; ready_to_deploy_live=false. Post-change DRY closed XLM profit-protect wins at 2026-06-18T21:17:46Z (+0.00339613 USD) and 2026-06-18T21:22:37Z (+0.00088333 USD), but XLM total DRY history remains negative, so it was not promoted.
+Action taken: patched sim/repair support to model the same DRY profit-protect exit behavior used by the runtime when evaluating forward recovery evidence; added explicit DRY_SIM_USE_PROFIT_PROTECT_OUTCOME=true and DRY_SIM_PROFIT_PROTECT_REQUIRE_FLOOR_TOUCH=true. Added DRY_RECOVERY_MAX_SL_TOUCH_RATE=0.2 and filtered recovery threshold support by full/train/validation SL-touch so high-stop-touch products do not count. Auto-sync remains DRY_PNL_SIM_APPROVED_PRODUCTS=[JTO-USD]. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (68 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK; run_settings.json JSON parse OK; forced sim iteration OK in 115 seconds with failed_command_count=0.
+Next action: keep hidden DRY observe/sim running; continue repair on the direct-recovery confirmation gap for ENA/HYPE/NEAR/ONDO or wait for a fresh JTO window. Do not enable LIVE until dry net P&L and supported recovery evidence are positive.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T21:18:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted; hidden sim/repair loop restarted; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=59920 sim_loop_pid=71956 status_monitor_pid=55040. Cloud task URL/status local pid=59920; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_recovery_ready_for_approval / waiting for a fresh JTO-approved DRY recovery window to open and close. The prior blocker was an over-strict recovery approval intersection: active/candidate support did not include JTO, but direct recovery evidence and product-threshold evidence both supported JTO.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior guarded changes in C:\ai_trading_bot_koko\managers\run_manager\run_manager.py remain unchanged.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Recovery approval now supported_products=[JTO-USD], reason=direct_recovery_and_threshold_agree, active_gate_bypassed_for_recovery=true. Evidence: JTO direct recovery signals=4, avg_net_forward_close_bps=+103.6613, positive_rate=1.0, SL touch=0.0; JTO product threshold signals=6, avg_net_forward_close_bps=+102.9270, positive_rate=1.0, SL touch=0.0. RE was not approved because direct recovery support remains false/high SL; XRP was not approved because product-threshold support is missing.
+Action taken: added explicit DRY_RECOVERY_APPROVAL_ALLOW_DIRECT_THRESHOLD_WHEN_ACTIVE_MISSING=true; patched recovery approval so direct recovery plus product-threshold agreement can approve a recovery-only product only when that flag is enabled; auto-sync wrote DRY_PNL_SIM_APPROVED_PRODUCTS=[JTO-USD]. Restarted DRY supervisor and sim loop hidden. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (65 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK; run_settings.json JSON parse OK; forced one-shot sim iteration OK in 164 seconds with failed_command_count=0.
+Next action: keep hidden DRY observe/sim running until a fresh approved JTO candidate opens/closes, then repair from actual post-approval P&L evidence. Do not tune score while opened=0 for the approved recovery lane; do not enable LIVE.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T21:07:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running on bounded activity tail; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=61560 sim_loop_pid=55160 status_monitor_pid=55040. Cloud task URL/status local pid=61560; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_direct_recovery_confirmation. The sim loop now completes a post-patch pass in 134 seconds instead of the prior 506 seconds. Latest state updated_at=2026-06-18T21:06:55Z; loop_health healthy=true; failed_command_count=0. Feed/preflight artifacts are writing from logs/activity_ticker_sim_tail.log instead of re-reading the multi-GB activity log each pass.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Latest recovery evidence: active_gate_supported_products=[]; candidate_recovery_supported_products=[XRP-USD]; direct_recovery_supported_products=[JTO-USD,XRP-USD]; threshold_supported_products=[JTO-USD,RE-USD]. Auto-sync approved_products=[]; reason=already_synced. DRY_PNL_SIM_APPROVED_PRODUCTS is empty until active/direct/threshold support agree.
+Action taken: reduced recovery sweep grid to safety-relevant values; added bounded activity-tail refresh for sim diagnostics; validated 64 sim/cloud tests plus py_compile/json; one forced sim iteration completed cleanly in 134 seconds; restarted hidden sim loop. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Next action: continue hidden observe/sim loop; wait for a fresh JTO strict recovery window or another product with active/direct/threshold agreement; do not approve RE because its recent recovery evidence is negative/high stop-touch; do not enable LIVE.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T20:52:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=61560 sim_loop_pid=52592 status_monitor_pid=55040. Cloud task URL/status local pid=61560; external Cloud task URL not configured locally.
+Current blocker: trough / current candidate quality. Latest bounded readiness shows feed/preflight coverage usable: signals=52, quote_volume_usable_ratio=1.0, book_metric_source_present_ratio=1.0, dmid_usable_ratio=0.9038, liquid_dmid_overlap_ratio=0.9038, spread_usable_ratio=1.0, tob_usable_ratio=1.0, trough_seeded_ratio=1.0. No U=0/stale-feed or product-cache blocker is indicated. Current blocks are tick_dmid/trough/dry_pnl_guard/market_breadth, with dry_liquid_early_skip reasons={trough:25} and probe_rejections={tick_dmid:25}.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Sim evidence before this patch: active/candidate approved recovery remained XRP-USD only; threshold products included JTO-USD/RE-USD/XRP-USD. JTO recovery-candidate evidence supports a strict shape: max_trough<=0.65, topbook>=50, quote>=50000, dmid>=-20, tick_dmid>=-10, positive_rate=1.0, avg_net_forward_close_bps=102.93, sl_touch_rate=0.0, last matching signal 2026-06-18T20:18:50Z. RE evidence rejected despite threshold support because sl_touch_rate was high and filtered outcomes were negative.
+Action taken: patched DRY recovery scout to support product-scoped quote volume, topbook, dmid, and tick-dmid thresholds; tightened JTO recovery profile in run_settings to the positive forward-evidence slice; added regression coverage proving the JTO recovery profile opens while nearby high-trough and low-topbook rows stay blocked; validated 106 targeted tests plus py_compile/json; restarted hidden DRY supervisor. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Next action: keep hidden observe/sim running until a fresh JTO-like strict recovery window or another evidence-backed product appears; do not tune Profit Score while opened=0; continue repairing preflight/feed/candidate coverage only.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T20:32:03Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=7508 sim_loop_pid=52592 status_monitor_pid=55040. Cloud task URL/status local pid=7508; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_recovery / live openability wait. Feed/preflight lane is alive and usable: recent ticks show U=120 S=356 brf=120, book source present, quote volume usable, no U=0/stale-feed condition. Remaining live blocks are candidate quality: current market_breadth below 0.85 plus trough/tick windows; latest ONDO signal blocked by net_negative_high_trough at trough=1.0; latest JTO-like recovery replay opens only when trough <=0.75 and tick/pressure pass.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Active dry gate support evidence: supported_products=[XRP-USD]; signals=6; avg_net_forward_close_bps=7.5469; positive_net_close_rate=0.8333; train_positive=1.0; validation_positive=0.6667; sl_touch_rate=0.0. Recent forward replay evidence: JTO dry_pnl_guard rows at 20:18:50/20:19:08/20:19:17 had net_forward_close_bps=55.2593/53.7134/43.4964 with trough 0.638667/0.689333/0.712.
+Action taken: patched net-negative DRY recovery guard so the scout-specific trough cap can override only net_negative_high_trough, while pressure/topbook/dmid/tick safety still blocks; added regression coverage; scoped recovery pressure floor to 0.3 for DOGE/JTO/ONDO/SOL/ZEC only; validated 105 targeted tests plus py_compile/json; restarted hidden DRY supervisor. Coinbase/order path not touched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Next action: continue hidden observe/sim loop until a fresh live DRY candidate repeats the supported scout window and opens; if no open appears, repair the remaining trough/tick/preflight candidate lane rather than tuning Profit Score. Do not enable LIVE.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T19:47:26Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with stricter XRP recovery gates; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=89192 sim_loop_pid=7804 status_monitor_pid=55040. Cloud task URL/status local pid=89192; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_direct_recovery_confirmation. XRP-USD now passes active dry-pnl-guard history and recovery threshold support only under a stricter slice, but direct recovery confirmation is still missing enough matching signals.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Strict XRP evidence: active_gate_supported_products=[XRP-USD]; threshold_supported_products=[XRP-USD]; direct_recovery_supported_products=[]; missing_direct_recovery_products=[XRP-USD]; approved_products=[]; auto_sync_changed=false. XRP strict gates applied: DRY_MIN_RECENT_QUOTE_VOLUME_USD_BY_PRODUCT[XRP-USD]=7581959.2651; DRY_PNL_NET_NEGATIVE_MAX_TROUGH_PCT_BY_PRODUCT[XRP-USD]=0.121901.
+Action taken: tightened XRP net-negative recovery criteria without approving XRP; patched sim summary blocker to name missing direct recovery confirmation once active gate and threshold support agree; validation passed 159 targeted tests plus py_compile; restarted hidden repair loop. No Coinbase/order path touched.
+Next action: keep hidden simulate/repair running until recovery history accumulates at least 6 matching strict XRP signals with positive full/train/validation support; auto-sync approval remains guarded by DRY=true, LIVE=false, static TP/SL, and cross-check agreement.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T19:24:28Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor restarted with recovery approval reporting; DRY=true LIVE=false; supervisor_pid=89192 sim_loop_pid=73596 status_monitor_pid=55040. Cloud task URL/status local pid=89192; external Cloud task URL not configured locally.
+Current blocker: dry_pnl_guard needs recovery; recovery blocked by market_breadth; closest gate quote_volume (NEAR-USD). Sim repair state also reports dry_pnl_active_gate_evidence because XRP-USD has direct recovery/threshold support but lacks active dry-pnl-guard support. Feed/cache lane remains usable enough to continue observe; current remaining issues are green breadth and net-negative recovery evidence, not Coinbase/order path.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Recovery approval evidence: supported=false; approved=none; direct=XRP-USD; threshold=XRP-USD; missing_active=XRP-USD; auto_sync_changed=false; auto_sync_reason=already_synced.
+Action taken: patched status reporter so future two-hour/hourly material status includes recovery approval cross-check and auto-sync state; restarted hidden status monitor; no-send render check confirmed report body; send suppressed because cadence was not due. Validation passed 158 targeted tests plus py_compile.
+Next action: keep hidden simulate/repair loop running; wait for active dry-pnl-guard support to agree with recovery/threshold support, then auto-sync DRY approvals; continue repairing concrete feed/preflight gaps if they reappear.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T19:21:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with auto-sync recovery approval guard; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=89192 sim_loop_pid=73596 status_monitor_pid=92800. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: dry_pnl_active_gate_evidence. Feed/cache lane is usable; current coverage cause is green_breadth. DRY approved recovery products remain empty because the strict cross-check is false.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Auto-sync evidence: changed=false; reason=already_synced; approved_products=[]. Recovery cross-check: supported=false; direct_recovery_supported_products=[XRP-USD]; threshold_supported_products=[XRP-USD]; missing_active_gate_products=[XRP-USD].
+Action taken: added guarded auto-sync for DRY_PNL_SIM_APPROVED_PRODUCTS so future products are approved automatically only when active dry gate history, direct recovery evidence, and product threshold support all agree; guarded by DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8. Forced sim iteration completed and did not approve XRP. Validation passed 157 targeted tests plus py_compile.
+Next action: keep hidden simulate/repair loop running; continue checking whether active dry-pnl-guard support turns positive for any recovery product, then auto-sync DRY approvals if and only if the strict cross-check passes.
+User action required: none for DRY repair. LIVE remains off.
+
+## 2026-06-18T19:14:27Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with recovery approval cross-check; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=89192 sim_loop_pid=24532 status_monitor_pid=92800. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: dry_pnl_active_gate_evidence. Feed/cache lane is usable; current coverage cause is green_breadth only. Latest sim state: latest_market_green_ratio=0.6000; product_cache_gap=false; open_count=0. The reason DRY cannot safely reopen yet is that net P&L is negative and the only recovery product showing threshold support is XRP-USD, but XRP-USD is missing active dry-pnl-guard history support.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior readiness/reporting files unchanged.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized=-0.37012501; unrealized=0.0; opened=73; closed=73; wins=32; losses=39; open=0; ready_to_deploy_live=false. Recovery cross-check: supported=false; supported_products=[]; direct_recovery_supported_products=[XRP-USD]; threshold_supported_products=[XRP-USD]; missing_active_gate_products=[XRP-USD]. Candidate active-gate recovery support remains false: signals=232, avg_net_forward_close_bps=-27.5374, positive_rate=0.2371.
+Action taken: patched sim/report loop to require agreement between active dry gate history, direct recovery evidence, and product threshold support before treating a recovery product as actionable; forced sim iteration completed; restarted hidden repair loop; validation passed 155 targeted tests plus py_compile.
+Next action: keep hidden simulate/repair loop running; do not approve XRP or any product until active dry-pnl-guard support and recovery threshold support agree in full/train/validation; continue collecting/repairing market coverage and recovery evidence.
+User action required: none for DRY repair. Gmail sends still depend on connector/auth availability. LIVE remains off.
+
+## 2026-06-18T18:09:25Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop restarted on patched recovery-candidate coverage; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=6772 status_monitor_pid=92800. Cloud task URL/status is not configured locally / not visible from this workspace. Gmail material-event send attempted and blocked by connector auth: HTTP 401 token_expired.
+Current blocker: dry_pnl_recovery_evidence. Feed/cache lane is usable: latest_tick_utc=2026-06-18T18:08:31Z, timestamp_stale_sec=4, U=120, S=356, quote_volume_usable_ratio=0.9937, liquid_dmid_abs_supported=true, tick_dmid_abs_supported=true, product_cache_gap=false. Remaining gate is market_breadth: latest_market_green_ratio=0.2917 vs 0.8500.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false. Recovery forward evidence widened to 104 signals across 9 products; threshold_supported=false; supported_count=0; best_avg_net_forward_close_bps=-16.309; best_positive_net_close_rate=0.375. Direct active-gate recovery support is still false: NEAR-USD 6 signals avg=-36.0898 bps, UNI-USD 45 avg=-30.9065 bps, XLM-USD 6 avg=-104.5747 bps.
+Action taken: fixed recovery candidate feed so runtime net_negative_no_approved_recovery candidates are included; preserved inferred trough pass from tick diagnostics; changed best_by_product to keep product diversity; raised recovery candidate sample limit to 60 and near-tail window to 60 ticks; added history recovery threshold sweep and real recovery grid values; validated 151 targeted tests plus py_compile; forced sim iterations completed cleanly.
+Next action: keep hidden simulate/repair loop running; continue collecting wider recovery evidence and only approve DRY recovery/open candidates when product support turns positive in full/train/validation. Do not tune Profit Score while openable support remains false.
+User action required: none for DRY repair. Gmail reporting requires reconnect/sign-in because the connector token is expired. LIVE remains off.
+
+## 2026-06-18T17:35:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with history-backed market_breadth evidence; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=20544 status_monitor_pid=52640.
+Current blocker: market_breadth. Feed/cache usable; latest green breadth was close but still below gate: market_green_ratio=0.8417 vs 0.8500, market_dmid=28.76 bps, timestamp_stale_sec=4, product_cache_gap=false.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false. Market_breadth evidence now uses history when larger: source=history, rows=51, loaded=51, mature=51, avg_net_forward_close_bps=-13.3939, positive_rate=0.2745, threshold_supported=false.
+Action taken: patched sim summary to prefer market_breadth history artifact and fixed loaded-signal fallback; validated 149 tests plus py_compile; forced sim iteration completed cleanly. Checked product/pressure/trough grid: no 6-signal supported market_breadth subset, so no safe DRY recovery approval applied.
+Next action: keep hidden simulate/repair running; if green breadth crosses gate, verify actual opens/P&L; if not, continue collecting current-blocker evidence and repair only concrete data/preflight defects.
+User action required: none for DRY repair; Gmail connector/auth still unavailable for actual sends; LIVE remains off.
+
+## 2026-06-18T17:27:11Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor restarted to load reporter patch; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=56184 status_monitor_pid=52640.
+Current blocker: market_breadth; latest status render includes market_breadth_forward evidence in the report body.
+Files changed: C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; plus current-blocker sim-loop files from prior entry.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0. Market_breadth_forward report evidence: loaded=51, mature=49, avg_net_forward_close_bps=-13.9234, positive_rate=0.2653, threshold_supported=false, supported_count=0.
+Action taken: patched reporter so material/hourly status includes current market_breadth forward and sweep support; validation passed 149 targeted tests plus py_compile; no-send render confirmed report text.
+Next action: keep hidden simulate/repair running and watch for current-blocker support; no DRY recovery approval unless train/validation support turns true.
+User action required: none for DRY repair; Gmail connector/auth still unavailable for actual sends; LIVE remains off.
+
+## 2026-06-18T17:24:50Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with current-blocker forward evidence lane; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=56184 status_monitor_pid=49340.
+Current blocker: market_breadth. Feed/cache usable: U=120, timestamp_stale_sec=7, runtime_cache_present=334, runtime_cache_stale=22, runtime_cache_missing=0, product_cache_gap=false. Latest market_green_ratio=0.6500 vs 0.8500; market_dmid=0.16 bps vs 0.00, so current remaining regime failure is green breadth.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior readiness/preflight patches unchanged.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false. Current market_breadth forward slice: loaded=51, mature=49, avg_net_forward_close_bps=-13.9234, positive_rate=0.2653, threshold_supported=false, supported_count=0. Best sweep avg was +60.312 bps but failed validation, so no safe approval was applied.
+Action taken: added market_breadth forward-outcome and threshold-sweep lane to the continuous sim loop; validation passed 95 targeted tests plus py_compile; forced sim iteration completed cleanly.
+Next action: keep hidden simulate/repair loop running; only approve DRY recovery products if the current-blocker slice becomes train/validation supported, otherwise continue looking for concrete preflight/feed defects.
+User action required: none for DRY repair; Gmail connector/auth still unavailable for actual sends; LIVE remains off.
+
+## 2026-06-18T17:17:36Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with corrected openable/preflight reporting; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=76616 status_monitor_pid=49340.
+Current blocker: market_breadth plus market_dmid. Feed/cache is usable: U=120, timestamp_stale_sec=2, runtime_cache_present=343, runtime_cache_stale=13, runtime_cache_missing=0, product_cache_gap=false. Latest market_green_ratio=0.1333 vs 0.8500 and market_dmid=-52.33 bps vs 0.00.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false. Current_open_candidate_present=false; historical_open_candidate_present=false; all_pass_candidates=0. Candidate recovery preview unsupported: signals=153, avg_net_forward_close_bps=-31.3104, positive_rate=0.2222.
+Action taken: patched readiness/preflight reporting so guard-blocked rows and rows missing required market-breadth fields are not counted as openable; patched ledger diagnostics close timestamp; validation passed 153 targeted tests plus py_compile; forced sim iteration completed cleanly.
+Next action: keep hidden simulate/repair loop running; wait for market/feed support or new concrete preflight defect, then repair without loosening Coinbase/order guardrails or static TP/SL.
+User action required: none for DRY repair; Gmail connector/auth still unavailable for actual sends; LIVE remains off.
+
+## 2026-06-18T17:13:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted to load latest diagnostics patch; hidden status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=92360 status_monitor_pid=49340.
+Current blocker: market_breadth plus market_dmid; feed/cache remains usable, not stale.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false.
+Action taken: relaunched sim/repair in hidden background, no foreground CMD.
+Next action: continue hidden simulate/repair cycle and only change approvals when forward evidence supports it.
+User action required: none for DRY repair; LIVE remains off.
+
+## 2026-06-18T17:10:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden sim/repair loop, and hidden status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=81088 status_monitor_pid=49340. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: market_breadth plus market_dmid. Feed/cache is usable: U=120, timestamp_stale_sec=0, runtime_cache_present=339, runtime_cache_stale=17, runtime_cache_missing=0, product_cache_gap=false. Latest market_green_ratio=0.3083 vs required 0.8500; market breadth bins remain unsupported by forward evidence.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior guard/reporting changes unchanged.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; ready_to_deploy_live=false. Current dryrank candidates are being blocked by net_negative_no_approved_recovery while candidate recovery preview remains unsupported, so this is still a market/support blocker rather than score tuning.
+Action taken: patched recent dry ledger diagnostics so close events report exit_ts_utc; validation passed 147 tests and py_compile; forced sim iteration completed cleanly.
+Next action: keep hidden DRY observe/sim repair running; continue re-simulating until market/support evidence can safely approve candidates or until the next concrete feed/preflight defect appears.
+User action required: none for DRY repair; Gmail connector/auth still unavailable for actual sends; LIVE remains off.
+
+## 2026-06-18T15:59:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running with pressure-aware sweep/status fields; DRY=true LIVE=false; supervisor_pid=31152 sim_loop_pid=16476. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: dmid/market_breadth with no supported pressure-aware recovery lane. Current runtime gate primary is market_breadth; runtime primary is dmid. Feed/cache is usable: U=120, S=356, stale_sec=6, product_cache_gap=false. Market remains red: market_green_ratio=0.1083 vs 0.8500 and market_dmid=-62.64 bps vs 0.0.
+Files changed: C:\ai_trading_bot_koko\tools\koko_forward_threshold_sweep.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_forward_threshold_sweep.py; prior pressure/outcome patches unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0. Active support: supported_products=[]; UNI pressure-verified rows=13 avg=-17.2484 bps positive_rate=0.3846. Pressure sweep: supported=false; supported_count=0; best_avg_net_forward_close_bps=6.2126; best_positive_rate=0.5, validation negative in top config.
+Action taken: added optional `min_book_pressure` threshold dimension to forward threshold sweep and surfaced pressure sweep summary in sim-loop state. Ran targeted pressure-aware history sweep; no deployable pressure-backed lane found. Coinbase/order path untouched; DRY remains true; LIVE remains false; static TP/SL untouched.
+Validation: python -m py_compile tools\koko_forward_threshold_sweep.py tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep OK; targeted pressure sweep wrote logs\forward_threshold_sweep_history_pressure_5m.json.
+Next action: continue hidden DRY observe/sim repair; inspect whether current dmid/market breadth is a temporary market regime or whether product-scoped recovery list should be tightened further to prevent unsupported opens while net negative.
+User action required: none for DRY repair; Gmail sending still needs auth/config before real emails can be sent; LIVE remains off.
+
+## 2026-06-18T15:54:50Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with pressure-aware support and wider outcome refresh; DRY=true LIVE=false; supervisor_pid=31152 sim_loop_pid=15264. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: market_breadth plus no pressure-verified active support. Feed/cache coverage is usable: U=120, S=356, stale_sec=6, product_cache_gap=false, book_metric_source_present_ratio=1.0. Market is still red: market_green_ratio=0.2083 vs 0.8500 and market_dmid=-29.51 bps vs 0.0.
+Files changed: C:\ai_trading_bot_koko\tools\koko_paper_signal_forward_outcomes.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_paper_signal_forward_outcomes.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0. Active support evidence_source=history; evidence_rows=5318; supported_products=[]; UNI pressure-verified rows=13 but avg_net_forward_close_bps=-17.2484 and positive_rate=0.3846; NEAR has zero openable rows after applying pressure/quote/trough gates.
+Action taken: added `press` and `dry_min_book_pressure` to forward outcomes; active support now enforces net-negative book-pressure gates and rejects missing/low-pressure rows. Increased hidden sim loop limit to 5000 to refill historical pressure evidence. This corrected the false NEAR support. Coinbase/order path untouched; DRY remains true; LIVE remains false; static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_paper_signal_forward_outcomes.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_paper_signal_forward_outcomes tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections OK; python tools\koko_sim_repair_loop.py --once --limit 5000 OK.
+Next action: add pressure-aware sweep/diagnostics to find any real product-scoped recovery lane; do not tune score while opened=0 and do not loosen into red market.
+User action required: none for DRY repair; Gmail sending still needs auth/config before real emails can be sent; LIVE remains off.
+
+## 2026-06-18T15:48:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with active-support history fix; DRY=true LIVE=false; supervisor_pid=31152 sim_loop_pid=41488. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: dry_pnl_recovery with runtime market_breadth red. Active recovery support is visible again from accumulated forward-history evidence, but current market breadth remains below entry floor.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior readiness fix unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0. Active support evidence_source=history; evidence_rows=1766; supported_products=NEAR-USD; NEAR signals=6; avg_net_forward_close_bps=91.7755; positive_rate=1.0; sl_touch_rate=0.0; train_avg=89.1979; validation_avg=94.3531.
+Action taken: fixed sim summary to compute active recovery support from accumulated forward history instead of the truncated latest-1000 outcome file. This restores usable recovery evidence without loosening gates, changing score tuning, touching Coinbase/order code, or enabling LIVE.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections OK; python tools\koko_sim_repair_loop.py --once OK.
+Next action: continue hidden DRY observe/sim repair and wait for a safe approved NEAR/UNI recovery window; if the next approved entry loses, repair product-scoped preflight/data gate from that entry evidence.
+User action required: none for DRY repair; Gmail sending still needs auth/config before real emails can be sent; LIVE remains off.
+
+## 2026-06-18T15:45:45Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted hidden with current-blocker diagnostic fix; DRY=true LIVE=false; supervisor_pid=31152 sim_loop_pid=69728. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: market_breadth. Latest feed is fresh and usable, but market breadth is red: market_green_ratio=0.0750 vs 0.8500 minimum and market_dmid=-68.85 bps vs 0.0 minimum. No U=0, stale feed, or product/cache gap.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; threshold_supported=false; active_dry_gate_support=false after current window refresh.
+Action taken: fixed readiness/preflight reporting so stale historical all-pass rows no longer mask the latest runtime market-breadth blocker. Restarted only the hidden sim-repair worker; Coinbase/order path untouched; DRY remains true; LIVE remains false; static TP/SL untouched.
+Validation: python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK; python tools\koko_sim_repair_loop.py --once OK.
+Next action: continue hidden DRY observe/sim repair. Do not loosen into red breadth; wait for a supported market window or repair real coverage causes if U/stale/cache/liquid/tick coverage regresses.
+User action required: none for DRY repair; Gmail sending still needs auth/config before real emails can be sent; LIVE remains off.
+
+## 2026-06-18T15:40:51Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop restarted with latest UNI pressure gate; DRY=true LIVE=false; supervisor_pid=31152 sim_loop_pid=36700. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; latest UNI loss pulled dry net P&L back down and required a scoped recovery-gate repair.
+Files changed: C:\ai_trading_bot_koko\run_settings.json.
+Dry Profit Score evidence: after loss, realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0. Latest loss: UNI-USD loss_trim -43.7530 bps -0.01312591 USD at 2026-06-18T15:39:00Z. Loss entry had book pressure=0.1324708657; recent profitable UNI recovery entries had book pressure about 0.426, 0.429, 0.619, 0.699, and 0.999.
+Action taken: tightened only UNI-USD net-negative recovery book-pressure floor from 0.0 to 0.3 via DRY_PNL_NET_NEGATIVE_MIN_BOOK_PRESSURE_BY_PRODUCT.UNI-USD=0.3. This blocks the low-pressure loss pattern while preserving recent higher-pressure winners. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: python -m json.tool run_settings.json OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop OK, 42 tests. Hidden workers restarted with Start-Process -WindowStyle Hidden.
+Next action: continue hidden DRY observe/sim loop and verify no immediate low-pressure UNI re-entry; keep LIVE blocked until net P&L is nonnegative and score is deployable.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T16:24:50Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running with coverage patch; hidden TDI status monitor restarted with reporter blocker-priority patch; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=80052 status_monitor_pid=49340.
+Current blocker: market_breadth. Reporter subject/status now prefers current runtime_gate_primary_blocker=market_breadth over runtime near-miss first failure=dmid.
+Files changed: C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; prior sim-loop/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0.
+Action taken: patched TDI report blocker priority and verified no-send report subject `[TDI STATUS] Profit 35/100 | DRY=true LIVE=false | market_breadth`; restarted hidden status monitor. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\tdi_status_reporter.py tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_tdi_status_reporter tests.test_koko_sim_repair_loop OK (63 tests).
+Next action: continue hidden DRY observe/sim loop; inspect current tick-dmid/openability if market breadth becomes usable; keep LIVE off until score/net P&L/support are deployable.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T17:05:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running with explicit-empty approved recovery guard; hidden sim loop restarted with recent ledger reason diagnostics; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=81088 status_monitor_pid=49340.
+Current blocker: market_breadth. Latest market breadth is 0.8250 against required 0.8500. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior run_manager/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36433427; unrealized_usd=0.0; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; candidate_recovery_supported=False; candidate_avg_net_forward_close_bps=-30.1364; candidate_positive_net_close_rate=0.3113.
+Action taken: added recent dry ledger activity diagnostics to sim summary, including blocked_open reason counts and recent open/close product counts. Current ledger sample shows blocked_open reasons: quarantine=52, net_negative_low_pressure=47, net_negative_low_tick_dmid=42, loss_cooldown=20, max_open=17; no new post-restart open attempts yet, so `net_negative_no_approved_recovery` has not appeared. Loop health remains healthy=True with failed_command_count=0. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (147 tests); forced sim iteration OK.
+Next action: keep hidden DRY observe/sim loop running; watch for post-patch blocked_open reason `net_negative_no_approved_recovery`; only approve products from candidate_recovery_support when train/validation evidence turns positive; keep LIVE off.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T17:00:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted with explicit-empty approved recovery guard; hidden sim loop running with loop-health reporting; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=45124 status_monitor_pid=49340.
+Current blocker: market_breadth. Latest market breadth is 0.8417 against required 0.8500. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; realized_usd=-0.36433427; unrealized_usd=0.0; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0. UNI open at 2026-06-18T16:54:47Z closed flat at 2026-06-18T16:57:28Z; UNI open at 2026-06-18T16:57:37Z closed profit_protect at 2026-06-18T16:58:20Z for +10.1592 bps / +0.00304775 USD.
+Action taken: added loop_health to sim state (healthy=True, failed_command_count=0, iteration_elapsed_sec=81 on forced refresh). Patched actual DRY PnL entry guard so `DRY_PNL_SIM_APPROVED_PRODUCTS=[]` blocks new net-negative recovery entries with `net_negative_no_approved_recovery`; this aligns supervisor behavior with the sim summary. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (146 tests); forced sim iteration OK.
+Next action: keep hidden DRY observe/sim loop running; require explicit product approval from candidate_recovery_support before any further net-negative recovery opens; keep LIVE off until score/net P&L/support are deployable.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:52:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with market-breadth support diagnostics; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=89732 status_monitor_pid=49340.
+Current blocker: green_breadth/market_breadth only. Latest market breadth is 0.4417 against required 0.8500. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior reporter/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; candidate_recovery_supported=False; candidate_avg_net_forward_close_bps=-30.6414; candidate_positive_net_close_rate=0.33.
+Action taken: added market-breadth support diagnostics to the sim summary. Current breadth bin 0.40-0.60 has 141 runtime-near signals, avg_net_forward_close_bps=-17.5002, positive_net_close_rate=0.1348, train_avg=-12.9963, validation_avg=-21.9407, supported=False. All breadth bins are unsupported, including 0.75-0.85 avg=-21.1394 and 0.85-1.01 avg=-18.9069. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (108 tests); forced sim iteration OK.
+Next action: keep hidden DRY observe/sim loop running; do not loosen market_breadth from current evidence; continue requiring product-specific candidate support before approving any recovery lane; keep LIVE off.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:45:26Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with candidate recovery preview support; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=55108 status_monitor_pid=49340.
+Current blocker: green_breadth/market_breadth only. Latest market breadth is 0.6083 against required 0.8500. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior reporter/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=False; active_gate_signals=0; supported_products=[].
+Action taken: added non-opening candidate recovery support preview so the loop can evaluate possible recovery products without approving them. Current preview shows no supported product: preview_signals=95, avg_net_forward_close_bps=-32.6855, positive_net_close_rate=0.3263, products=AERO-USD:4|BCH-USD:4|HYPE-USD:38|NEAR-USD:1|UNI-USD:13|XLM-USD:35, supported_products=[]. Active support remains blocked because `DRY_PNL_SIM_APPROVED_PRODUCTS=[]`. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (106 tests); forced sim iteration OK.
+Next action: keep hidden DRY observe/sim loop running; approve no products until candidate preview shows train/validation-positive support under current guards; keep LIVE off.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:41:24Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with tick-dmid current-tail diagnostics; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=82428 status_monitor_pid=49340.
+Current blocker: green_breadth/market_breadth only. Latest market breadth is 0.6500 against required 0.8500. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior reporter/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=False; active_gate_signals=0; supported_products=[].
+Action taken: patched coverage diagnostics so low whole-window tick_dmid ratio no longer appears as a current feed blocker when latest absolute tick coverage is healthy. Forced iteration now reports tick_dmid_latest_ready=204, tick_dmid_abs_floor=30, tick_dmid_abs_supported=True, U=120, stale_sec=4, cache_missing=0, product_cache_gap=False, liquid_dmid_abs_supported=True, causes=green_breadth. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (104 tests); forced sim iteration OK.
+Next action: keep hidden DRY observe/sim loop running; do not loosen market_breadth below 0.85 without validated positive train/validation evidence; continue scanning for an approved product-specific recovery lane.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:33:56Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with approved-product safety patch; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=85220 status_monitor_pid=49340.
+Current blocker: market_breadth; latest market breadth is 0.8000 against required 0.8500, with tick_dmid_coverage still weak. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior reporter/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=False; active_gate_signals=0; supported_products=[].
+Action taken: fixed active support evaluator so `DRY_PNL_SIM_APPROVED_PRODUCTS=[]` means no approved recovery products while net P&L is negative; reporting can no longer claim active recovery support from unapproved products. Forced iteration reports U=120, stale_sec=0, cache_present=350, cache_stale=6, cache_missing=0, product_cache_gap=False. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_koko_dry_observe_readiness OK (103 tests); forced sim iteration OK.
+Next action: continue hidden DRY observe/sim loop; only approve a recovery product if train/validation forward evidence passes under current guards; keep LIVE off.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:30:02Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted with runtime-product-cache coverage command included; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=32612 status_monitor_pid=49340.
+Current blocker: market_breadth; current market breadth is 0.7833 against required 0.8500, with tick_dmid_coverage still weak. Data/preflight coverage is usable.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior reporter/test changes unchanged.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=False; supported_products=[].
+Action taken: added runtime product cache coverage refresh into every sim-loop iteration and surfaced runtime cache counts in coverage diagnostics. Forced iteration now reports U=120, stale_sec=2, runtime_products=356, cache_present=350, cache_stale=6, cache_missing=0, cache_stale_ratio=0.0169, product_cache_gap=False, liquid_dmid_abs_supported=True, liquid_dmid_overlap=2071. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_runtime_product_coverage.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter OK (65 tests); forced sim iteration OK.
+Next action: continue hidden DRY observe/sim loop; do not loosen market_breadth below 0.85 because 0.75-0.85 runtime-near evidence is negative; inspect current tick-dmid/openability only when breadth is usable or a validated product-specific pocket appears.
+User action required: none for DRY repair; Gmail auth/SMTP still required for actual send; LIVE remains off.
+
+## 2026-06-18T16:23:04Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; patched hidden sim loop relaunched; hidden TDI status monitor running; DRY=true LIVE=false; supervisor_pid=73792 sim_loop_pid=80052 status_monitor_pid=26052.
+Current blocker: market_breadth; current feed is live and usable, but latest market breadth is red and tick dmid coverage is weak. Not live-ready.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; realized_usd=-0.36738202; unrealized_usd=0.0; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=False; threshold_supported=False; pressure_threshold_supported=False.
+Action taken: patched coverage diagnostics so low historical liquid+dmid ratio no longer masks usable absolute overlap; current diagnostics now show liquid_dmid_abs_supported=True with liquid_dmid_overlap=1984 floor=30, U=120, S=356, stale_sec=4, product_cache_gap=False, causes=tick_dmid_coverage|green_breadth|market_dmid. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\tdi_status_monitor.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter OK (99 tests); one sim iteration OK.
+Next action: keep hidden DRY observe/sim running; do not loosen market_breadth into a red market; next repair target is current tick-dmid/openability evidence once breadth turns usable or a supported positive pocket appears.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T16:06:17Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running pid=1120; hidden sim loop running pid=28892; hidden TDI status monitor started pid=26052; DRY=true LIVE=false.
+Current blocker: reporting delivery auth/config is blocked; DRY repair blocker remains current openability false with dmid/market_breadth in red market, not U=0/stale/cache.
+Files changed: no additional code changes after readiness split; relay updated.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36738202; realized_usd=-0.36738202; unrealized_usd=0.0; opened=70; closed=70; wins=31; losses=38; open=0.
+Action taken: attempted immediate Gmail connector send to tdifactorToday@gmail.com; Gmail connector returned HTTP 401 token_expired. Verified repo SMTP reporter exists and writes outbox fallback when SMTP env is missing; started tools\tdi_status_monitor.py hidden with 60s checks and 7200s hourly/two-hour cadence. Latest repo reporter blocker: missing SMTP env ['user', 'password', 'sender']; outbox .eml written under C:\ai_trading_bot_koko\logs\tdi_status_outbox.
+Validation: hidden TDI status monitor process confirmed pid=26052; TDI_REPORT_TO=tdifactorToday@gmail.com and TDI_REPORT_HOURLY_SEC=7200 present in run_settings.json.
+Next action: continue DRY observe/sim loop and status monitor; actual Gmail delivery requires refreshed Gmail connector auth or SMTP env credentials. Do not touch Coinbase/order path; do not loosen gates into red market.
+User action required: yes for actual Gmail delivery only: reconnect Gmail connector or provide SMTP/app-password env vars. No user action required for DRY repair loop.
+
+## 2026-06-18T16:13:17Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted pid=73792; hidden sim loop restarted pid=33052; hidden TDI status monitor still running pid=26052; DRY=true LIVE=false.
+Current blocker: market_breadth. The data/preflight lane is now distinguishing current runtime blocker from stale historical all-pass/open evidence. Feed/cache is usable: U=120, stale_sec=0, product_cache_gap=false, book_metric_source_present_ratio=1.0. Current market remains red: latest_market_green_ratio=0.0833/0.8500 with market_dmid negative.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36738202; realized_usd=-0.36738202; unrealized_usd=0.0; opened=70; closed=70; wins=31; losses=38; open=0; active_gate_supported=false; supported_products=[].
+Action taken: fixed latest-tick current blocker handling so prior dryopen/all-pass evidence in the lookback cannot mask current red-breadth; fixed sim summary to prefer runtime_gate_primary_blocker over first near-miss failure. Stopped cmd/wscript status-monitor wrapper; kept direct hidden Python monitor only. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness OK (46); python tools\koko_sim_repair_loop.py --once OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes tests.test_cloud_only_corrections OK (61).
+Next action: continue hidden DRY observe/sim loop; do not tune Profit Score while opened=0; wait for or repair only a current pressure-supported openable window. Do not loosen into red market breadth.
+User action required: none for DRY repair. Actual Gmail delivery still requires refreshed Gmail connector auth or SMTP env credentials.
+
+## 2026-06-18T16:15:11Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor pid=73792; hidden sim loop pid=33052; hidden TDI status monitor pid=26052; hidden named tunnel watchdog pid=9716; DRY=true LIVE=false.
+Current blocker: market_breadth; no U=0/stale/cache issue in current feed tail.
+Files changed: C:\Users\13144\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\KokoNamedTunnelWatchdog.cmd.
+Dry Profit Score evidence: unchanged score=35; dry_pnl_net_usd=-0.36738202; opened=70; closed=70; wins=31; losses=38; open=0.
+Action taken: removed foreground-prone cmd wrapper behavior by changing Startup KokoNamedTunnelWatchdog.cmd to launch PowerShell hidden in background and exit; stopped duplicate/old wrapper processes. Current process list has no Koko TDI/named-tunnel cmd.exe wrapper, only hidden Python/PowerShell processes. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: process verification confirmed hidden Python DRY supervisor, hidden Python sim loop, hidden Python TDI status monitor, and hidden PowerShell named-tunnel watchdog only.
+Next action: continue hidden DRY observe/sim loop and monitor current market-breadth/feed evidence; do not tune Profit Score while opened=0.
+User action required: none for DRY repair or backgrounding. Actual Gmail delivery still requires refreshed Gmail connector auth or SMTP env credentials.
+
+## 2026-06-18T16:05:03Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop restarted with patched readiness/preflight reporting; DRY=true LIVE=false; supervisor_pid=1120 sim_loop_pid=28892.
+Current blocker: coverage lane is usable but current openability is false; runtime blocker remains dmid/market_breadth with red breadth, not U=0/stale/cache. Latest tail: U=120, S=356, stale_sec=0, product_cache_gap=false, book_metric_source_present_ratio=1.0, latest_market_green_ratio=0.1000/0.8500, latest_market_dmid=-62.75/0.00.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; prior pressure/sweep/run_settings changes unchanged.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.36738202; realized_usd=-0.36738202; unrealized_usd=0.0; opened=70; closed=70; wins=31; losses=38; open=0; current_open_candidate_present=false; historical_open_candidate_present=true; active_gate_supported=false; supported_products=[]; pressure_threshold_supported=false.
+Action taken: split stale historical all-pass candidates from current runtime open candidates so old paper rows cannot make DRY observe think it can open now; kept historical evidence visible for diagnosis. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_koko_dry_observe_readiness OK (36); python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes tests.test_cloud_only_corrections OK (60); python tools\koko_sim_repair_loop.py --once OK.
+Next action: continue hidden DRY observe/sim loop; do not tune Profit Score while opened=0; wait for/repair only a current pressure-supported openable window, and do not loosen into red market breadth.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:35:47Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop running; DRY=true LIVE=false; supervisor_pid=44544 sim_loop_pid=23368. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; dry net P&L remains negative, but score and net are improving. A new UNI-USD DRY position opened after the latest close.
+Files changed: no new files since 2026-06-18T15:27:54Z entry.
+Dry Profit Score evidence: score improved 34 -> 35; realized_usd=-0.35766188; dry_pnl_net_usd=-0.35766188 before the new open mark; opened=69; closed=68; wins=30; losses=37; open=1. Latest closed trade: UNI-USD profit_protect +12.9262 bps +0.00387785 USD at 2026-06-18T15:34:50Z.
+Action taken: refreshed sim state after close; confirmed score=35 and continued monitoring the newly opened DRY position. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: python tools\koko_sim_repair_loop.py --once OK; no stale/U=0/product-cache blocker observed.
+Next action: monitor the new open UNI-USD position through close and continue DRY recovery until net P&L is nonnegative and score is deployable.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:31:57Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop running; DRY=true LIVE=false; supervisor_pid=44544 sim_loop_pid=23368. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; dry net P&L remains negative, but DRY recovery continues improving.
+Files changed: no new files since 2026-06-18T15:27:54Z entry.
+Dry Profit Score evidence: score=34; realized_usd=-0.36153973; unrealized_usd=0.0; dry_pnl_net_usd=-0.36153973; opened=67; closed=67; wins=29; losses=37; open=0. Latest material close: UNI-USD profit_protect +16.1655 bps +0.00484966 USD at 2026-06-18T15:31:10Z.
+Action taken: refreshed sim state after close; confirmed open_count=0 and continued hidden DRY/sim monitoring. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: python tools\koko_sim_repair_loop.py --once OK; active support still reports supported_products=[NEAR-USD] with 6 signals, avg +91.7755 bps, positive_rate=1.0.
+Next action: keep hidden DRY observe/sim loop running; continue repairing from actual dry P&L events until net P&L is nonnegative and score is deployable.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:29:29Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop running; DRY=true LIVE=false; supervisor_pid=44544 sim_loop_pid=23368. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; dry net P&L is still negative, but DRY recovery improved after the latest patches.
+Files changed: no new files since 2026-06-18T15:27:54Z entry.
+Dry Profit Score evidence: score improved 33 -> 34; realized_usd=-0.36638939; unrealized_usd=0.0; dry_pnl_net_usd=-0.36638939; opened=66; closed=66; wins=28; losses=37; open=0. Latest material closes: UNI-USD profit_protect +1.6160 bps +0.00048481 USD at 2026-06-18T15:25:49Z; UNI-USD profit_protect +11.3214 bps +0.00339641 USD at 2026-06-18T15:27:28Z.
+Action taken: verified post-patch DRY recovery opens/closes and score/P&L improvement. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: running hidden loop state reports active support=True, supported_products=[NEAR-USD], no stale/U=0/product-cache blocker; current runtime blocker remains market breadth/market dmid with green breadth about 0.125 and market dmid about -41.22 bps.
+Next action: continue hidden DRY observe/sim loop and repair from the next actual dry P&L event; keep LIVE blocked until net P&L is nonnegative and score is deployable.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:27:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor still running; hidden sim loop restarted after reporting patch; DRY=true LIVE=false; supervisor_pid=44544 sim_loop_pid=23368. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; runtime market breadth is still red and dry net P&L remains negative. Current usable recovery evidence is NEAR-USD only; UNI is no longer counted as supported under the stricter current trough gate.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior C:\ai_trading_bot_koko\run_settings.json NEAR gate remains active.
+Dry Profit Score evidence: score=33; dry_pnl_net_usd=-0.37027061; open=0; opened=64; closed=64; wins=26; losses=37. Corrected active gate support: supported=True; supported_products=[NEAR-USD]; signals=6; avg_net_forward_close_bps=91.7755; positive_rate=1.0; train_avg=89.1979; validation_avg=94.3531; sl_touch_rate=0.0.
+Action taken: patched sim-loop reporting so active_dry_gate_support includes product_support/supported_products and does not hide product-level evidence inside aggregate counts. Restarted sim loop hidden. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness OK, 77 tests; python tools\koko_sim_repair_loop.py --once OK.
+Next action: keep hidden DRY observe/sim loop running for the next NEAR-supported runtime window; if it opens and closes, update recovery gate from actual dry P&L evidence.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:24:02Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop restarted with DRY=true LIVE=false; supervisor_pid=44544 sim_loop_pid=51452. Cloud task URL/status is not configured locally / not visible from this workspace.
+Current blocker: not LIVE-ready; dry net P&L is still negative and runtime breadth is deeply red, but active DRY recovery support is now usable with UNI-USD plus NEAR-USD.
+Files changed: C:\ai_trading_bot_koko\run_settings.json.
+Dry Profit Score evidence: score=33; realized_usd=-0.37027061; unrealized_usd=0.0; dry_pnl_net_usd=-0.37027061; opened=64; closed=64; wins=26; losses=37; open=0. Active gate support after patch: supported=True; signals=11; by_product={NEAR-USD:6, UNI-USD:5}; avg_net_forward_close_bps=59.5803; positive_rate=1.0; sl_touch_rate=0.0. NEAR strict evidence: 6/6 positive, avg +91.7755 bps, qv>=2M, dmid>=20 bps, spread<=10 bps, tob>=50 USD, trough<=0.30, tick_dmid>=-10.
+Action taken: added NEAR-USD to DRY-only sim-approved net-negative recovery lane with strict product-scoped qv/dmid/tick/tob/trough gates. Restarted workers hidden so settings load. Coinbase/order path untouched. Static TP/SL untouched. DRY remains true; LIVE remains false.
+Validation: python -m json.tool run_settings.json OK; python tools\koko_sim_repair_loop.py --once OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK, 76 tests.
+Next action: continue hidden DRY observe/sim loop for a supported UNI or NEAR recovery window; if the next entry loses, quarantine/tighten that product from actual dry P&L evidence.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18 09:28:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor restarted hidden PID 60428; sim/repair loop restarted hidden PID 11856 at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L remains negative. The current HYPE open moved to about -36.8 bps unrealized, outside the forward-supported HYPE drawdown band. This made the HYPE product-specific force-loss age too slow.
+
+Dry Profit Score evidence: latest score snapshot before restart showed score=32/100; opened=58, closed=57, wins=22, losses=34, open_count=1; realized=-0.34260003 USD, unrealized=-0.01104816 USD, net about -0.35364819 USD.
+
+Files changed since prior relay: run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: tightened only HYPE-USD force-loss leash from 5 minutes to 1 minute at -35 bps. Static SL remains -80 bps and unchanged. Coinbase/order path untouched.
+
+Validation: python -m json.tool run_settings.json OK. python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes -> OK, 90 tests.
+
+Next action: continue hidden DRY observe and sim/repair; verify the unsupported HYPE drawdown closes or recovers without violating static TP/SL. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:25:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor hidden PID 93948 running; sim/repair loop hidden PID 51232 running at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L remains negative but improving. Runtime blocker remains market_breadth/tick_dmid; HYPE is now actively opening and closing through the scoped recovery lane.
+
+Dry Profit Score evidence: score improved to 32/100; opened=58, closed=57, wins=22, losses=34, open_count=1; realized=-0.34260003 USD, unrealized=0 at latest score write, net=-0.34260003 USD. Latest material HYPE close after exit fix: +41.2371 bps / +0.01237113 USD at 2026-06-18T14:24:38Z. A new HYPE open followed at 2026-06-18T14:24:55Z.
+
+Files changed since prior relay: CODEX_RELAY.md only since the last relay entry.
+
+Action taken: confirmed hidden workers are still running and HYPE lane is reducing dry net loss. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: prior 89-test suite remains the latest validation after the profit-protect patch.
+
+Next action: continue hidden DRY observe and sim/repair; monitor current HYPE open and next score tick. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:24:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor restarted hidden PID 93948; sim/repair loop restarted hidden PID 51232 at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L remains negative though improving. HYPE recovery lane is active, but one HYPE trade gave back a small peak into a small loss, exposing exit-side profit-protect weakness.
+
+Dry Profit Score evidence: latest observed score file before this restart showed opened=56, closed=56, wins=21, losses=34, open_count=0; realized=-0.35497116 USD, unrealized=0, net=-0.35497116 USD. HYPE post-patch evidence: +4.9561 bps, +5.6649 bps, then -2.1251 bps via profit_protect, net positive but exit giveback was too loose.
+
+Files changed since prior relay: managers/run_manager/run_manager.py; run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: fixed `_dry_pnl_profit_protect_reason` so product-scoped profit-protect settings are supported and `DRY_PNL_PROFIT_PROTECT_RETAIN_BPS` is actually used in the protect floor. Added HYPE-specific profit-protect settings: min peak 8 bps, giveback 3 bps, retain 2 bps. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m json.tool run_settings.json OK. python -m py_compile managers/run_manager/run_manager.py OK. python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes -> OK, 89 tests.
+
+Next action: continue hidden DRY observe and sim/repair; verify HYPE exits preserve more of the peak and continue reducing dry net loss. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:20:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor restarted hidden PID 51608; sim/repair loop restarted hidden PID 1504 at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L remains negative. Feed/cache coverage remains usable: U=120, S=356, timestamp_stale_sec=5, product_cache_gap=false, book_metric_source_present_ratio=1.0, trough_seeded_ratio=1.0. Runtime blocker is still market_breadth/tick_dmid with product expectancy/topbook sub-blocks on some candidates.
+
+Dry Profit Score evidence: score improved to 31/100; opened=53, closed=53, wins=19, losses=33, open_count=0; realized=-0.35751994 USD, unrealized=0, net=-0.35751994 USD. Latest material closes: NEAR-USD +51.2364 bps / +0.01537091 USD at 2026-06-18T14:16:35Z; HYPE-USD +9.9495 bps / +0.00298486 USD at 2026-06-18T14:17:20Z.
+
+Files changed since prior relay: run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: added HYPE-USD product-scoped recovery settings after forward evidence showed HYPE qv/dmid/tick/trough slice positive with no SL touches: tick floor -5, net-negative dmid floor 20, min topbook 0, min pressure 0, trough ceiling 0.5, force-loss leash 5 minutes / -35 bps. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m json.tool run_settings.json OK. python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes -> OK, 88 tests.
+
+Next action: continue hidden DRY observe and sim/repair; verify HYPE opens under the new scoped recovery lane and keep repairing only from forward-backed blocker evidence. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:15:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor restarted hidden PID 23536; sim/repair loop restarted hidden PID 81240 at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L remains negative. Data/preflight coverage is usable: U=120, S=356, timestamp_stale_sec=6, product_cache_gap=false, book_metric_source_present_ratio=1.0, trough_seeded_ratio=1.0. Runtime blocker remains market_breadth/tick_dmid, but XLM-USD is now a near-miss blocked only by market_breadth after product-scoped XLM recovery settings.
+
+Dry Profit Score evidence: score=30/100; opened=51, closed=51, wins=17, losses=33, open_count=0; realized=-0.37587571 USD, unrealized=0, net=-0.37587571 USD. Forward evidence for XLM product lane: qv>=250k, dmid>=0, tick_dmid>=0, trough<=0.2 produced 9-13 matched samples depending tick floor, avg net close about +82 to +84 bps, positive close rate 1.0, worst forward min about -46.2 bps, SL touches 0.
+
+Files changed since prior relay: run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: added XLM-USD to sim-approved dry recovery products with product-scoped tick floor 0, net-negative dmid/tick/tob/pressure overrides, tight net-negative trough ceiling 0.2, and force-loss leash 5 minutes / -55 bps. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m json.tool run_settings.json OK. python -m py_compile managers/run_manager/run_manager.py tools/koko_sim_repair_loop.py tools/koko_dry_observe_readiness.py OK. python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes -> OK, 87 tests.
+
+Next action: continue hidden DRY observe and sim/repair; watch whether XLM/UNI/HYPE opens recover dry net P&L and only patch again if score stalls or a new loss/blocker pattern appears. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## Codex relay status update
+
+Timestamp: 2026-06-17T20:54:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / local pid=27032 ts=20:52:46.
+- Local hidden DRY supervised runner is active and responding: pid=27032.
+- Local hidden simulation/repair loop is active and responding: pid=52924.
+- DRY=true and LIVE=false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Not ready for LIVE.
+- Current Profit Score remains 26/100.
+- dry P&L remains negative: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open=0, closed=43, wins=11, losses=31.
+- Latest loop blocker remains tick_dmid after the dmid-floor patch.
+- The prior bad ENA recovery open had dry_effective_dmid_bps=32.1888, tick_dmid_bps=10.7585, tob_usd=108.8128, and closed -26.8673 bps.
+- New patch blocks that class by requiring DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS=40.0 when payload dry_min_dmid_bps is missing.
+- Latest forward artifact still includes pre-patch signals in the 180-minute lookback: dry_pnl_guard_forward signals=492, avg_net_forward_close_bps=-31.9406, positive_net_close_rate=0.1098.
+- Runtime-near latest remains not mature, so tick_dmid/market-breadth loosening is not supported yet.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open=0, closed=43, wins=11, losses=31.
+
+Patch/change evidence:
+- Net-negative recovery quality now defaults to DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS, then DRY_PNL_SCOUT_MIN_DMID_BPS, then DRY_MIN_DMID_BPS.
+- run_settings.json now sets DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS=40.0.
+- Added regression test proving weak recovery dmid with missing payload floor returns net_negative_low_dmid.
+- Hidden supervisor restarted after patch: pid=27032.
+
+Verification evidence:
+- python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 165 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\tdi_status_reporter.py tools\koko_sim_repair_loop.py: OK.
+- python -m json.tool run_settings.json: OK.
+- python tools\koko_sim_repair_loop.py --once completed exit 0.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+
+Next action:
+- Keep hidden simulation loop running.
+- Verify new blocked_open reasons include net_negative_low_dmid before any further gate change.
+- Let pre-patch signals age out of the loop window.
+- Do not enable LIVE.
+
+User action required:
+- No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-18T12:50:10Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner is active: pid=2500, responding=true.
+- Local hidden sim/repair loop is active: pid=75896, responding=true.
+- DRY=true and LIVE=false.
+
+Current blocker:
+- Latest after supported-gate tightening: market_breadth / green_breadth.
+- Supervisor preflight cache refresh now reports supported=True and openable=True with timestamp_ratio=0.8708 and liquid=16, but blocker=green_breadth.
+- New readiness artifact after tightening has current_blocker=market_breadth, signals=932, quote_volume_usable=676/932, dmid_usable=609/932, liquid_dmid_spread_tob_overlap=440/932, book metrics=932/932, dry_open_seen=false.
+- Tightening reduced noisy candidates but current live tape still has no all-pass candidates.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L summary: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- No score tuning was done.
+
+Patch/change evidence:
+- Tightened DRY observe gates to the supported replay slice: DRY_MIN_DMID_BPS -20.0 -> 20.0, DRY_MIN_RECENT_QUOTE_VOLUME_USD 150000.0 -> 250000.0, TROUGH_PCT_MAX 0.5 -> 0.22.
+- Left DRY_MAX_SPR_BPS at 25.0 because the same supported result appeared at max_spread_bps=25.0.
+- Left UNI recovery safety intact: DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS_BY_PRODUCT UNI-USD remains 30.0 and global DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS remains 40.0.
+- Regenerated readiness: logs/dry_observe_readiness_after_supported_gate_tighten.json.
+- Regenerated forward outcomes: logs/paper_signal_forward_outcomes_after_supported_gate_tighten_5m.json.
+- Regenerated threshold sweep: logs/forward_threshold_sweep_after_supported_gate_tighten_5m.json.
+- Gmail material-event send failed because Gmail connector returned token_expired and no SMTP/Gmail env is present. A no-send local reporter payload was generated.
+
+Verification evidence:
+- python -m json.tool run_settings.json: OK.
+- python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight: 119 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py: OK.
+- Threshold sweep after tightening: supported_count=1058, best avg net forward close +72.9906 bps, positive net close rate 1.0, train +58.1776 bps, validation +84.8410 bps, signals=9.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+
+Next action:
+- Keep DRY observe and sim/repair running in the background.
+- Wait for green_breadth to clear under the tightened supported gates.
+- If green_breadth remains the only blocker, keep validating market-breadth probe evidence before any change; do not loosen into negative validation.
+
+User action required:
+- Yes for email delivery only: Gmail connector token expired; re-auth Gmail connector or provide SMTP env. No user action required for DRY trading loop.
+
+## Codex relay status update
+
+Timestamp: 2026-06-18T12:46:04Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner is active: pid=2500, responding=true.
+- Local hidden sim/repair loop is active: pid=75896, responding=true.
+- DRY=true and LIVE=false.
+
+Current blocker:
+- Current blocker is now reported correctly as market_breadth in logs/dry_observe_readiness_after_runtime_blocker_patch.json.
+- The previous readiness artifact under-reported the runtime blocker as dmid because PAPER_BUY_SIGNAL rows did not always carry market breadth fields while tick_diag drynear/drygate did.
+- Coverage is usable, not the current blocker: signals=264, quote_volume_usable=264/264, book_metric_source_present=264/264, dmid_usable=253/264, liquid_dmid_spread_tob_overlap=253/264.
+- Current green breadth remains below the active 0.85 gate; runtime drygate shows market_breadth while dry_open remains 0.
+- Updated forward replay is still not deploy-quality: 203 mature signals, threshold sweep supported_count=0, best avg net +7.5332 bps but positive net close rate only 0.4286 and validation avg net -36.1232 bps.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py
+- C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100 from latest sim/repair state.
+- dry P&L summary: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- No score tuning was done while open_count remains 0.
+
+Patch/change evidence:
+- Added runtime gate blocker selection so tick_diag drygate/drynear can promote market_breadth when paper rows are missing market breadth fields and dry_open=0.
+- Added regression coverage for the exact stale-reporting case: paper row says dmid, runtime drygate/drynear says dmid|market_breadth, report current_blocker becomes market_breadth.
+- Regenerated readiness artifact: logs/dry_observe_readiness_after_runtime_blocker_patch.json.
+- Regenerated forward outcomes: logs/paper_signal_forward_outcomes_after_runtime_blocker_patch_5m.json.
+- Regenerated threshold sweep: logs/forward_threshold_sweep_after_runtime_blocker_patch_5m.json.
+
+Verification evidence:
+- python -m unittest tests.test_koko_dry_observe_readiness: 35 OK.
+- python -m py_compile tools\koko_dry_observe_readiness.py: OK.
+- python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight tests.test_cloud_only_corrections: 119 OK.
+- Hidden workers responding: pid=2500 and pid=75896.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Keep DRY observe and sim/repair running in the background.
+- Continue maturing forward windows and only promote a gate when train and validation both support it.
+- Stay in data/preflight/openability lane; do not tune profit score while open_count=0.
+
+User action required:
+- No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-18T12:25:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner remains active: pid=48776.
+- Local hidden sim/repair loop remains active: pid=52924.
+- DRY=true and LIVE=false.
+- Latest heartbeat: logs/run_active.json phase=run_manager_active source=run_manager ts=2026-06-18T12:19:13Z.
+- Continuous observe is running unbounded after the zero-length observe patch.
+
+Current blocker:
+- Preflight/feed lane is working again; the prior signals=0 / unknown blocker came from the dead supervisor, not from market coverage.
+- Fresh blocker is tick_dmid readiness plus dry_pnl_guard validation.
+- Post-restart readiness coverage remains usable: signals=418, quote_volume_usable=418, spread_usable=418, tob_usable=418, dmid_usable=248, liquid_dmid_overlap=248, liquid_dmid_spread_tob_overlap=248, tick_dmid_ready=31, tick_dmid_warmed=391.
+- Matured post-restart replay is still partial: loaded_signals=481, outcomes/signals=43, not_mature=438.
+- By-reason replay: tick_dmid signals=39 avg_net_forward_close_bps=11.36 positive_net_close_rate=0.4359 sl_touch_rate=0.0.
+- By-reason replay: dmid signals=4 avg_net_forward_close_bps=7.9494 positive_net_close_rate=0.75 sl_touch_rate=0.0.
+- Fresh threshold sweep is positive but sample-limited: supported_count=297, threshold_forward_supported=True.
+- Best threshold config: max_spread_bps=25.0, max_trough_pct=0.22, min_dmid_bps=16.0, min_quote_volume_usd=0.0, min_tob_usd=0.0.
+- Best threshold evidence: signals=9, avg_net_forward_close_bps=39.7867, positive_net_close_rate=1.0, sl_touch_rate=0.0, train_avg=37.6598 on 4 signals, validation_avg=41.4883 on 5 signals.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- No new dry opens yet after restart.
+- Do not switch LIVE on: positive threshold evidence is new and sample-limited; most post-restart signals are still maturing.
+
+Patch/change evidence:
+- No additional code patch after the zero-length observe fix.
+- Ran post-restart forward replay and threshold sweep once enough signals matured.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+- DRY remains on and LIVE remains off.
+
+Verification evidence:
+- Supervisor proof remains continuous_start ticks=unbounded and continuous_chunk_start chunk=1 ticks=20 ticks_left=unbounded.
+- Hidden supervisor PID 48776 is responding.
+- Hidden sim/repair PID 52924 is responding.
+- Fresh threshold sweep output: logs\forward_threshold_sweep_latest_post_supervisor_fix_5m.json.
+- Fresh replay output: logs\paper_signal_forward_outcomes_latest_post_supervisor_fix_5m.json.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Keep continuous DRY observe running.
+- Let the remaining post-restart signals mature, then rerun replay/sweep with a larger sample before promoting any gate change.
+- Do not tune score or enable LIVE from the small first positive subset.
+
+User action required:
+- No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-18T12:22:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner is active after zero-length observe patch: pid=48776.
+- Local hidden sim/repair loop remains active: pid=52924.
+- DRY=true and LIVE=false.
+- Latest heartbeat: logs/run_active.json phase=run_manager_active source=run_manager ts=2026-06-18T12:19:13Z.
+- Supervisor reached continuous_start ticks=unbounded and continuous_chunk_start chunk=1 after entry preflight.
+
+Current blocker:
+- Fixed current runtime blocker: manual hidden restart had KOKO_SUPERVISOR_MAX_CYCLES unset, and max_cycles=0 was incorrectly treated as exhausted after a 24-tick entry preflight sample.
+- Entry preflight now completes without killing continuous observe: signals=339, signal_coverage_gap=False, open_candidate=True, liquid_dmid=195, liquid_dmid_spread_tob=195.
+- Current live DRY observe blocker after restart: tick_dmid, with dry_pnl_guard still blocking all-pass candidates.
+- Fresh readiness coverage since restart is usable: signals=418, quote_volume_usable=418, spread_usable=418, tob_usable=418, dmid_usable=248, liquid_dmid_overlap=248, liquid_dmid_spread_tob_overlap=248.
+- tick_dmid remains the narrow coverage lane: tick_dmid_ready=31, tick_dmid_warmed=391.
+- Forward replay for post-restart signals is not mature yet: loaded_signals=410 but outcomes=0 with not_mature=410 for 5-minute horizon.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- No new dry opens since restart yet.
+- Fresh all-pass readiness candidates exist but are blocked by dry_pnl_guard; closest example XLM-USD tick=15 blocked_by=dry_pnl_guard, dry_effective_dmid_bps=4.1529, tick_dmid_bps=22.3599, tob_usd=91.0268, press=0.2174, spr_bps=1.3086.
+
+Patch/change evidence:
+- Added helper logic so max_cycles=0 remains unbounded after entry preflight consumes ticks.
+- Added regression tests proving unbounded continuous is not exhausted by entry preflight ticks, while bounded runs can still be exhausted normally.
+- Restarted DRY supervised runner hidden; no visible CMD window required.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+- DRY remains on and LIVE remains off.
+
+Verification evidence:
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_tdi_status_reporter tests.test_cloud_only_corrections: 133 OK.
+- python -m py_compile tools\run_koko_dry_supervised.py tools\tdi_status_monitor.py managers\run_manager\run_manager.py: OK.
+- Runtime proof: continuous_start ticks=unbounded, continuous_chunk_start chunk=1 ticks=20 ticks_left=unbounded.
+- Hidden supervisor PID 48776 is responding.
+- Hidden sim/repair PID 52924 is responding.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Let the post-restart signals mature past the 5-minute horizon, then rerun forward replay and threshold sweep.
+- Keep continuous DRY observe alive and do not switch LIVE on.
+- Continue repairing only evidence-backed blockers; current narrow lane is tick_dmid readiness plus dry_pnl_guard validation.
+
+User action required:
+- No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-18T00:22:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden DRY supervised runner restarted after heartbeat patch: pid=34076.
+- Local hidden sim/repair loop remains active: pid=52924.
+- DRY=true and LIVE=false.
+- Latest heartbeat: logs/run_active.json phase=preflight_cache source=run_koko_dry_supervised ts=2026-06-18T00:21:36Z.
+- Latest preflight refresh is actively running through the product universe.
+
+Current blocker:
+- Current blocker is dmid / dry_pnl_guard replay quality, not Profit Score tuning.
+- Preflight/feed lane is no longer dead: latest completed preflight cache evidence before restart had refreshed=355, failed=1, supported=True, timestamp_ratio=0.8399, liquid=23.
+- Sim loop still reports ready_to_deploy_live=false.
+- Current score blocker evidence: replayed dry_pnl_guard candidates are still negative after costs.
+- Do not loosen dmid yet: dmid-blocked forward checks are protective rather than stale/noise.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- Latest dry_pnl_guard forward replay: signals=489, avg_net_forward_close_bps=-17.4014, positive_net_close_rate=0.1902, sl_touch_rate=0.0368.
+- Latest threshold sweep: supported_configs=0 across 6326 configs; top config remains unsupported.
+- Current sim state: ready_to_deploy_live=false, blocker=dmid, threshold_supported=false, threshold_supported_count=0.
+
+Patch/change evidence:
+- Fixed run_manager run_active heartbeat to write full UTC timestamp, source, and phase instead of ambiguous HH:MM:SS only.
+- Restarted DRY supervised runner hidden so CMD does not keep popping up.
+- Supervisor heartbeat now writes a visible phase/source marker immediately during preflight cache refresh.
+- Sim/repair loop continues hidden and repeats forward outcome, threshold sweep, and dry observe readiness checks.
+- Coinbase/order placement path was not touched.
+- Static TP/SL safety was not touched.
+- DRY remains on and LIVE remains off.
+
+Verification evidence:
+- python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_tdi_status_reporter tests.test_cloud_only_corrections: 131 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py tools\tdi_status_reporter.py tools\koko_sim_repair_loop.py: OK.
+- Hidden supervisor PID 34076 is responding.
+- Hidden sim/repair PID 52924 is responding.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
+
+Next action:
+- Continue sim/repair loop and do not switch LIVE on.
+- Keep dmid/dry_pnl_guard blocked until replay evidence supports an opening lane.
+- Continue data/preflight verification for timestamp coverage, liquid subset, green breadth, stale/U causes, and missing product/cache gaps.
+- Resume P&L improvement only after DRY observe has usable market coverage and forward replay supports candidates.
+
+User action required:
+- No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-17T18:27:00Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / local pid=50844 ts=18:23:01.
+- Local hidden DRY supervised runner is active and responding: pid=50844.
+- Local hidden simulation/repair loop is active and responding: pid=52924.
+- DRY=true and LIVE=false.
+- No Coinbase/order placement path was touched.
+- Static TP/SL safety was not touched.
+
+Current blocker:
+- Not ready for LIVE.
+- Current Profit Score is 26/100.
+- dry P&L is still negative: realized=-0.40270234 USD, unrealized=0.00000000 USD, net=-0.40270234 USD.
+- open/closed/wins/losses: open=0, closed=42, wins=11, losses=30.
+- Latest readiness headline blocker is tick_dmid / runtime near-miss TAO-USD blocked by tick_dmid.
+- Coverage is no longer the same blind zero-open problem: recent readiness showed signals=4276, liquid=3727, dmid=4014, liquid_dmid_overlap=3466, liquid_dmid_spread_tob_overlap=3443, U=120, book_gap=false.
+- Forward dry_pnl_guard evidence remains negative: signals=179, avg_net_forward_close_bps=-32.5411, positive_net_close_rate=0.1732, sl_touch_rate=0.1453.
+- Threshold sweep over latest dry_pnl_guard forward outcomes did not support promotion: supported_count=0, best_avg_net_forward_close_bps=-18.697, best_positive_net_close_rate=0.4.
+
+Files changed in current lane:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- C:\ai_trading_bot_koko\run_settings.json
+- C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md
+
+Dry Profit Score evidence:
+- Current Profit Score: 26/100.
+- dry P&L: realized=-0.40270234 USD, unrealized=0.00000000 USD, net=-0.40270234 USD.
+- open/closed/wins/losses: open=0, closed=42, wins=11, losses=30.
+- Latest DRY ledger includes recent bad XLM/NEAR losses; the patch now blocks the escape hatch that allowed net-negative recovery opens with missing effective dmid or too-thin top book.
+
+Patch/change evidence:
+- Added DRY net-negative/recovery guard requirement for effective recent-candle dmid when DRY_DMID_SOURCE is recent_candle.
+- Added configurable net-negative top-book floor: DRY_PNL_NET_NEGATIVE_MIN_TOB_USD=100.0.
+- Added ledger audit fields for effective dmid source/value, tick dmid, recent-candle quote volume/range, market breadth, probe, and book source.
+- Added hidden simulation loop tool that repeatedly runs forward outcomes, threshold sweep, readiness, and writes logs\koko_sim_repair_loop_state.json.
+- Fixed TDI status reporter PID liveness check on Windows so status reports show local pid=50844 instead of false stale.
+
+Verification evidence:
+- python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_run_koko_dry_supervised_preflight: 164 OK.
+- python -m unittest tests.test_tdi_status_reporter: 52 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\koko_sim_repair_loop.py: OK.
+- python -m json.tool run_settings.json: OK.
+- python tools\koko_sim_repair_loop.py --once completed exit 0.
+- Hidden DRY supervisor restarted with -WindowStyle Hidden.
+- Hidden simulation loop started with -WindowStyle Hidden.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting destination remains tdifactorToday@gmail.com; local SMTP env is still missing, so local direct SMTP send is not available.
+
+Next action:
+- Keep hidden simulation loop running.
+- Inspect tick_dmid blocker and runtime-near forward evidence.
+- Patch only if simulation shows a net-positive improvement; do not tune score while forward dry_pnl_guard evidence is negative.
+- Do not enable LIVE.
+
+User action required:
+- No for DRY/LIVE safety.
+- Yes only if direct local SMTP sending is required: provide TDI_REPORT_SMTP_USER, TDI_REPORT_SMTP_PASSWORD, and TDI_REPORT_FROM or equivalent SMTP env values.
 
 ## Codex relay status update
 
@@ -8596,53 +9779,2012 @@ User action required:
 
 ## Codex relay status update
 
-Timestamp: 2026-06-29T05:35:10Z
+Timestamp: 2026-06-18T12:35:44Z
 
 RELAY_FILE_VISIBLE=yes
 
 Cloud task status:
 - Cloud task URL/status: not configured locally / not visible from this workspace.
-- Local hidden keep-working runner: active via pythonw.exe after hidden restart.
+- Local hidden DRY supervised runner is active: pid=2500.
+- Local hidden sim/repair loop is active: pid=75896.
 - DRY=true and LIVE=false.
-- Coinbase/order placement path not touched.
-- Static TP/SL safety intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
 
 Current blocker:
-- Primary blocker is DRY recovery/openability, not score tuning.
-- Summary/ledger stale P&L mismatch was fixed locally by reconciling dry summary writes from the append-only ledger.
-- Current approved recovery product is XLM-USD only, backed by direct recovery evidence, but latest observed XLM row is blocked by dmid/net_negative_low_dmid, not missing approval.
-- Feed/data coverage is usable: timestamp coverage 1.0, latest U=120, U-zero rows=0, book metric present ratio about 0.9909, spread usable about 0.9640, top-book usable about 0.8825.
+- Profit Score is still pinned because open_count=0 and realized dry P&L is negative, not because the score formula is being tuned.
+- Preflight/feed coverage is no longer the zero-coverage blocker: latest post-restart readiness has book source 38/38, quote volume 38/38, spread/top-book 38/38, dmid present 38/38.
+- Current post-restart blocker is market/regime quality: no all-pass candidates, tick_dmid_ready=0/38, recent liquid candidates have negative/weak dmid, and tick diagnostics show green breadth around 0.1500/0.8500 with negative market dmid.
+- New forward sample after restart loaded 38 signals but all are not_mature, so no deploy-quality outcome evidence yet.
 
-Files changed locally:
+Files changed in current lane:
 - C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
-- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
 - C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
-- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
 - C:\ai_trading_bot_koko\run_settings.json
-- Remote relay update: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot
+- C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py
+- C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py
+- C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py
+- C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py
+- Remote relay updated: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot.
 
-Dry Profit Score / P&L evidence:
-- Current score evidence: Profit Score 40/100 from dry_cycle18 score summary.
-- Reconciled dry P&L: realized=-0.19068862 USD, unrealized=0.0 USD, net=-0.19068862 USD.
-- opened=244, closed=244, wins=131, losses=108, open_count=0.
-- Ledger and summary now match after reconciliation: opened/closed 244/244, realized=-0.19068862.
-- Previous stale summary showed opened/closed 243/243 and realized=-0.20249407 while ledger showed 244/244 and realized=-0.19068862.
+Dry Profit Score evidence:
+- Current Profit Score: 26/100 from latest sim/repair state.
+- dry P&L summary: realized=-0.41076252 USD, unrealized=0.00000000 USD, net=-0.41076252 USD.
+- open/closed/wins/losses: open_count=0, opened=43, closed=43, wins=11, losses=31.
+- Recent pre-restart replay evidence found UNI-USD current slice positive: 14 qualifying signals, avg net forward close about +74.79 bps, positive rate 1.0, but broader global thresholds were not safe.
 
-Action taken:
-- Added DRY P&L ledger audit to status reporting so stale summary mismatches are visible.
-- Added write-boundary dry P&L reconciliation from ledger to prevent stale in-memory workers from republishing old realized P&L totals.
-- Restarted only hidden KOKO pythonw workers in background and reconciled current state.
-- Set DRY_PNL_SIM_APPROVED_PRODUCTS and DRY_PNL_SIM_APPROVED_HISTORY_OVERRIDE_PRODUCTS to ["XLM-USD"] based on positive forward evidence; did not loosen trough, dmid, TP/SL, or live/order settings.
+Patch/change evidence:
+- Fixed unbounded supervised DRY observe so max_cycles=0 survives entry preflight sampling and continues instead of ending immediately.
+- Fixed sim/repair loop coverage so it includes dry_pnl_guard,dry,tick_dmid,dmid and reports not_mature instead of unknown when forward windows are not mature.
+- Added product-specific net-negative P&L recovery quality override support without weakening global recovery gates.
+- Set only UNI-USD DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS_BY_PRODUCT=30.0 while global DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS remains 40.0.
+- Restarted DRY supervisor and sim loop hidden; no foreground CMD window should remain from these workers.
 
-Verification:
-- py_compile passed for run_manager, tdi_status_reporter, and touched tests.
-- Focused unittest set passed: 4 tests OK.
-- Fresh readiness regenerated after the approval change.
+Verification evidence:
+- python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight tests.test_tdi_status_reporter: 136 OK.
+- python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py: OK.
+- Fresh hidden workers responding: pid=2500 and pid=75896.
+
+Guardrails:
+- DRY remains true.
+- LIVE remains false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety remains intact: DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Orders guardrail remains in force: market_order_buy/sell with client_order_id only, and no portfolio_uuid in order bodies.
+- Balances guardrail remains in force: get_accounts(portfolio_uuid=PFID) with available_balance['value'] and hold['value'].
+- Reporting guardrail remains in force: tdifactorToday@gmail.com is the single TDI/KOKO reporting inbox, with two-hour summaries and immediate material-event reports only.
 
 Next action:
-- Keep hidden DRY observe running and collect the next XLM/recovery candidate with nonnegative dmid under existing guards.
-- Do not tune Profit Score while open_count remains 0 and openability is the blocker.
-- Continue data/preflight/openability work only if evidence shows product/rank/cache gaps rather than real dmid/trough/quality failure.
+- Continue hidden DRY observe through current regime until forward windows mature.
+- Do not loosen green breadth/dmid/tick_dmid while the fresh regime is negative and outcome evidence is not mature.
+- Re-run forward outcomes once current post-restart windows mature; only promote a gate if train/validation and current regime support it.
+- Keep working on data/preflight/openability, not score tuning.
 
 User action required:
 - No.
+
+## Codex Relay Update - 2026-06-18 07:59:24 -05:00
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local DRY supervisor restarted hidden and responding; supervisor PID 58144, sim/repair loop PID 62544. DRY=true, LIVE=false.
+Current blocker: open_count=0; current runtime candidates are not the supported UNI slice. Live near-misses are dmid/market_breadth/trough/dry_pnl_guard, with non-supported ENA/ONDO/JTO/NEAR-style candidates rejected.
+Patch/change applied: product-scoped recovery admission for sim-supported UNI tick_dmid-only misses; global gates unchanged for other products. Added product-scoped dry PnL tick floor for UNI.
+Files changed: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; CODEX_RELAY.md.
+Dry Profit Score evidence: score=26/100; dry PnL realized=-0.41076252, unrealized=0, net=-0.41076252; opened=43, closed=43, wins=11, losses=31, open_count=0.
+Forward evidence: threshold_supported=True, supported_count=1053, current rolling forward_avg_net_close_bps=-4.5052, positive_rate=0.306. Prior supported slice was UNI-only: 9 signals, avg net +72.9906 bps, positive_rate 1.0.
+Tests: focused UNI recovery tests OK; broader DRY/preflight suite OK (160 tests); py_compile OK; run_settings JSON OK.
+Next action: keep DRY observe running hidden and wait for/live-test next supported UNI-style slice; do not loosen unsupported XLM/AERO/ONDO/JTO candidates; continue sim/repair loop.
+User action required: Gmail delivery still requires auth/token repair; trading loop does not require user action.
+
+## Codex Relay Update - 2026-06-18 08:02:42 -05:00
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local DRY supervisor hidden PID 58144 responding; sim/repair loop restarted hidden at 60-second cadence PID 7264. DRY=true, LIVE=false.
+Current blocker: post-patch readiness shows feed/preflight coverage usable but no openable candidate: quote_volume=25/25, book_source=25/25, trough_seeded=25/25, liquid_dmid_overlap=5/25; current candidates fail dmid or trough+market_breadth. open_count=0.
+Patch/change applied: accelerated sim/repair loop cadence from 180 sec to 60 sec for faster mature-window evidence; no Coinbase/order path changes; no TP/SL changes.
+Files changed: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; CODEX_RELAY.md.
+Dry Profit Score evidence: score remains 26/100; net dry PnL remains -0.41076252; opened=43 closed=43 wins=11 losses=31 open_count=0.
+Next action: continue hidden DRY observe and 60-sec sim/repair loop; wait for supported low-trough positive-dmid slice, especially UNI-style recovery slice, then verify dry open/P&L.
+User action required: no trading-loop action; Gmail auth still required for actual email delivery.
+
+## 2026-06-18 08:51:38 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor hidden PID 60240 running; sim/repair loop hidden PID 65332 running at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: opened=0 blocker is fixed for the supported UNI slice, but LIVE is still not ready because cumulative dry P&L remains negative and Profit Score remains 26/100. Latest runtime blocker after the winning UNI close is market_breadth / tick_dmid around the same UNI-style lane, with feed/cache coverage usable: U=120, S=356, runtime_products=356, product_cache_gap=false, book_metric_source_present_ratio=1.0, timestamp_stale_sec=4, quote_volume_usable_ratio=0.7026. Green breadth remains below threshold at about 0.61/0.85 with market_dmid negative.
+
+Dry Profit Score evidence: score=26/100; opened=44, closed=44, wins=12, losses=31, open_count=0; realized=-0.38890725 USD, unrealized=0.00000000 USD, net=-0.38890725 USD. Latest dry trade: UNI-USD opened 2026-06-18T13:48:04Z and closed 2026-06-18T13:50:14Z via profit_protect for +72.8509 bps / +0.02185527 USD after peak +89.04 bps. Active gate support remains positive: supported_count=892; best supported slice avg_net_forward_close_bps=78.9382, positive_net_close_rate=1.0, train=70.3362 bps, validation=85.3897 bps, signals=7.
+
+Files changed since prior relay: managers/run_manager/run_manager.py; run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: fixed dry P&L guard/top-book payload handling so prefetch/observe top-book evidence is used; fixed sim-approved preview so missing entry-quality payload does not suppress a supported candidate; fixed disabled top-book gate diagnostics so observed top-book is still reported; lowered only UNI net-negative dmid floor to 20.0 based on supported forward evidence. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: run_settings.json json.tool OK; managers/run_manager/run_manager.py py_compile OK; focused cloud correction tests OK; broader DRY/preflight suite OK; sim/repair loop tests OK. Hidden background workers are running without foreground CMD windows.
+
+Next action: continue sim/repair and DRY observe against current live data until cumulative dry net P&L recovers and Profit Score improves; do not switch LIVE on; do not loosen unsupported non-UNI candidates; keep investigating market_breadth/tick_dmid/book_pressure causes only when forward evidence supports a change.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:08:05 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor hidden PID 20852 running; sim/repair loop hidden PID 68240 running at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready because dry net P&L is still negative, but score/P&L recovery is active. Current runtime blocker remains market_breadth/tick_dmid under usable feed/cache coverage: U=120, S=356, timestamp_stale_sec=6, product_cache_gap=false, book_metric_source_present_ratio=1.0.
+
+Dry Profit Score evidence: score improved to 30/100; opened=51, closed=50, wins=17, losses=32, open_count=1; realized=-0.37491294 USD, unrealized=-0.00048139 USD, net=-0.37539433 USD. Since the prior relay, UNI closed +6.4175 bps / +0.00192524 USD and UNI closed +3.2108 bps / +0.00096324 USD. Current open: UNI-USD entry 2026-06-18T14:07:56Z, last unrealized -1.6046 bps / -0.00048139 USD.
+
+Files changed since prior relay: CODEX_RELAY.md only.
+
+Action taken: kept hidden DRY observe and sim/repair running; no new code/settings patch after the score improved to 30. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: hidden worker processes still running. Prior full focused suite remains green: 86 tests OK.
+
+Next action: continue monitoring the current UNI open through the product-scoped force-loss leash; keep recovering dry net P&L; do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:03:54 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor hidden PID 20852 running; sim/repair loop hidden PID 68240 running at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready; dry net P&L is still negative, but score and P&L are now improving. Current runtime blocker is market_breadth/tick_dmid under usable feed/cache coverage: U=120, S=356, timestamp_stale_sec=0, product_cache_gap=false, quote_volume_usable_ratio=0.724, book_metric_source_present_ratio=1.0. Green breadth remains weak around 0.59/0.85 with negative market_dmid.
+
+Dry Profit Score evidence: score improved to 28/100; opened=48, closed=48, wins=15, losses=32, open_count=0; realized=-0.37780142 USD, unrealized=0, net=-0.37780142 USD. Latest material closes: UNI-USD +12.8370 bps / +0.00385109 USD via profit_protect at 2026-06-18T14:02:19Z; HYPE-USD +24.1546 bps / +0.00724638 USD via profit_protect at 2026-06-18T14:03:32Z.
+
+Files changed since prior relay: managers/run_manager/run_manager.py; run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: kept hidden DRY observe and sim/repair running after UNI force-loss override; verified the score moved from 26 to 28 with realized net P&L improvement. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: broader DRY/preflight/sim/forward test suite remains green: 86 tests OK. run_settings.json json.tool OK. managers/run_manager/run_manager.py py_compile OK.
+
+Next action: continue hidden DRY observe and sim/repair until net P&L recovers further; inspect new blocker only if score stalls or a new loss pattern appears. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+
+## 2026-06-18 09:01:43 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: local DRY supervisor hidden PID 20852 running; sim/repair loop hidden PID 68240 running at 60s cadence. DRY=true, LIVE=false. Cloud task URL/status is not configured locally / not visible from this workspace.
+
+Current blocker: not LIVE-ready yet because cumulative dry net P&L is still negative and Profit Score remains 26/100. The prior openability blocker is fixed: DRY observe is now opening supported UNI recovery candidates. Remaining blocker is dry P&L recovery plus exit handling under the supported UNI forward horizon.
+
+Dry Profit Score evidence: score=26/100; opened=47, closed=46, wins=13, losses=32, open_count=1; realized=-0.38889889 USD, unrealized=+0.00433248 USD, net=-0.38456641 USD. Latest closed trade: UNI-USD entry 2026-06-18T13:57:23Z, exit 2026-06-18T14:00:32Z via profit_protect for +19.2895 bps / +0.00578685 USD. Current open: UNI-USD entry 2026-06-18T14:00:40Z, last unrealized +14.4416 bps / +0.00433248 USD.
+
+Files changed since prior relay: managers/run_manager/run_manager.py; run_settings.json; tests/test_cloud_only_corrections.py; CODEX_RELAY.md.
+
+Action taken: added product-scoped UNI net-negative trough ceiling DRY_PNL_NET_NEGATIVE_MAX_TROUGH_PCT_BY_PRODUCT=0.5 after replay showed UNI dmid>=20/qv>=250k remained positive through trough<=0.5. Added product-scoped force-loss controls and set UNI to 5 minutes / -40 bps because replay showed 31/33 supported UNI samples dipped below -12 bps but 0/33 dipped below -40 bps and 0/33 touched the -80 bps static SL. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep tests.test_koko_paper_signal_forward_outcomes -> OK, 86 tests. run_settings.json json.tool OK. managers/run_manager/run_manager.py py_compile OK.
+
+Next action: keep hidden DRY observe and sim/repair running; monitor current UNI open through the 5-minute supported horizon; continue repairs only if dry P&L/score evidence shows a new blocker. Do not enable LIVE.
+
+User action required: no trading-loop action. Gmail connector re-auth is still required for actual Gmail delivery.
+## 2026-06-18 08:18:00 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: DRY supervisor hidden PID 58316 running; sim/repair loop hidden PID 48232 running at 60s cadence. DRY=true, LIVE=false.
+
+Current blocker: active DRY gates are now forward-supported after product-scoped UNI tick-dmid alignment, but current live observe has no open candidate yet. Latest loop evidence shows runtime blocker market_breadth; feed/cache are usable: U=120, S=356, runtime_products=356, book_source_present=1.0, trough_seeded=1.0, product_cache_gap=false.
+
+Dry Profit Score evidence: score 26/100; realized=-0.41076252, unrealized=0.0, net=-0.41076252; opened=43, closed=43, wins=11, losses=31, open_count=0. Active DRY gate support evidence: UNI-USD 7 signals, avg_net_forward_close_bps=78.9382, positive_net_close_rate=1.0, train=70.3362 bps, validation=85.3897 bps.
+
+Files changed: run_settings.json; tools/koko_forward_threshold_sweep.py; tools/koko_sim_repair_loop.py; tests/test_koko_forward_threshold_sweep.py; tests/test_koko_sim_repair_loop.py.
+
+Action taken: added tick-dmid to threshold sweep, added active product-scoped DRY gate support reporting, set DRY_MIN_TICK_DMID_BPS_BY_PRODUCT UNI-USD=0.0 while keeping global tick-dmid=10.0, restarted DRY supervisor and sim loop hidden. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections tests.test_koko_forward_threshold_sweep tests.test_koko_sim_repair_loop -> OK (108 tests plus focused follow-up OK). run_settings.json json.tool OK. py_compile on sim loop hit Windows pycache lock because hidden loop was running; no-bytecode import check passed.
+
+Next action: keep observing for a live UNI/openable candidate; do not enable LIVE. User action required: Gmail connector re-auth remains required for actual Gmail delivery.
+## 2026-06-18 08:24:10 -05:00
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud/local task status: DRY supervisor hidden PID 58316 running; sim/repair loop hidden PID 82148 running at 60s cadence. DRY=true, LIVE=false.
+
+Current blocker: data/cache lane is usable; runtime blocker shifted after UNI tick-dmid alignment. UNI candidate is visible but currently blocked by TDI/trough/book-pressure depending on tick. Latest state: U=120, S=356, product_cache_gap=false, timestamp_stale_sec=0, market breadth recovered to 0.85/0.85 in the latest observed window; open_count remains 0.
+
+Dry Profit Score evidence: score 26/100; realized=-0.41076252, unrealized=0.0, net=-0.41076252; opened=43, closed=43, wins=11, losses=31. Active DRY gate support remains UNI-USD 7 signals, avg_net_forward_close_bps=78.9382, positive_net_close_rate=1.0, but support reporting now carries TDI fields/counters so TDI evidence gaps are explicit.
+
+Files changed since prior relay: tools/koko_paper_signal_forward_outcomes.py; tools/koko_sim_repair_loop.py; tests/test_koko_paper_signal_forward_outcomes.py; tests/test_koko_sim_repair_loop.py.
+
+Action taken: added TDI fields to forward outcomes, made active gate support honor low TDI when evidence is present, added missing/low TDI counters, fixed forward-outcome tests to be explicit about local-only behavior. Coinbase/order path untouched. Static TP/SL untouched.
+
+Validation: python -m unittest tests.test_koko_paper_signal_forward_outcomes tests.test_koko_sim_repair_loop tests.test_koko_forward_threshold_sweep -> OK. no-bytecode import check OK.
+
+Next action: continue observing for UNI/current supported trough window or determine next non-score preflight blocker. User action required: Gmail connector re-auth remains required for actual Gmail delivery.
+
+## 2026-06-18T14:31:46Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor restarted; sim/repair loop restarted; DRY=true LIVE=false; supervisor_pid=74476 sim_loop_pid=16960.
+Current blocker: Profit Score remains low after HYPE weak/unwarmed tick entries caused two loss_trim closes; corrective blocker now is validating HYPE tick gate and dry net P&L recovery.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; realized_usd=-0.3814199; unrealized_usd=0.
+Action taken: tightened HYPE product tick floor from -5.0 to 10.0 for DRY_MIN_TICK_DMID_BPS_BY_PRODUCT and DRY_PNL_NET_NEGATIVE_MIN_TICK_DMID_BPS_BY_PRODUCT; updated regression test; validation passed 90 tests.
+Next action: watch restarted DRY observe/sim loop for HYPE low_tick blocks, then continue simulate/repair until dry net P&L and score are deployable.
+User action required: Gmail reporting still requires auth/config if automated email sending is mandatory; trading remains DRY only, LIVE off.
+
+## 2026-06-18T14:35:11Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor restarted again with stricter recovery gate; sim/repair loop restarted; DRY=true LIVE=false; supervisor_pid=82140 sim_loop_pid=89424.
+Current blocker: dry net P&L still negative; prior score drag from old/loose entries remains; active blocker is proving corrected recovery lane without non-approved HYPE/scout entries.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; realized_usd=-0.3814199; unrealized_usd=0.
+Action taken: disabled DRY_PNL_ALLOW_SCOUT_WHEN_NET_NEGATIVE so net-negative entries require sim-approved/expectancy path; verified HYPE low tick blocks as net_negative_low_tick_dmid and HYPE non-approved scout blocks as net_negative_no_expectancy. 90-test validation passed.
+Next action: observe next dry/sim cycle, confirm non-approved recovery stays blocked, then continue repair for dry net P&L recovery.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:12:15Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop restarted with stricter supported UNI gate; DRY=true LIVE=false; supervisor_pid=13292 sim_loop_pid=47348.
+Current blocker: dry_pnl_recovery; score improved to 33 but cumulative dry net P&L remains negative, so live deployment remains blocked.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=33; realized_usd=-0.37027061; unrealized_usd=0.0; net=-0.37027061; opened=64; closed=64; wins=26; losses=37; open=0; last closes: UNI +25.769 bps, UNI +9.6339 bps, UNI +1.608 bps; active_gate_supported=True; active_gate_product=UNI-USD; active_gate_signals=13; active_gate_avg_net_forward_close_bps=41.0574; active_gate_positive_rate=1.0.
+Action taken: rejected the too-loose UNI trough experiment after it made active support negative; set UNI net-negative trough cap to 0.22 and min TOB to 50 based on latest supported grid; kept sim-approved loss-cooldown fix. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m json.tool run_settings.json OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK; one sim iteration OK and support returned to true.
+Next action: continue hidden DRY observe/sim loop; only allow next recovery entries under stricter supported UNI gate; monitor score/net P&L recovery.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T15:07:45Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden sim loop running after restart; DRY=true LIVE=false; supervisor_pid=74280 sim_loop_pid=26728.
+Current blocker: dry_pnl_recovery; a widened UNI trough experiment opened too high and closed at a loss, so the active blocker is preventing repeat loss re-entry while preserving supported UNI recovery.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py.
+Dry Profit Score evidence: latest score evidence pending next sim-loop summary; dry score file shows realized_usd=-0.38137388; unrealized_usd=0.00724754; net=-0.37412634; opened=62; closed=61; wins=23; losses=37; open=1; last bad close=UNI-USD loss_trim -43.3109 bps -0.01299326 USD; current open UNI unrealized=+24.1585 bps.
+Action taken: tightened failed UNI trough expansion from 0.8 to 0.65; shortened UNI force-loss min age from 5m to 2m; patched DRY P&L guard so sim-approved net-negative recovery respects loss cooldown by default (`DRY_PNL_SIM_APPROVED_RESPECT_LOSS_COOLDOWN_WHEN_NET_NEGATIVE=true`). Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py OK; python -m json.tool run_settings.json OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK, 76 tests.
+Next action: monitor current UNI close; verify no immediate same-product reopen after a loss cooldown; continue DRY recovery only if closes improve net P&L.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:59:05Z
+RELAY_FILE_VISIBLE=yes
+## 2026-06-18T17:47:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running and hidden sim/repair loop restarted on patched code; DRY=true LIVE=false; supervisor_pid=71232 sim_loop_pid=25516 status_monitor_pid=52640.
+Current blocker: dry_pnl_recovery_evidence. Feed/preflight coverage is usable, but net P&L is negative and direct recovery-candidate forward evidence is not supportive enough to approve a recovery product.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; realized_usd=-0.36433427; unrealized_usd=0.0; dry_pnl_net_usd=-0.36433427; opened=72; closed=72; wins=32; losses=38; open=0; recovery_candidate_signals=10; direct_recovery_supported=false; direct_recovery_avg_net_forward_close_bps=-42.5928; direct_recovery_positive_rate=0.0; current_green_ratio=0.3250/0.8500; stale_sec=2; product_cache_gap=false.
+Action taken: restored trough/TDI safety fields in recovery-candidate readiness rows; added direct recovery-candidate forward outcome and threshold sweep commands to the sim loop; forced one DRY iteration; restarted sim loop hidden. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter tests.test_cloud_only_corrections passed 150 tests; py_compile passed; forced sim iteration healthy with command_count=8 failed=0.
+Next action: continue hidden DRY/sim loop; repair next from recovery evidence and market-breadth windows only if direct support becomes positive. No score tuning while no safe recovery candidate is supported.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+Cloud task status: hidden DRY supervisor and hidden sim loop running; DRY=true LIVE=false; supervisor_pid=78748 sim_loop_pid=93388.
+Current blocker: dry_pnl_recovery; last supported UNI-USD DRY trade closed profitably, but cumulative dry net P&L is still negative, so live deployment remains blocked.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; prior run_settings/test changes unchanged.
+Dry Profit Score evidence: score=32; realized_usd=-0.36838062; unrealized_usd=0.0; dry_pnl_net_usd=-0.36838062; opened=60; closed=60; wins=23; losses=36; open=0; last_close=UNI-USD profit_protect +43.4643 bps +0.01303928 USD; active_gate_supported=True; active_gate_product=UNI-USD; active_gate_signals=10; active_gate_avg_net_forward_close_bps=48.42; active_gate_positive_rate=1.0.
+Action taken: verified profitable UNI close; confirmed no U=0/stale/cache blocker (U=120, stale_sec=0-2, product_cache_gap=false). Current no-open cause is runtime gate state around market_breadth/TDI/trough, not Coinbase/order path. Static TP/SL untouched.
+Validation: hidden sim loop continues; latest sim state reports ready_to_deploy_live=false, threshold_supported=true, active support true, blocker=dry_pnl_recovery.
+Next action: continue hidden DRY observe/sim loop for next UNI-supported window; if the next supported entry gives back profit, tighten product-specific profit-protect only, leaving static TP/SL unchanged.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T18:58:44Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden repair/sim loop restarted; DRY=true LIVE=false; supervisor_pid=89192 sim_loop_pid=90260 status_monitor_pid=92800.
+Current blocker: no approved net-negative recovery lane. Feed/preflight coverage is usable, but current recovery candidates are not safe to open: U=120, S=356, timestamp_ratio=0.9691, liquid=16; runtime dryrank candidates are marked net_negative_no_approved_recovery. Market breadth remains weak around 0.40-0.43 vs required 0.85.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\run_settings.json; prior changes remain in C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tools\tdi_status_reporter.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized_usd=-0.37012501; unrealized_usd=0.0; opened=73; closed=73; wins=32; losses=39; open=0. Latest forced sim at 2026-06-18T18:56:06Z: ready=false, signals=562, blocker=market_breadth. Active XRP support is now false: 21 signals, avg_net_forward_close_bps=-21.8624, positive_rate=0.2857, train_avg=-38.6825, validation_avg=-6.5714. Latest XLM recovery slice is positive, but active/full history remains negative, so XLM was not approved.
+Action taken: patched readiness so runtime near-misses include dry_pnl_guard and precise dry_pnl_guard_reason while dry net P&L is negative; removed stale XRP from DRY_PNL_SIM_APPROVED_PRODUCTS because active product-scoped support no longer proves it. Coinbase/order path untouched; static TP/SL untouched.
+Validation: python -m json.tool run_settings.json OK; python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py managers\run_manager\run_manager.py OK; python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_tdi_status_reporter OK (153 tests). Hidden processes alive after restart.
+Next action: keep hidden DRY observe/sim running; approve a recovery product only when product-specific latest and/or active history support is positive across train and validation, then restart hidden supervisor. Do not loosen market breadth or approve latest-only XLM while active history is negative.
+User action required: none for DRY repair. Gmail connector token remains expired for actual sends; local two-hour reporting monitor remains running.
+
+## 2026-06-18T18:44:37Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden repair/sim loop running; DRY=true LIVE=false; supervisor_pid=58420 sim_loop_pid=20040 status_monitor_pid=92800.
+Current blocker: real market/quality gates, not quarantine. XRP sim-approved recovery no longer gets stuck behind the off-config low-pressure loss quarantine; current XRP candidates are blocked by net_negative_low_dmid because effective recent-candle dmid is -36.7518 bps against required 0.0, plus one topbook miss. Market breadth remains weak around 0.39-0.42 vs required 0.85.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; prior changes remain in C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized_usd=-0.37012501; unrealized_usd=0.0; opened=73; closed=73; wins=32; losses=39; open=0. Post-change XRP signal reasons: net_negative_low_dmid=4, tob_usd=1; no post-change opens.
+Action taken: set DRY_PNL_SIM_APPROVED_REQUIRE_NONNEGATIVE_DRY_HISTORY=false for the XRP-only sim-approved recovery lane, while keeping DRY_PNL_SIM_APPROVED_REQUIRE_ENTRY_QUALITY=true and DRY_PNL_SIM_APPROVED_RESPECT_LOSS_COOLDOWN_WHEN_NET_NEGATIVE=true. This lets supported recovery bypass the off-config quarantine but still blocks low-dmid/low-pressure/high-trough/low-topbook setups. Coinbase/order path untouched; static TP/SL untouched; LIVE remains false.
+Validation: run_settings.json JSON parse OK; python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness OK (98 tests). Hidden processes alive after restart.
+Next action: keep hidden DRY observe/sim running until XRP reaches supported dmid/pressure/trough/topbook with adequate breadth/probe evidence, or until the repair loop finds a new train/validation-supported recovery product. Do not loosen market breadth or score gates without forward evidence.
+User action required: none for DRY repair. Gmail connector token remains expired for actual sends; local two-hour reporting monitor remains running.
+
+## 2026-06-18T18:40:36Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and hidden repair/sim loop running; DRY=true LIVE=false; supervisor_pid=73768 sim_loop_pid=20040 status_monitor_pid=92800.
+Current blocker: market_breadth. Post-correction observe is producing usable candidates and runtime coverage is not U=0/cache-missing, but current green breadth is too weak for entry; latest drynear UNI-USD had market_green_ratio 0.4250 vs required 0.8500. Net-negative recovery remains restricted to supported XRP evidence.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; prior changes remain in C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=35; dry_pnl_net_usd=-0.37012501; realized_usd=-0.37012501; unrealized_usd=0.0; opened=73; closed=73; wins=32; losses=39; open=0. XRP recovery support remains positive on history: 75 signals, supported_count=36, supported config avg_net_forward_close_bps=+1.1462, positive_rate=0.60, train_avg=+1.8626, validation_avg=+0.4299, SL touch=0.0. Latest unsupported low-pressure XRP open closed -0.00579074 USD before the corrected pressure patch fully landed.
+Action taken: corrected XRP recovery settings to match supported evidence: DRY_MIN_TICK_DMID_BPS_BY_PRODUCT XRP-USD restored to 0.0 and DRY_PNL_NET_NEGATIVE_MIN_BOOK_PRESSURE_BY_PRODUCT XRP-USD set to 0.9; restarted hidden DRY supervisor. Coinbase/order path untouched; static TP/SL untouched; LIVE remains false.
+Validation: run_settings.json JSON parse OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections OK (98 tests). Hidden processes alive after restart. Runtime product coverage: runtime_products=356, present=347, stale=9, repeat_sparse_in_runtime=12; no U=0 condition observed in tick_diag (U=120, S=356).
+Next action: keep hidden DRY observe/sim running; wait for either XRP to meet supported pressure/trough/tob/dmid gates or for the repair loop to find a new train/validation-supported recovery lane. Do not tune profit score while openable support is zero; do not loosen market breadth without forward evidence.
+User action required: none for DRY repair. Gmail connector token remains expired for actual sends; local two-hour reporting monitor remains running.
+
+## 2026-06-18T14:57:25Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop restarted to load blocker-report patch; DRY=true LIVE=false; supervisor_pid=78748 sim_loop_pid=93388.
+Current blocker: dry_position_open; supported UNI-USD DRY position remains open and positive, but live remains blocked until it closes and dry net P&L/score become deployable.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; prior run_settings/test changes unchanged.
+Dry Profit Score evidence: score=31; realized_usd=-0.3814199; unrealized_usd=0.01545396; dry_pnl_net_usd=-0.36596594; opened=60; closed=59; wins=22; losses=36; open=1; active_gate_supported=True; active_gate_product=UNI-USD; active_gate_signals=9; active_gate_avg_net_forward_close_bps=50.4657; open_UNI_unrealized_bps=51.5132.
+Action taken: patched sim-loop summary blocker priority so an active open DRY position reports as dry_position_open instead of stale dmid/market-breadth diagnostics; restarted sim loop hidden with DRY=true LIVE=false. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness OK; one sim iteration OK.
+Next action: monitor UNI close result; if profitable, keep DRY sim/repair running for net P&L recovery; if it gives back, tighten product-specific profit-protect without changing static TP/SL.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:56:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and sim loop running; DRY=true LIVE=false; supervisor_pid=78748 sim_loop_pid=14992.
+Current blocker: not live-ready; active UNI recovery support is now visible and supported, but dry net P&L remains negative and one DRY UNI position is open, so live deployment remains blocked.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; prior run_settings/sim-loop/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.37948815; realized_usd=-0.3814199; unrealized_usd=0.00241468; opened=60; closed=59; wins=22; losses=36; open=1; active_gate_supported=True; active_gate_product=UNI-USD; active_gate_signals=6; active_gate_avg_net_forward_close_bps=59.3336; active_gate_positive_rate=1.0.
+Action taken: patched readiness/preflight reporting to evaluate thresholds with active product-scoped config instead of stale row snapshots; recovery coverage now uses product-scoped net-negative dmid/tick/tob/book-pressure/trough gates. Coinbase/order path untouched. Static TP/SL untouched.
+Validation: python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py OK; python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK; python tools\koko_sim_repair_loop.py --once OK.
+Next action: keep hidden DRY/sim loop running, monitor the open UNI close, then repair based on actual post-patch P&L delta and blocker if score/net P&L do not improve.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:38:51Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor restarted with UNI-only dmid recovery lane; sim/repair loop restarted; DRY=true LIVE=false; supervisor_pid=77304 sim_loop_pid=75576.
+Current blocker: dry net P&L remains negative from prior entries; live blocker is proving current corrected UNI-only recovery can open and close positively while non-approved HYPE/scout stays blocked.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; active_gate_supported=False; active_gate_product=UNI-USD; active_gate_avg_bps=-19.9609; active_gate_signals=3; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0.
+Action taken: set UNI-USD DRY_MIN_DMID_BPS_BY_PRODUCT=9.0 and DRY_PNL_NET_NEGATIVE_MIN_DMID_BPS_BY_PRODUCT=9.0; direct guard check confirms current-style UNI candidate openable while net negative; 90-test validation passed.
+Next action: observe next dry cycles for UNI open/close, then continue repair based on actual dry P&L delta.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:41:23Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor restarted with UNI-only TDI grace; sim/repair loop restarted; DRY=true LIVE=false; supervisor_pid=77476 sim_loop_pid=58080.
+Current blocker: current UNI candidate reached dmid/tick/spread/trough but was blocked by TDI shadow plus market breadth; active fix is UNI-only TDI grace while market-breadth observe probe remains in force.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; latest_blocker=tick_dmid.
+Action taken: set DRY_TDI_SHADOW_GRACE_BY_PRODUCT UNI-USD=20.0; latest UNI forward evidence with grace remains 15/15 positive, avg +48.37 bps, 0 SL touches; 90-test validation passed.
+Next action: observe next dry cycle for UNI open/close and continue repair based on post-patch P&L delta.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:45:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor restarted with UNI-only sim-approved recovery list; sim/repair loop restarted; DRY=true LIVE=false; supervisor_pid=33032 sim_loop_pid=88972.
+Current blocker: no live-ready state; dry net P&L still negative from previous entries. Current safe recovery is waiting for UNI trough <=0.5 and TDI/effective gate OK; HYPE remains blocked because strict HYPE is negative over historical forward evidence.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; latest_blocker=tick_dmid.
+Action taken: narrowed DRY_PNL_SIM_APPROVED_PRODUCTS to UNI-USD only; kept DRY=true and LIVE=false; 90-test validation passed. Strict HYPE latest slice was positive, but historical strict HYPE remained negative, so HYPE was not re-approved.
+Next action: observe for supported UNI window; continue repair from actual post-patch P&L evidence.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:48:43Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor and sim loop running; DRY=true LIVE=false; supervisor_pid=66044 sim_loop_pid=35320.
+Current blocker: active openable recovery support is currently zero after correcting support reporting; UNI is nearest but blocked by market breadth and high trough, while non-UNI products are blocked by net-negative recovery restrictions.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; active_openable_support=0; threshold_supported=False; latest_blocker=tick_dmid.
+Action taken: patched sim-loop reporting so active_dry_gate_support only counts sim-approved products while net P&L is negative; validation passed py_compile, 20 sim tests, and one full sim iteration; workers relaunched hidden.
+Next action: keep observing for a real UNI-supported window or implement next data/preflight repair if coverage remains zero.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+
+## 2026-06-18T14:49:59Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor and sim loop relaunched; DRY=true LIVE=false; supervisor_pid=78748 sim_loop_pid=14992.
+Current blocker: no active openable UNI support in current 180-minute forward window; nearest runtime UNI is market-breadth blocked and current forward evidence is not mature/supportive enough. HYPE/non-UNI remain blocked under net-negative recovery rules.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior manager/test changes unchanged.
+Dry Profit Score evidence: score=31; dry_pnl_net_usd=-0.3814199; opened=59; closed=59; wins=22; losses=36; open=0; active_openable_support=0; threshold_supported=False; latest_blocker=tick_dmid.
+Action taken: patched support reporting to use net-negative product-scoped dmid/tick/trough gates; validation passed py_compile, 20 sim tests, and one full sim iteration; workers relaunched hidden.
+Next action: keep observing for real UNI support; if zero persists, inspect whether forward maturity/lookback or candidate feed coverage is suppressing mature UNI evidence.
+User action required: none for DRY repair; Gmail reporting still needs auth/config for actual sends; LIVE remains off.
+## 2026-06-18T22:11:19Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=51592 sim_loop_pid=76692 status_monitor_pid=55040.
+Current blocker: not live-ready; preflight/feed openability blocker is cleared because DRY opened XLM-USD at 2026-06-18T22:09:19Z. Remaining blocker is dry net P&L recovery and closing current DRY position safely.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; prior changes remain in C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, C:\ai_trading_bot_koko\managers\run_manager\run_manager.py, and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: opened=78; closed=77; wins=35; losses=40; open=1; realized_usd=-0.37091813; unrealized_usd=+0.01224685; net_usd=-0.35867128; open_XLM=+40.8228 bps; latest HYPE close was loss_trim -36.8216 bps under the prior oversized HYPE loss cap.
+Action taken: tightened DRY_PNL_FORCE_LOSS_MAX_BPS_BY_PRODUCT for HYPE-USD, UNI-USD, and XLM-USD to -12.0; tightened XLM-USD force-loss min age to 2 minutes; kept DRY=true and LIVE=false; Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8.
+Validation: run_settings.json JSON parse OK; python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (71 tests). Forced sim pass completed and recurring sim loop relaunched hidden.
+Next action: monitor current XLM close outcome under tightened risk; if it closes profitably, continue recovery loop; if it gives back, patch product-specific profit-protect/risk based on ledger evidence without changing static TP/SL or Coinbase/order code.
+User action required: none for DRY repair. Gmail connector token/config may still block actual sends; local reporting monitor remains running. LIVE remains off.
+## 2026-06-18T22:16:51Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=63664 sim_loop_pid=98244 status_monitor_pid=55040.
+Current blocker: dry P&L recovery, not feed/openability. DRY opened and closed post-fix candidates; live remains blocked because realized net P&L is still negative.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior changes remain in C:\ai_trading_bot_koko\managers\run_manager\run_manager.py and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: Profit Score approximately 36/100; opened=79; closed=79; wins=36; losses=41; open=0; realized_usd=-0.36215778; unrealized_usd=0.0; latest XLM closed profit_protect +47.6160 bps +0.0142848 USD; latest HYPE closed loss_trim -18.4148 bps -0.00552445 USD after cap tightening; HYPE actual ledger now closed=12 pnl_usd=-0.02802097 and is not approved for more net-negative recovery.
+Action taken: added auto-sync ledger floor so cross-checked simulated support is filtered to ledger-supported products while dry net P&L is negative; narrowed DRY_PNL_SIM_APPROVED_PRODUCTS to UNI-USD only; kept force-loss caps at -12.0 for HYPE/UNI/XLM; kept DRY=true and LIVE=false; Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8.
+Validation: run_settings.json JSON parse OK; python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK; python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (72 tests). Forced sim pass completed; auto_sync_recovery_approval reports approved_products=[UNI-USD], changed=false, reason=already_synced.
+Next action: continue hidden DRY/sim loop; do not widen approved products until actual DRY ledger is nonnegative or a product passes the ledger support floor; if UNI current forward support stays negative, hold rather than forcing opens.
+User action required: none for DRY repair. Gmail SMTP env still missing, so reports are written to outbox instead of sent until credentials are configured. LIVE remains off.
+
+## 2026-06-18T23:06:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=79768 sim_loop_pid=80720 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: dry P&L recovery. Feed/openability and top-10 breadth are now passing, but the latest UNI recovery open closed as a loss, so live remains blocked.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; prior repair files remain changed.
+Dry Profit Score evidence: Profit Score about 36/100 before latest close; opened=81; closed=81; wins=36; losses=43; open=0; realized_usd=-0.37257208; unrealized_usd=0.0; net_usd=-0.37257208. Latest UNI-USD opened at 2026-06-18T23:02:31Z and closed loss_trim at 2026-06-18T23:04:44Z, pnl_bps=-12.9870, pnl_usd=-0.00389610. UNI ledger remains positive overall: closed=22, wins=16, losses=5, pnl_usd=+0.04309206, pnl_bps=+143.6404.
+Action taken: aligned UNI net-negative trough cap to the tested support config by setting DRY_PNL_NET_NEGATIVE_MAX_TROUGH_PCT_BY_PRODUCT.UNI-USD=1.0; after the real UNI loss, removed UNI TDI grace by setting DRY_TDI_SHADOW_GRACE_BY_PRODUCT.UNI-USD=0.0 so sub-70 TDI entries no longer pass recovery. Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8.
+Validation: python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK (119 tests); python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK.
+Next action: continue hidden DRY observe/sim; wait for UNI or another ledger-supported product to pass full entry quality without TDI grace, then evaluate close outcome. Do not go live while net DRY P&L is negative.
+User action required: none for DRY repair. Gmail SMTP env still missing, so reports are written to outbox instead of sent until credentials are configured. LIVE remains off.
+
+## 2026-06-19T00:28:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=58992 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: DRY observe has usable feed/cache coverage, but current entry final gate is blocked by market_breadth, with RE-USD the closest final-gate miss. Latest evidence shows U=120 S=356 brf=120, timestamp_ratio=0.9691, runtime_product_coverage present=345 stale=11 missing=0 empty=0, latest_mbr=0.1000/0.8500, max_near_mbr=0.9000, latest_mdmid=-5.85/0.00. NEAR-USD and ONDO-USD approvals are restored and hot-reloaded, but current NEAR/ONDO recent-candle dmid is negative, so no safe DRY open yet.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior active safety patch remains in C:\ai_trading_bot_koko\managers\run_manager\run_manager.py and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: Profit Score=37/100; opened=92; closed=92; wins=42; losses=45; open=0; realized_usd=-0.36350433; unrealized_usd=0.0; net_usd=-0.36350433. Latest score improvement came from ONDO-USD profit_protect close at 2026-06-18T23:53:21Z.
+Action taken: stopped stale sim loop PID 38764, restored DRY_PNL_SIM_APPROVED_PRODUCTS to [NEAR-USD, ONDO-USD] using current threshold-only probation logic, confirmed active quarantines still exclude ENA-USD, HYPE-USD, JTO-USD, UNI-USD, and XRP-USD, restarted hidden sim loop as PID 58992, and verified supervisor settings reload picked up the approval change. Patched reporter output so stale sim-state approval evidence is shown beside actual settings_approved=NEAR-USD|ONDO-USD. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness OK (125 tests); python -m unittest tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (60 tests); python -m py_compile tools\tdi_status_reporter.py tools\tdi_status_monitor.py OK. Reporter generated a material-event status payload with settings_approved=NEAR-USD|ONDO-USD, but actual email send remains blocked by missing SMTP env user/password/sender.
+Next action: keep hidden DRY observe/sim running; do not go live. Next repair target is evidence-backed market-breadth/product selection if approved products continue to show no openable dmid window.
+User action required: none for DRY repair. User action is required only for outbound Gmail/SMTP delivery if email reports must leave the machine. LIVE remains off.
+
+## 2026-06-19T00:33:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=58992 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: DRY observe remains active with good feed/cache coverage, but current approved-product timing is still not openable. Fresh readiness at 2026-06-19T00:29:15Z showed U=120 S=356 brf=120, quote_volume_usable_ratio=0.8368, dmid_usable_ratio=0.5208, tick_dmid_warmed_ratio=0.9468, book_metric_source_present_ratio=1.0. NEAR/ONDO were approved and visible in dryrank_top; market breadth briefly passed at 0.9000/0.8500, then later slipped to 0.8000/0.8500. After the NEAR patch, current NEAR refusal is quality timing, not stale approval: rdmid fell to 22.31 against the evidence-backed 40.0 minimum.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior active safety patch remains in C:\ai_trading_bot_koko\managers\run_manager\run_manager.py and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: Profit Score=37/100; opened=92; closed=92; wins=42; losses=45; open=0; realized_usd=-0.36350433; unrealized_usd=0.0; net_usd=-0.36350433.
+Action taken: applied current recovery-threshold evidence to NEAR only: max_spread=10.0, max_trough=1.0, min_tick_dmid=0.0, min_dmid=40.0, min_tob=500.0, min_book_pressure=0.3 for net-negative/scout lanes as applicable. This was based on NEAR history support: 14 signals, avg_net_forward_close_bps=+20.7009, positive_rate=0.7143, sl_touch_rate=0.0. ONDO was not loosened because its supported config requires quote_volume_usd=500000 and current ONDO quote volume was about 291k-331k. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: run_settings.json JSON parse OK. Prior reporter tests remain OK (60 tests), and prior sim/readiness tests remain OK (125 tests).
+Next action: keep hidden DRY observe/sim running; do not go live. Watch for NEAR to regain rdmid >=40 with market breadth passing, or identify the next evidence-backed approved product. Do not lower NEAR dmid below the supported threshold.
+User action required: none for DRY repair. User action is required only for outbound Gmail/SMTP delivery if email reports must leave the machine. LIVE remains off.
+
+## 2026-06-19T00:36:35Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=56364 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: not live-ready. DRY net P&L remains negative and no new DRY open has occurred after the NEAR gate update. Latest post-update ticks show ONDO/NEAR still in dryrank_top, but market breadth slipped to 0.8000/0.8500 and NEAR rdmid is about 22.31 against the supported 40.0 floor. This is now a market/timing refusal, not a stale feed or approval wipe.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior reporter patch remains in C:\ai_trading_bot_koko\tools\tdi_status_reporter.py and C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py.
+Dry Profit Score evidence: Profit Score=37/100; opened=92; closed=92; wins=42; losses=45; open=0; realized_usd=-0.36350433; unrealized_usd=0.0; net_usd=-0.36350433. Latest ledger event is NEAR-USD blocked_open at 2026-06-19T00:30:42Z for net_negative_high_trough, before the NEAR supported-config update.
+Action taken: added auto-sync for approved product recovery gates from supported threshold configs. It is guarded by DRY=true, LIVE=false, static TP/SL 8.0/0.8, and only updates currently approved products with supported configs. Restarted hidden sim loop from PID 58992 to PID 56364. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness OK (127 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK.
+Next action: keep hidden DRY observe/sim running; watch for NEAR/ONDO to pass evidence-backed gates. If no approved product opens, continue from market-breadth/product-selection evidence; do not tune profit score while opened=0.
+User action required: none for DRY repair. User action is required only for outbound Gmail/SMTP delivery if email reports must leave the machine. LIVE remains off.
+
+## 2026-06-19T00:42:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=56364 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: not live-ready. First new sim loop pass completed at 2026-06-19T00:41:12Z; ready_to_deploy_live=false. Blocker remains dry_pnl_recovery_ready_for_approval / market-timing quality with no open position.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: Profit Score=37/100; opened=92; closed=92; wins=42; losses=45; open=0; realized_usd=-0.36350433; unrealized_usd=0.0; net_usd=-0.36350433.
+Action taken: verified auto_sync_recovery_product_configs executed in the hidden loop. It updated NEAR-USD net-negative quote-volume floor to 50000 and aligned ONDO-USD to supported config: quote_volume=500000, dmid=0, max_trough=1.0, min_tob=50, min_book_pressure=0.3. Current approved products remain [NEAR-USD, ONDO-USD]. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: run_settings.json JSON parse OK after auto-sync; hidden loop state healthy with failed_command_count=0.
+Next action: keep hidden DRY observe/sim running; watch for actual NEAR/ONDO open under the newly synced evidence-backed gates. Do not go live until DRY net P&L and score recover.
+User action required: none for DRY repair. User action is required only for outbound Gmail/SMTP delivery if email reports must leave the machine. LIVE remains off.
+
+## 2026-06-18T23:00:45Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=63160 sim_loop_pid=47364 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: feed/openability breadth lane is fixed; current DRY signal is blocked by net-negative entry quality, specifically UNI-USD net_negative_low_pressure. HYPE-USD remains quarantined; ENA-USD is loss-cooldown/quote-volume blocked after the latest ENA loss.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; prior changes remain in C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py, C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py, C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, and C:\ai_trading_bot_koko\managers\run_manager\run_manager.py.
+Dry Profit Score evidence: Profit Score=36/100; opened=80; closed=80; wins=36; losses=42; open=0; realized_usd=-0.36867598; unrealized_usd=0.0; net_usd=-0.36867598. Latest closed trade ENA-USD loss_trim at 2026-06-18T22:54:45Z, pnl_bps=-21.7273, pnl_usd=-0.00651820. Latest runtime breadth after patch shows mbr=1.0000/0.8500, mbn=10, mdmid about 39-41 bps, and drynear all_pass candidates present, but DRY open is blocked by P&L entry guard rather than feed coverage.
+Action taken: corrected observe/preflight net-negative recovery guard so product-specific quote-volume floors match runtime; changed DRY_MARKET_BREADTH_TOP_N from 120 to 10 while keeping DRY_MIN_MARKET_GREEN_RATIO at 0.85; restarted hidden DRY supervisor and sim/repair loop. Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8.
+Validation: python -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK (119 tests); python -m py_compile tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK.
+Next action: continue DRY observe/sim loop and only open recovery candidates when net-negative entry-quality gates pass. Do not loosen UNI pressure while pressure is weak; watch for UNI pressure/trough window or new ledger-supported recovery product.
+User action required: none for DRY repair. Gmail SMTP env still missing, so reports are written to outbox instead of sent until credentials are configured. LIVE remains off.
+## 2026-06-18T22:45:23Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=91908 sim_loop_pid=89504 status_monitor_pid=55040.
+Current blocker: dry P&L recovery with real entry-quality gates, not U=0/cache-missing. Approval stall is fixed: DRY_PNL_SIM_APPROVED_PRODUCTS is now ENA-USD,UNI-USD. ENA quote-volume mismatch is fixed; current ENA block is dmid because refreshed recent-candle dmid is about -21.79 bps against required 40.0. UNI is approved but current trough/market-quality remains unfavorable. HYPE remains excluded/quarantined.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; prior changes remain in C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py and C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py.
+Dry Profit Score evidence: Profit Score approximately 36/100; opened=79; closed=79; wins=36; losses=41; open=0; realized_usd=-0.36215778; unrealized_usd=0.0; net_usd=-0.36215778. Ledger probation evidence for ENA: closed=3; ledger_pnl_usd=-0.0000302; ledger_pnl_bps=-0.1007; win_rate=0.3333; loss_trim_rate=0.3333; direct recovery signals=42; avg_net_forward_close_bps=+10.7221; positive_rate=0.5714; sl_touch_rate=0.0476. Ledger support remains UNI-USD only.
+Action taken: added tested ledger-probation support and negative-net auto-sync filtering so approved recovery products must be ledger-supported or probation-supported; auto-sync changed approvals from UNI-USD to ENA-USD,UNI-USD. Lowered ENA quote-volume floor from 500000 to 50000 where current DRY/scout gates were blocking despite probation approval. Forced targeted recent-candle cache refresh for ENA-USD and UNI-USD; refreshed=2 failed=0; restarted supervisor hidden. Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8.
+Validation: run_settings.json JSON parse OK; python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (133 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight OK (96 tests); py_compile for tools\run_koko_dry_supervised.py, tools\koko_sim_repair_loop.py, and managers\run_manager\run_manager.py OK. Hidden processes confirmed alive.
+Next action: keep hidden DRY/sim loop running; do not lower ENA dmid unless a sweep-supported lower-dmid config appears. Current history sweep has no supported lower-dmid ENA config; forcing ENA through negative candle dmid would weaken the tested safety lane. Continue searching for supported windows/products and let DRY open only when approved product quality gates pass.
+User action required: none for DRY repair. Gmail SMTP env still missing, so reports are written to outbox instead of sent until credentials are configured. LIVE remains off.
+## 2026-06-18T22:26:25Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=65028 sim_loop_pid=98244 status_monitor_pid=55040.
+Current blocker: dry P&L recovery under weak market breadth, not U=0/stale feed. Entry preflight is no longer sleeping on stale timestamp coverage; supervisor reached continuous_start.
+Files changed: C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py; C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py; C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: Profit Score approximately 36/100; opened=79; closed=79; wins=36; losses=41; open=0; realized_usd=-0.36215778; unrealized_usd=0.0. Latest sim approval remains UNI-USD only; current active UNI forward support is negative, so no forced widen.
+Action taken: patched preflight cache refresh so low raw timestamp coverage ratio triggers refresh even when tail_cache_refresh_required is false; restarted supervisor hidden. Post-fix evidence: preflight_cache_after_refresh refreshed=356 failed=0 timestamp_ratio=0.9466 liquid=14; entry_preflight_runtime_cache supported=True ranked_probe=True; entry_preflight_sample_done signals=205 liquid_dmid=28 liquid_dmid_spread_tob=28; continuous_start reached. Coinbase/order path untouched; static TP/SL untouched.
+Validation: python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (131 tests); py_compile for tools\run_koko_dry_supervised.py, tools\koko_sim_repair_loop.py, and managers\run_manager\run_manager.py OK.
+Next action: continue hidden DRY/sim loop; watch for next approved UNI window or new ledger-supported product; do not widen approvals or tune profit score while current forward evidence is negative.
+User action required: none for DRY repair. Gmail SMTP env still missing, so reports are written to outbox instead of sent until credentials are configured. LIVE remains off.
+## 2026-06-18T23:27:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden repair/sim loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=42544 sim_loop_pid=80720 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: not live-ready because dry net P&L is still negative, but DRY observe is opening and closing candidates again. Current open is UNI-USD and unrealized positive.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: Profit Score=35/100; opened=85; closed=84; wins=39; losses=43; open=1; realized_usd=-0.35432965; unrealized_usd=+0.00241390; net_usd=-0.35191575. Recent closes: UNI-USD profit_protect +27.4814 bps +0.00824442 USD at 2026-06-18T23:20:54Z; JTO-USD profit_protect +24.5131 bps +0.00735394 USD at 2026-06-18T23:21:21Z; JTO-USD profit_protect +8.8136 bps +0.00264407 USD at 2026-06-18T23:26:47Z. Current UNI-USD opened at 2026-06-18T23:25:48Z and is positive unrealized.
+Action taken: added an explicit cross-checked direct recovery approval gate for negative DRY net, refreshed runtime candle coverage, synced approvals, then patched the manager guard so a non-approved product cannot bypass DRY_PNL_SIM_APPROVED_PRODUCTS while net P&L remains negative. Restarted the DRY supervisor hidden. Coinbase/order path untouched; static TP/SL untouched at TP=8.0 and SL=0.8; DRY=true LIVE=false.
+Validation: python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness OK (121 tests); python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK.
+Next action: monitor current UNI close, then force a fresh sim/repair pass from the improved ledger; keep live blocked until dry net P&L and score recover enough for deployment criteria.
+User action required: none for DRY repair. Gmail reporter did not send because event was classified not-material/duplicate under cadence; local status/outbox remains available. LIVE remains off.
+
+## 2026-06-18T23:43:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=42544 sim_loop_pid=80720 status_monitor_pid=55040; duplicate one-shot sim PID 32212 was stopped after command timeout; Cloud task URL not configured for this local run.
+Current blocker: dry P&L recovery, not missing product/cache coverage. Product-cache gap is now false after refresh; latest scheduled sim blocker is dry_pnl_recovery_ready_for_approval with coverage_usable_no_openable_candidate. Current feed evidence: runtime_cache_present=340, runtime_cache_stale=16, product_cache_gap=false, timestamp_stale_sec=150, latest_drynear=UNI-USD tdi_shadow.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; prior active repair files remain C:\ai_trading_bot_koko\run_settings.json, C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, C:\ai_trading_bot_koko\managers\run_manager\run_manager.py, C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py, and C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py.
+Dry Profit Score evidence: Profit Score=36/100; opened=91; closed=91; wins=41; losses=45; open=0; realized_usd=-0.36654784; unrealized_usd=0.0; net_usd=-0.36654784. The prior improvement to score 37/net -0.33989893 did not hold after two additional losses.
+Action taken: refreshed all 356 runtime products in the candle cache with failed=0, verified DRY=true LIVE=false and static TP/SL remain TP=8.0 SL=0.8, confirmed run_loop hot-reloaded DRY_PNL_SIM_APPROVED_PRODUCTS, stopped only the duplicate one-shot sim process after timeout, and left the hidden scheduled loop/supervisor running.
+Validation: cache refresh completed 356/356 failed=0; scheduled sim state updated at 2026-06-18T23:43:14Z; hidden processes confirmed alive. No Coinbase/order path edits; no LIVE enablement.
+Next action: continue observing approved recovery products NEAR-USD, ONDO-USD, and UNI-USD under net-negative gates; repair the next blocker from ledger evidence only, with no score tuning while recovery entries are not profitable.
+User action required: none for DRY repair. Gmail/SMTP send capability may still require credentials if not already configured. LIVE remains off.
+
+## 2026-06-18T23:46:50Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted and running; hidden scheduled sim/repair loop and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=80720 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: dry P&L recovery. Latest current blocker from reporter/readiness is dry signal blocked by net_negative_high_trough on NEAR-USD. Feed/cache lane is usable enough for DRY observe; this patch addresses loss recycling, not profit scoring.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: Profit Score=36/100; opened=91; closed=91; wins=41; losses=45; open=0; realized_usd=-0.36654784; unrealized_usd=0.0; net_usd=-0.36654784. Latest damaging closes were UNI-USD loss_trim -14.2383 bps and JTO-USD loss_trim -74.5914 bps.
+Action taken: patched negative-net DRY recovery so loss_trim/sl quarantine blocks recovery entries by default even when a product is sim-approved or has positive historical expectancy; added DRY_PNL_RESPECT_LOSS_QUARANTINE_WHEN_NET_NEGATIVE=true; kept Coinbase/order path untouched; kept static TP/SL unchanged at TP=8.0 SL=0.8; restarted supervisor hidden.
+Validation: python -m unittest tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness OK (122 tests); python -m py_compile managers\run_manager\run_manager.py tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK.
+Next action: watch the next DRY observe cycle for quarantine blocks on recently losing products, then continue scheduled sim/repair from the new safety state.
+User action required: none for DRY repair. Reporter generated the status payload but suppressed email as not_material/duplicate under cadence rules. LIVE remains off.
+
+## 2026-06-19T00:14:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden scheduled sim/repair loop, and status monitor running; DRY=true LIVE=false; supervisor_pid=69036 sim_loop_pid=38764 status_monitor_pid=55040; Cloud task URL not configured for this local run.
+Current blocker: not approval coverage anymore; DRY approvals are NEAR-USD and ONDO-USD after quarantine filtering, but current market/trend quality is blocking entries. Latest live ticks show U=120 S=356 brf=120 with NEAR/ONDO visible in dryrank_top and no P&L rejection, but NEAR/ONDO currently have negative recent-candle dmid and market breadth is weak.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior active safety patch remains in C:\ai_trading_bot_koko\managers\run_manager\run_manager.py and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py.
+Dry Profit Score evidence: Profit Score=37/100 from sim state; opened=92; closed=92; wins=42; losses=45; open=0; realized_usd=-0.36350433; unrealized_usd=0.0; net_usd=-0.36350433. Latest improvement was ONDO-USD profit_protect close at 2026-06-18T23:53:21Z, moving realized P&L from -0.36654784 to -0.36350433.
+Action taken: patched sim auto-sync to exclude active loss_trim/sl quarantines while net P&L is negative; added explicit threshold-only probation approval behind DRY_RECOVERY_APPROVAL_ALLOW_THRESHOLD_ONLY_PROBATION=true; forced artifact sync changed DRY_PNL_SIM_APPROVED_PRODUCTS from [] to [NEAR-USD, ONDO-USD] and excluded ENA-USD, HYPE-USD, JTO-USD, UNI-USD, XRP-USD by active quarantine. Aligned NEAR/ONDO normal/scout recovery thresholds to the supported 5-minute forward sweep profile: max_spread=5, max_trough=0.2, min_dmid=16, min_tick_dmid=10, min_tob=0, min_book_pressure=0. Coinbase/order path untouched; DRY stayed true; LIVE stayed false; static TP/SL stayed TP=8.0 SL=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness OK (125 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py OK; run_settings.json JSON parse OK. Hidden supervisor hot-reloaded DRY_RECOVERY_APPROVAL_ALLOW_THRESHOLD_ONLY_PROBATION and DRY_PNL_SIM_APPROVED_PRODUCTS.
+Next action: keep DRY observe/sim running; do not go live. Watch for NEAR/ONDO to pass dmid/market-breadth/trough quality, then evaluate actual DRY close. If no approved product opens, next repair target is market-breadth/feed candidate selection evidence, not Coinbase/order code.
+User action required: none for DRY repair. LIVE remains off.
+
+
+## Codex Relay Update - 2026-06-19T01:25:27Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted on patched code; hidden status monitor running. LIVE remains false.
+Current blocker: not ready for live; DRY recovery openability improved. XLM-USD was promoted into DRY_PNL_SIM_APPROVED_PRODUCTS and opened/closed profit-protect in DRY. Remaining work is continued DRY recovery P&L improvement and validation, with loss-quarantined products still excluded while net P&L is negative.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; logs/dry_cycle18_pnl_score.json/ledger updated by DRY observe.
+Dry Profit Score evidence: score=36; opened=94 closed=94 wins=43 losses=46 open_count=0 realized=-0.35692859 unrealized=0.0 last_event=2026-06-19T01:25:15Z.
+Latest material event: XLM-USD DRY open at 2026-06-19T01:21:40Z, close profit_protect +44.1364 bps / +0.01324093 USD; settings approved products now ['ONDO-USD', 'XLM-USD'].
+Validation: python -m unittest tests.test_koko_sim_repair_loop passed (45 tests); python -m unittest tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor passed (105 tests); py_compile passed for changed tools.
+Next action: keep hidden DRY observe and sim/repair running; watch XLM/ONDO approved runtime coverage and continue repair until Profit Score and dry net P&L meet deployment criteria. User action required: no for DRY work; yes only if real Gmail SMTP sending is required because SMTP env is still missing.
+
+
+## Codex Relay Update - 2026-06-19T01:36:07Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with lighter bounded diagnostics; hidden status monitor running. LIVE remains false.
+Current blocker: not ready for live. XLM briefly fixed opened=0 and produced two profit-protect closes, then a loss_trim; XLM is now loss-quarantined and removed from DRY_PNL_SIM_APPROVED_PRODUCTS while net P&L is negative. Current approved recovery product is ONDO-USD only; ONDO runtime is blocked by quote_volume/tob_usd/market_breadth.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json; logs/dry_observe_readiness_latest.json refreshed.
+Dry Profit Score evidence: opened=96 closed=96 wins=44 losses=47 open_count=0 realized=-0.37402743 unrealized=0.0 last_event=2026-06-19T01:33:10Z approved=['ONDO-USD'].
+Latest material event: XLM-USD profit closes +0.01324093 and +0.0025838 USD, then loss_trim -0.01968264 USD; approval reverted to ONDO-only. DRY=true LIVE=false TP=8.0 SL=0.8.
+Validation: sim-loop tests 45 OK; reporter tests 56 OK; readiness/status/monitor tests 105 OK; py_compile passed for changed tools.
+Next action: keep DRY observe running, wait for non-quarantined fresh recovery support or ONDO runtime gates to clear; do not tune score while no safe openable candidate exists. User action required: no for DRY work; SMTP env still required only for real Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T01:43:22Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor, hidden sim/repair loop, and hidden status monitor running. LIVE=false.
+Current blocker: approved_recovery_quote_volume (approved runtime primary=quote_volume); ONDO-only approved recovery remains blocked by quote_volume/top-of-book/market breadth. XLM is excluded by loss quarantine and negative dry ledger evidence.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json; logs/dry_observe_readiness_latest.json; logs/koko_sim_repair_loop_state.json.
+Dry Profit Score evidence: score=37 opened=96 closed=96 wins=44 losses=47 open_count=0 realized=-0.37402743 unrealized=0.0 net=-0.37402743 last_event=2026-06-19T01:33:10Z approved=['ONDO-USD'].
+Latest material event: added negative-ledger approval exclusion; XLM cannot re-enter approvals while net negative unless ledger/approval evidence improves. DRY=true LIVE=false TP=8.0 SL=0.8.
+Validation: focused sim-loop and reporter tests passed; full relevant bundle running/continuing separately if not already complete.
+Next action: continue hidden DRY observe; wait for ONDO gates to clear or a non-quarantined/non-negative-ledger recovery product to appear. User action required: no for DRY work; SMTP env required only for real Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T01:49:45Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor pid active; hidden sim/repair loop pid active; hidden status monitor pid active. LIVE=false.
+Current blocker: approved_recovery_quote_volume; actionable recovery products=['ONDO-USD']; excluded recovery products=['ENA-USD', 'JTO-USD', 'NEAR-USD', 'UNI-USD', 'XLM-USD']. ONDO is the only approved/actionable product and is currently blocked by quote_volume/top-of-book/market breadth.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json; logs/koko_sim_repair_loop_state.json.
+Dry Profit Score evidence: score=37 opened=96 closed=96 wins=44 losses=47 open_count=0 realized=-0.37402743 unrealized=0.0 net=-0.37402743 last_event=2026-06-19T01:33:10Z approved=['ONDO-USD'].
+Latest material event: approval evidence now separates raw support from actionable support; quarantined/negative-ledger products no longer read as deployable approvals in status output. DRY=true LIVE=false TP=8.0 SL=0.8.
+Validation: sim-loop + reporter focused tests passed (103 OK); py_compile passed for changed tools.
+Next action: continue hidden DRY observe/repair; do not lower ONDO gates without positive product-specific forward evidence. User action required: no for DRY work; SMTP env still required only for real Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:01:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with current patched code; hidden status monitor restarted hidden. DRY=true LIVE=false. supervisor_pid=69036 sim_loop_pid=74312 status_monitor_pid=73080. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume. Approved/actionable recovery is ONDO-USD only; latest ONDO approved runtime coverage is observed and blocked by quote_volume: qv=222501 vs min=500000, tob=54 vs min=50, market_green=1.0, market_dmid=64.84, recent_dmid=55.44, failure_count=1, failures=[quote_volume]. Feed/preflight coverage is usable: signals=1557, book_metric_source_present_ratio=1.0, quote_volume_usable_ratio=0.8022, dmid_usable_ratio=0.8022, liquid_dmid_overlap_ratio=0.6044, spread_usable_ratio=0.9775, tob_usable_ratio=0.9184, tick_dmid_warmed_ratio=0.9563. Current blocker is not U=0/stale feed or missing product cache.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json; C:\ai_trading_bot_koko\logs\koko_sim_repair_loop_state.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=37/100 from sim state; opened=96 closed=96 wins=44 losses=47 open_count=0 realized_usd=-0.37402743 unrealized_usd=0.0 net_usd=-0.37402743 last_event=2026-06-19T01:33:10Z. ready_to_deploy_live=false.
+Action taken: fixed sim/repair reporting so quarantined fresh recovery support is separated from actionable recovery support, negative-ledger products remain excluded while net P&L is negative, and approved runtime blockers report against approved products. Fixed test fixture placement and validated the current blocker path. Restarted sim/repair and status monitor with -WindowStyle Hidden so CMD windows should not pop up. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop tests.test_tdi_status_reporter OK (103 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (193 tests); python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py OK.
+Next action: keep hidden DRY observe/repair running; do not enable LIVE. Wait for ONDO quote volume to clear the supported floor or for the sim loop to find a non-quarantined, non-negative-ledger recovery product with forward evidence. Do not tune score while there is no safe openable approved candidate.
+User action required: none for DRY repair. SMTP credentials are still required only if real outbound Gmail sending is required; local status/outbox and monitor remain active.
+
+
+## Codex Relay Update - 2026-06-19T02:08:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor restarted with corrected blocker reporting. DRY=true LIVE=false. supervisor_pid=69036 sim_loop_pid=74312 status_monitor_pid=22364. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume. Fresh recovery evidence supports XLM-USD, but XLM is blocked by active loss quarantine until 2026-06-19T13:33:10Z and negative ledger while net P&L is negative. ONDO-USD remains the only actionable approved product and is blocked by quote_volume; latest observed ONDO qv is about 245293 vs min 500000 with topbook and market breadth currently passing.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\logs\koko_sim_repair_loop_state.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=37/100; opened=96 closed=96 wins=44 losses=47 open_count=0 realized_usd=-0.37402743 unrealized_usd=0.0 net_usd=-0.37402743 last_event=2026-06-19T01:33:10Z. ready_to_deploy_live=false.
+Action taken: patched status reporting so email/status current_blocker uses the sim-loop recovery/quarantine blocker when it is more specific than the generic approved-runtime blocker. Refreshed sim-loop state; current fresh_recovery_supported_products=[XLM-USD], fresh_recovery_quarantine_blocked_products=[XLM-USD], fresh_recovery_unblocked_products=[]. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_tdi_status_reporter OK (59 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (196 tests); python -m py_compile tools\koko_sim_repair_loop.py tools\tdi_status_reporter.py OK. Status monitor one-shot now reports current_blocker=dry_pnl_recovery_quarantine_then_quote_volume.
+Next action: continue hidden DRY observe/repair. Do not enable LIVE. Do not lower ONDO quote-volume floor because ONDO recovery history is still negative. Do not reapprove XLM while active loss quarantine/negative-ledger safety blocks it.
+User action required: none for DRY repair. SMTP credentials are still required only for real outbound Gmail sending; local monitor/status remains active.
+
+
+## Codex Relay Update - 2026-06-19T03:53:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop restarted on patched code and completed a healthy fast pass. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=52204 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine. Feed/preflight is usable and the loop is not stuck on U=0/stale/cache. Latest fast pass wrote state at 2026-06-19T03:51:28Z with command_count=8, failed_command_count=0, healthy=true, iteration_elapsed_sec=30. Broad recovery threshold support currently finds BASED1-USD only, but BASED1 is excluded by active quarantine and negative dry ledger, so actionable_supported_products is empty and approvals stay empty.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Logs/cache refreshed by hidden sim/repair loop.
+Dry Profit Score evidence: score=37/100; opened=101 closed=101 wins=47 losses=49 open_count=0 realized/net_usd=-0.39304821 unrealized_usd=0.0. forward_signals=210 market_breadth_forward_signals=931 broad_recovery_forward_signals=2893. ready_to_deploy_live=false.
+Action taken: patched cached product-threshold support reporting so stale cache cannot keep products in supported_products when their product detail row says supported=false. This keeps recovery approval/status evidence aligned with the actual actionable product set and prevents stale supported labels from obscuring why approvals are empty. Restarted sim/repair loop hidden using WindowStyle Hidden. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (52 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (202 tests); python -m py_compile tools\koko_sim_repair_loop.py OK. run_settings verified DRY=True LIVE=False TP=8.0 SL=0.8 APPROVED=[].
+Next action: continue hidden sim/repair. Do not tune score while actionable approvals are empty. Keep searching for a non-quarantined, non-negative-ledger recovery product with product-level threshold evidence; if one appears, sync approval and let DRY observe verify opens before any live consideration.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:45:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop restarted after forced heavy sweep. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=1092 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume. Current approved list remains ONDO-USD only. Forced heavy sweep completed healthy at 2026-06-19T04:42:47Z with command_count=11 failed_command_count=0 heavy_sweeps_due=true. ONDO current runtime candidate remains blocked by quote_volume/top-of-book/market_breadth: qv=185956 vs min=500000, tob=11 vs min=50, market_green=0.1 vs min=0.85, market_dmid=-48.37.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Current-code changes from this work cycle remain C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized/net_usd=-0.39917832 unrealized_usd=0.0. ready_to_deploy_live=false.
+Action taken: ran a wider 360-minute heavy sim/repair sweep with limit=600. Broad recovery evidence found threshold-supported products including PENGU-USD, ENA-USD, JTO-USD, LIGHTER-USD, NEAR-USD, ONDO-USD, UNI-USD; safety filters excluded all except ONDO. PENGU is excluded by negative DRY ledger with loss_trim_rate=1.0; LIGHTER is excluded by negative ledger and quarantine; UNI has positive ledger but is quarantined and direct evidence is negative; ENA/JTO/NEAR are negative ledger and quarantined. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: forced heavy pass completed healthy. Prior validation remains 205 relevant tests OK plus reporter py_compile OK.
+Next action: continue hidden DRY observe on ONDO-only under strict gates; keep searching for a non-quarantined, non-negative-ledger candidate. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:32:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=57668 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume. Current approved list is ONDO-USD only. Latest forced sim/repair pass completed healthy at 2026-06-19T04:29:40Z with command_count=8 failed_command_count=0. ONDO current runtime candidate is blocked by quote_volume/top-of-book/market_breadth; latest observed qv=340679 vs min=500000, tob=14 vs min=50, market_green=0.2 vs min=0.85, recent_dmid=-88.3.
+Files changed: C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior current-cycle changes remain C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized/net_usd=-0.39917832 unrealized_usd=0.0 last_event_ts_utc=2026-06-19T04:23:34Z. ready_to_deploy_live=false.
+Action taken: fixed TDI status reporter material-event classification so dry_open, dry_close, dry_position_opened, dry_position_closed, and dry_trade_closed are material events instead of being skipped as not_material. Forced a fresh sim/repair pass and confirmed ONDO-only remains synced. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_tdi_status_reporter OK (60 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections OK (96 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (205 tests); python -m py_compile tools\tdi_status_reporter.py OK.
+Next action: continue hidden DRY observe on ONDO-only with stricter ONDO gates; if ONDO opens, monitor close under patched positive-only profit-protect. Continue searching for non-quarantined, non-negative-ledger candidates with direct plus threshold evidence. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:28:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop restarted after forced sync. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=5324 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume with approved list reduced to ONDO-USD only. LIGHTER-USD was removed after live DRY evidence turned net negative and the forced sim/repair pass applied quarantine plus negative-ledger exclusion.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Logs refreshed by forced sim/repair pass.
+Dry Profit Score evidence: opened=104 closed=104 wins=48 losses=51 open_count=0 realized/net_usd=-0.39917832 unrealized_usd=0.0. LIGHTER-USD close 1: profit_protect +3.1716 bps / +0.00095147 at 2026-06-19T04:21:07Z. LIGHTER-USD close 2: loss_trim -22.2152 bps / -0.00666455 at 2026-06-19T04:23:34Z. ONDO-USD prior close: profit_protect -1.3901 bps / -0.00041703 before profit-protect patch.
+Action taken: forced patched sim/repair pass after LIGHTER loss; auto-sync changed DRY_PNL_SIM_APPROVED_PRODUCTS from [LIGHTER-USD, ONDO-USD] to [ONDO-USD]. LIGHTER is now in quarantine_excluded_products and ledger_negative_excluded_products. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: forced sim/repair pass completed healthy at 2026-06-19T04:26:07Z with command_count=8 failed_command_count=0. Prior patch validation remains 204 relevant tests OK plus py_compile OK.
+Next action: continue hidden DRY observe on ONDO-only, and keep searching for additional non-quarantined, non-negative-ledger candidates with direct plus threshold evidence. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:22:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted on patched run_manager.py; hidden status monitor running; hidden sim/repair loop running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=47120 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: ONDO-USD DRY probe closed; open_count=0. The close exposed a DRY profit-protect safety issue, now patched: profit_protect no longer closes when current pnl_bps is negative. Continue DRY observe only; ready_to_deploy_live=false.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Prior this cycle also changed C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json.
+Dry Profit Score evidence: opened=102 closed=102 wins=47 losses=50 open_count=0 realized/net_usd=-0.39346524 unrealized_usd=0.0. ONDO-USD close at 2026-06-19T04:15:18Z: exit_reason=profit_protect, peak_pnl_bps=8.3406, pnl_bps=-1.3901, pnl_usd=-0.00041703. This negative profit-protect close is now blocked by patched runtime logic.
+Action taken: changed DRY profit-protect runtime rule from pnl_bps <= protect_floor to 0.0 < pnl_bps <= protect_floor, so profit-protect cannot realize a negative close. Updated regression that previously expected negative profit-protect. Restarted hidden DRY supervisor. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_cloud_only_corrections OK (42 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (204 tests); python -m py_compile managers\run_manager\run_manager.py OK.
+Next action: continue hidden DRY observe on LIGHTER-USD and ONDO-USD with patched profit-protect; if another dry open appears, monitor close/P&L and repair any realized loss cause before live consideration.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:17:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=47120 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: DRY observe is no longer stuck at opened=0. ONDO-USD opened in DRY at 2026-06-19T04:11:05Z after the approval lane synced LIGHTER-USD and ONDO-USD. Latest loop state still says approved_recovery_quote_volume from the pre-open pass; latest score/ledger now show open_count=1.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Logs updated by DRY observe.
+Dry Profit Score evidence: opened=102 closed=101 wins=47 losses=49 open_count=1 realized_usd=-0.39304821 unrealized_usd=0.00033363 net_usd=-0.39271458 at latest score read; last_event_ts_utc=2026-06-19T04:11:05Z. ONDO-USD open: entry_mid=0.359685, notional_usd=3.0, dry_recent_candle_dmid_bps=46.7094, quote_volume_usd=367822.5705, spr_bps=4.1703, tob_usd=10.5591, market_green_ratio=0.8, market_dmid_bps=26.769.
+Action taken: recorded material DRY open event after approval-lane fixes. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: prior patch validation remains 204 relevant tests OK plus py_compile OK. No test failure observed. Hidden processes remain running with WindowStyle Hidden.
+Next action: monitor ONDO-USD dry close and P&L; continue sim/repair based on realized DRY result. Do not enable LIVE until repeated DRY closes recover net P&L and score materially.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T04:14:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden status monitor running; hidden sim/repair loop running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=47120 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume in loop state, with latest readiness showing approved recovery runtime failures have shifted to dmid/market_breadth for LIGHTER-USD and ONDO-USD as market conditions changed. Feed/preflight coverage is usable: signals=5527, quote_volume_usable_ratio=0.8954, liquid_dmid_overlap=1231, timestamp_stale_sec=16, product_cache_gap=false, U=120, S=356. Current green breadth is low at 0.10 vs required 0.85 and market dmid is -27.45 bps.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Logs/cache refreshed by forced patched sim/repair pass.
+Dry Profit Score evidence: score=37/100; opened=101 closed=101 wins=47 losses=49 open_count=0 realized/net_usd=-0.39304821 unrealized_usd=0.0. No new DRY opens since 2026-06-19T02:58:17Z. ready_to_deploy_live=false.
+Action taken: fixed recovery threshold cache invalidation so history reports recompute when signal/row counts change; fixed supported-product report merge so unsupported detail rows cannot overwrite supported evidence; fixed report aliasing so merge cannot mutate source threshold reports. Forced a patched one-shot sim/repair pass. Result: DRY_PNL_SIM_APPROVED_PRODUCTS is now [LIGHTER-USD, ONDO-USD] from direct plus threshold recovery evidence; quarantined/negative-ledger products remain excluded. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (54 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (204 tests); python -m py_compile tools\koko_sim_repair_loop.py OK. Forced patched pass completed healthy at 2026-06-19T04:10:20Z with command_count=8 failed_command_count=0.
+Next action: keep hidden DRY observe running against LIGHTER-USD and ONDO-USD; do not loosen market breadth because current 0.00-0.40 green bin forward evidence is negative. Continue sim/repair for approved-product runtime dmid/green-breadth coverage and only sync additional products with direct plus threshold evidence and quarantine/ledger safety.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:58:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden fast sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=93896 sim_loop_pid=77168 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: not opened=0. DRY openability is restored through broad recovery/product-threshold coverage. BASED1-USD is now producing live DRY observe trades; overall blocker remains recovery/P&L because historical realized losses still dominate. Latest sim-loop blocker before ledger catch-up was approved_recovery_quote_volume, with actionable approved recovery products [BASED1-USD, ONDO-USD].
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by DRY observe and sim/repair.
+Dry Profit Score evidence: latest ledger summary opened=100 closed=100 wins=47 losses=48 open_count=0 realized_usd=-0.364096 unrealized_usd=0.0 net_usd=-0.364096 last_event=2026-06-19T02:55:19Z. BASED1-USD latest product stats: closed=3 wins=3 losses=0 pnl_bps=45.9215 pnl_usd=0.01377648. Latest BASED1 close: profit_protect +36.63 bps / +0.01098901 USD at 2026-06-19T02:55:19Z. Last sim-loop Profit Score evidence was 37/100 before this close; ready_to_deploy_live=false.
+Action taken: added a focused regression proving broad recovery product-threshold support can flow into recovery approval for BASED1-style safe probation while still excluding quarantined/negative-ledger products. Confirmed DRY=true LIVE=false and static TP/SL unchanged at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8. Coinbase/order path untouched.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (48 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (198 tests); python -m py_compile tools\koko_sim_repair_loop.py OK.
+Next action: keep hidden DRY observe/repair running, refresh Profit Score after the latest BASED1 close, and only promote/adjust gates from product-level forward evidence. Do not enable LIVE until score and net DRY P&L recover and repeated closes verify the broad recovery lane.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T03:49:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden fast sim/repair loop restarted with cached product-threshold support; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=75244 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine. Current DRY_PNL_SIM_APPROVED_PRODUCTS=[] because BASED1-USD is threshold-supported but excluded by both active quarantine and negative ledger after the latest SL. No safe approved product is currently openable.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by sim/repair.
+Dry Profit Score evidence: score=37/100; opened=101 closed=101 wins=47 losses=49 open_count=0 realized_usd=-0.39304821 unrealized_usd=0.0 net_usd=-0.39304821 last_event=2026-06-19T02:58:17Z. ready_to_deploy_live=false.
+Action taken: added product-threshold support caching keyed by artifact signature/settings and short-lived stale-cache reuse for rewritten history artifacts. This cuts the fast sim/repair pass from multi-minute summary recomputation to a clean 52-second one-shot while preserving heavy sweep cadence and safety filters. Latest clean one-shot: command_count=8, failed_command_count=0, healthy=true, heavy_sweeps_due=false, iteration_elapsed_sec=52. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (52 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (202 tests); python -m py_compile tools\koko_sim_repair_loop.py OK.
+Next action: keep hidden cached fast loop running; search for a non-quarantined, non-negative-ledger recovery product with product-level forward support; do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T03:24:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden fast sim/repair loop restarted with heavy-sweep cadence; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=49972 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume. Current DRY_PNL_SIM_APPROVED_PRODUCTS=[] because BASED1-USD is supported by threshold evidence but is excluded by active quarantine and negative ledger after the latest SL. No safe approved product is currently openable.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by fast sim/repair pass.
+Dry Profit Score evidence: score=37/100; opened=101 closed=101 wins=47 losses=49 open_count=0 realized_usd=-0.39304821 unrealized_usd=0.0 net_usd=-0.39304821 last_event=2026-06-19T02:58:17Z. ready_to_deploy_live=false.
+Action taken: fixed sim/repair loop speed by adding heavy-sweep cadence. Fast path now skips broad/history sweeps between heavy refreshes and ran healthy with command_count=8, heavy_sweeps_due=false, elapsed=137s. Heavy evidence still refreshes on cadence. Fixed blocker ordering so threshold-supported products that are fully excluded by quarantine/negative-ledger report as dry_pnl_recovery_quarantine_then_<runtime blocker> instead of ready_for_approval. Added focused regressions for fast-path command count and excluded-recovery blocker classification. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (51 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (201 tests); python -m py_compile tools\koko_sim_repair_loop.py OK.
+Next action: keep hidden fast loop running; search for a non-quarantined, non-negative-ledger recovery product with product-level forward support; do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T03:12:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden fast sim/repair loop restarted after forced refresh; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=33384 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume. The forced patched pass refreshed state and correctly removed all approved recovery products because BASED1-USD is now excluded by active SL quarantine and negative ledger after the latest loss. LIGHTER-USD did not remain in settings after the sanitizer fix. Current DRY_PNL_SIM_APPROVED_PRODUCTS=[].
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by forced sim/repair pass.
+Dry Profit Score evidence: score=37/100; opened=101 closed=101 wins=47 losses=49 open_count=0 realized_usd=-0.39304821 unrealized_usd=0.0 net_usd=-0.39304821 last_event=2026-06-19T02:58:17Z. ready_to_deploy_live=false.
+Action taken: forced a patched sim/repair refresh after the approval sanitizer and stricter BASED1 gates. Result: approval supported_products=[BASED1-USD] but actionable_supported_products=[] because BASED1 is now both quarantine_excluded and negative_ledger_excluded; settings synced to empty approved list. Restarted hidden repair loop to search for the next safe non-quarantined, non-negative-ledger product. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: forced patched pass wrote state at 2026-06-19T03:09:53Z; prior full validation remains 199 relevant tests OK plus py_compile OK.
+Next action: continue hidden sim/repair for fresh product-level recovery support; do not reapprove BASED1 until quarantine/negative-ledger safety clears or new evidence justifies it under the guardrails. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T03:07:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted on stricter settings; hidden fast sim/repair loop restarted on patched code; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=75024 sim_loop_pid=35792 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: DRY openability is restored but not deployable. BASED1 produced three profit-protect closes, then one SL close, so the lane needs stricter entry gates before LIVE. LIGHTER-USD was briefly auto-added from an inconsistent threshold support set and has been removed; approval sanitizer now rejects supported_products entries whose per-product detail says supported=false.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by DRY observe and sim/repair.
+Dry Profit Score evidence: latest ledger summary opened=101 closed=101 wins=47 losses=49 open_count=0 realized_usd=-0.39304821 unrealized_usd=0.0 net_usd=-0.39304821 last_event=2026-06-19T02:58:17Z. BASED1-USD product stats after four closes: wins=3 losses=1; latest close was SL -96.5074 bps / -0.02895221 USD at 2026-06-19T02:58:17Z. ready_to_deploy_live=false.
+Action taken: fixed recovery approval set sanitization so inconsistent unsupported product rows cannot become actionable approvals; removed LIGHTER-USD from DRY_PNL_SIM_APPROVED_PRODUCTS. Added regression for that failure. Expanded recovery threshold sweep grid to include spread=20, tob=700, tick_dmid=15. Applied stricter BASED1 gates from forward evidence: DRY_MAX_SPR_BPS_BY_PRODUCT[BASED1-USD]=20, DRY_MIN_TICK_DMID_BPS_BY_PRODUCT[BASED1-USD]=15, DRY_MIN_TOB_USD_BY_PRODUCT[BASED1-USD]=700, mirrored into net-negative/scout product gates. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (49 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (199 tests); python -m py_compile tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py OK.
+Next action: keep hidden DRY observe/repair running on stricter BASED1 gates, wait for next qualifying open/close, and continue tightening only from product-level forward evidence and realized DRY outcomes. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials are still required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:24:15Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted faster; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=58036 sim_loop_pid=1372 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume. Market-breadth evidence does not support lowering the green floor: current bin 0.00-0.40 has avg_net_forward_close_bps=-11.3977 and validation=-20.9235; the 0.85-1.01 bin is also negative with avg_net_forward_close_bps=-18.8806 and validation=-23.0668. ONDO remains the only approved runtime product and is blocked by quote_volume/top-of-book/market_breadth; XLM remains fresh-supported but quarantined.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=36/100; opened=97 closed=97 wins=44 losses=48 open_count=0 realized_usd=-0.37787248 unrealized_usd=0.0 net_usd=-0.37787248. ready_to_deploy_live=false.
+Action taken: restarted the hidden sim/repair loop at 60-second cadence instead of 180 seconds to reduce wait time for approved runtime gate changes and fresh supported recovery detection. Did not loosen market-green, quote-volume, quarantine, Coinbase/order, DRY/LIVE, or TP/SL safety.
+Validation: background process check shows supervisor/status/fast sim loop running hidden. Prior code validation remains 197 relevant tests OK plus py_compile OK.
+Next action: continue hidden DRY observe/repair at faster cadence; only apply changes backed by forward evidence and guardrail tests.
+User action required: none for DRY repair. SMTP credentials are still required only for real outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:30:15Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden fast sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=58036 sim_loop_pid=1372 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume after 360-minute forced pass. The wider pass found no non-quarantined fresh-supported recovery product. XRP-USD is the only supported candidate slice, but it remains active loss_trim quarantined until 2026-06-19T06:36:26Z and is also excluded by negative ledger while net P&L is negative. ONDO-USD is not quarantined but is the only approved runtime product and remains blocked by quote_volume/top-of-book/market_breadth.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by forced 360-minute sim pass.
+Dry Profit Score evidence: score=36/100; opened=97 closed=97 wins=44 losses=48 open_count=0 realized_usd=-0.37787248 unrealized_usd=0.0 net_usd=-0.37787248. ready_to_deploy_live=false.
+Action taken: ran wider 360-minute sim/repair pass with limit=500 to look for a safe non-quarantined recovery candidate. Result: no safe new approval; kept ONDO-only approval; kept loss quarantine and negative-ledger exclusions intact.
+Validation: forced 360-minute pass completed at 2026-06-19T02:29:26Z. Hidden process check still shows supervisor/status/fast sim loop active. Coinbase/order path untouched; DRY=true; LIVE=false; TP=8.0; SL=0.8.
+Next action: continue fast hidden loop. Do not enable LIVE. Watch ONDO quote/top-book/green gates and re-evaluate XRP only after quarantine and ledger safety permit it.
+User action required: none for DRY repair. SMTP credentials required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:52:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted on patched settings; hidden fast sim/repair loop restarted on patched code; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=93896 sim_loop_pid=77168 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: not opened=0 anymore. Broad product-threshold recovery evidence found safe non-quarantined BASED1-USD support. BASED1-USD and ONDO-USD are now the approved recovery products. ONDO remains quote-volume blocked; BASED1 restored DRY openability and has produced one profit-protect close plus one currently open positive mark.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md; logs refreshed by forced sim/repair and DRY observe.
+Dry Profit Score evidence: score=36/100 before next sim refresh; opened=99 closed=98 wins=45 losses=48 open_count=1 realized_usd=-0.37647648 unrealized_usd=0.00556586 net_usd=-0.37091062 last_event=2026-06-19T02:50:30Z. BASED1 close: profit_protect +4.6533 bps / +0.001396 USD at 2026-06-19T02:50:12Z. Current BASED1 open mark: +18.5529 bps / +0.00556586 USD at 2026-06-19T02:50:39Z.
+Action taken: patched sim/repair loop to generate broad recovery forward outcomes and broad product-level threshold support, then merge that support into the existing approval/product-config sync path. Existing safety filters still remove active loss-quarantined and negative-ledger products while net P&L is negative. Auto-sync changed DRY_PNL_SIM_APPROVED_PRODUCTS from [ONDO-USD] to [BASED1-USD, ONDO-USD] and synced BASED1 product gates from supported threshold evidence. Restarted hidden DRY supervisor and hidden fast loop. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_koko_sim_repair_loop OK (47 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (197 tests); python -m py_compile tools\koko_sim_repair_loop.py OK. Forced patched sim pass completed and settings verified.
+Next action: watch BASED1 close, then refresh Profit Score and continue sim/repair. Do not enable LIVE until DRY net P&L and score recover and repeated closes verify the broad recovery lane.
+User action required: none for DRY repair. SMTP credentials required only for actual outbound Gmail sending.
+
+
+## Codex Relay Update - 2026-06-19T02:23:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=58036 sim_loop_pid=74312 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_quote_volume. Feed/preflight coverage is usable, not U=0/stale/cache: signals=1788, quote_volume_usable_ratio=0.8037, dmid_usable_ratio=0.8009, liquid_dmid_overlap_ratio=0.6046, book_metric_source_present_ratio=1.0, tick_dmid_warmed_ratio=0.9508, tob_usable_ratio=0.9418. Runtime approval is ONDO-USD only; latest ONDO observed qv=249089 vs min=500000, tob=13 vs min=50, market_green=0.3 vs min=0.85, recent_dmid=-9.93, dry_pnl_guard_reason=net_negative_low_quote_volume. Fresh recovery support found XLM-USD, but XLM is blocked by active loss quarantine and negative ledger while net P&L is negative.
+Files changed: C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\logs\koko_sim_repair_loop_state.json; C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=36/100 from sim state; opened=97 closed=97 wins=44 losses=48 open_count=0 realized_usd=-0.37787248 unrealized_usd=0.0 net_usd=-0.37787248 last_event=2026-06-19T02:14:54Z. ready_to_deploy_live=false.
+Action taken: fixed the DRY net-negative recovery guard leak that allowed a non-approved probe/scout product to open before the approved-product check. Regression uses the ZEC-USD payload that opened at 2026-06-19T02:12:14Z and now returns net_negative_no_approved_recovery for non-approved ZEC while still allowing approved ONDO when quality passes. Restarted the DRY supervisor hidden so the running process uses the patched guard. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Validation: python -m unittest tests.test_cloud_only_corrections OK (42 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (197 tests); python -m py_compile managers\run_manager\run_manager.py OK. Forced sim/repair pass completed and updated state at 2026-06-19T02:21:20Z.
+Next action: continue hidden DRY observe/repair; do not enable LIVE. Keep approved recovery constrained to non-quarantined, non-negative-ledger products with forward evidence. Do not tune profit scoring while no safe approved openable candidate exists.
+User action required: none for DRY repair. SMTP credentials are still required only for real outbound Gmail sending; local monitor/status remains active.
+## Codex Relay Update - 2026-06-19T04:52:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=1092 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: market_breadth. The stall is not U=0, stale feed, missing product cache, or missing book metrics. Regenerated readiness shows timestamp_usable_ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_missing=0, target_refreshed_book_gap=0, approved_missing_products=[].
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832 last_event=2026-06-19T04:23:34Z. ready_to_deploy_live=false.
+Action taken: patched the DRY observe readiness lane to emit explicit timestamp_coverage, green_breadth, liquid_subset_coverage, and product_cache_gaps sections. Approved recovery blocker selection now promotes market_breadth when the active green-breadth floor is enabled and latest green breadth is below the floor, instead of masking that condition behind quote_volume. Regenerated readiness: latest_green_ratio=0.6 vs min=0.85, signals_green_ok=33/646, quote_volume_usable_ratio=0.9111, liquid_dmid_overlap=1147, liquid_dmid_spread_tob_overlap=1136. ONDO remains the only approved product and is observed, but current ONDO is blocked by tob_usd|quote_volume|market_breadth: qv=176421 vs 500000, tob=2 vs 50, green=0.6 vs 0.85. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m py_compile tools\koko_dry_observe_readiness.py OK; python -m unittest tests.test_koko_dry_observe_readiness OK (45 tests); python -m unittest tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (206 tests; urllib3 SystemTimeWarning observed, tests passed).
+Next action: keep hidden loop running; use the new readiness lanes to continue searching for a non-quarantined, non-negative-ledger product with fresh green-breadth support. Do not tune score while opened=0. Do not enable LIVE.
+User action required: none for DRY repair. Outbound email still needs a working send path; local reporter/monitor remains active.
+
+## Codex Relay Update - 2026-06-19T04:55:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=1092 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth from sim/repair state updated_at=2026-06-19T04:52:18Z. Reporter subject/body now resolve the user-facing blocker to market_breadth from the fresh readiness artifact. Current score=37, opened=104, closed=104, wins=48, losses=51, open_count=0, net_usd=-0.39917832.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py; C:\ai_trading_bot_koko\logs\dry_observe_readiness_latest.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=37/100; realized_usd=-0.39917832; unrealized_usd=0.0; net_usd=-0.39917832; opened=104 closed=104 wins=48 losses=51 open_count=0; ready_to_deploy_live=false.
+Action taken: patched status reporter so an `approved_recovery_*` sim-repair blocker no longer masks a fresher specific readiness blocker. Generated reporter status subject is now `[TDI STATUS] Profit 37/100 | DRY=true LIVE=false | market_breadth`. Gmail connector send attempt failed with HTTP 401 token_expired. Local SMTP reporter cannot send because SMTP user/password/sender env are missing; outbox write was throttled by the configured two-hour report cadence, so no duplicate spam was created. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m py_compile tools\tdi_status_reporter.py OK; python -m unittest tests.test_tdi_status_reporter OK (61 tests); full relevant suite OK (207 tests; urllib3 SystemTimeWarning observed, tests passed).
+Next action: keep hidden DRY observe/sim/repair running; continue only data/preflight/openability work until a non-quarantined, non-negative-ledger product has fresh green-breadth support and DRY evidence improves. Do not enable LIVE.
+User action required: none for DRY repair. To actually deliver Gmail from this Codex connector, Gmail app auth must be refreshed; to let the local reporter send independently, SMTP env user/password/sender must be set.
+
+## Codex Relay Update - 2026-06-19T04:58:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop running; hidden status monitor running. DRY=true LIVE=false. Runtime processes remain supervisor_pid=68568 sim_loop_pid=1092 status_monitor_pid=62692.
+Current blocker: approved_recovery_market_breadth / market_breadth user-facing report. The runtime copy and branch copy now both contain the preflight/reporting fixes.
+Files changed: Runtime copy: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work: tools\koko_dry_observe_readiness.py; tests\test_koko_dry_observe_readiness.py; tools\tdi_status_reporter.py; tests\test_tdi_status_reporter.py; tools\tdi_status_monitor.py; tests\test_tdi_status_monitor.py. Relay updated here.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832; ready_to_deploy_live=false.
+Action taken: mechanically synced the runtime readiness/reporting files into branch codex/cloud-ready-koko-bot under C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work. The branch already has many untracked tools/tests, so these files are present as untracked branch-copy artifacts rather than staged commits. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime suite OK 207 tests. Branch-copy validation: python -m unittest tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (111 tests; urllib3 SystemTimeWarning observed, tests passed); python -m py_compile tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\tdi_status_monitor.py OK.
+Next action: keep hidden runtime loop running and continue from the corrected green-breadth/openability evidence. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:29:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: market_breadth for trading; outbound reporting delivery still blocked by missing SMTP credentials. Material-event reporter was invoked for the TAO profit-protect close and generated subject `[TDI STATUS] Profit 37/100 | DRY=true LIVE=false | market_breadth`, but sent=false because SMTP env is missing user/password/sender and outbox write was throttled to avoid duplicate spam.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=105 closed=105 wins=49 losses=51 open_count=0 realized_usd=-0.39435358 unrealized_usd=0.0 net_usd=-0.39435358.
+Action taken: attempted required material-event status report; confirmed local delivery path still blocked by SMTP env. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: reporter produced status body/subject and exited with missing-SMTP reason; no email was sent and no duplicate outbox spam was created.
+Next action: continue hidden DRY observe/sim/repair. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T06:25:30Z
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status: hidden DRY supervisor running; hidden lightweight sim/repair wrapper running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured in local runtime status.
+
+Current blocker: approved_recovery_market_breadth. This is not U=0 or stale feed: latest readiness generated 2026-06-19T06:24:04Z. Current TAO approved candidate is blocked by dmid|market_breadth and is not probe eligible because dmid=-30.04 bps is below the configured probe floor -20.0 bps. The bot is correctly waiting instead of forcing that entry.
+
+Files changed: C:\ai_trading_bot_koko\tools\run_koko_dry_supervised.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_run_koko_dry_supervised_preflight.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+
+Dry Profit Score evidence: score estimate remains 38/100; opened=110 closed=110 wins=54 losses=51 open_count=0 realized_pnl_usd=-0.38115348 unrealized_pnl_usd=0.0 net_pnl_usd=-0.38115348. Latest post-fix material trade: TAO-USD opened 2026-06-19T06:08:39Z and closed 2026-06-19T06:10:14Z via profit_protect for +2.8283 bps / +0.00084849 USD. TAO ledger support is now 6 closes, 6 wins, 0 loss trims, +60.0829 bps / +0.01802484 USD.
+
+Action taken: aligned supervisor preflight near-openable evidence with configured DRY observe probe failures and probe floors; restarted hidden supervisor to load that fix; fixed stale product-support merge so newer unsupported product rows revoke old supported rows; enabled explicit strong-ledger recovery approval and synced DRY_PNL_SIM_APPROVED_PRODUCTS to TAO-USD only. ONDO was removed from approved recovery because current product support no longer justified chasing its quote-volume floor.
+
+Validation: `python -m unittest tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness` passed; `python -m unittest tests.test_koko_sim_repair_loop tests.test_run_koko_dry_supervised_preflight tests.test_koko_dry_observe_readiness` passed; `python -m py_compile tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py` passed. Latest loop state says ready_to_deploy_live=false.
+
+Next action: continue DRY observe/repair with TAO as the only approved recovery product; wait for TAO dmid to recover above the probe floor and market breadth to become probe-acceptable/openable, then let DRY P&L continue improving. Do not tune score while no supported open is available. Keep Coinbase/order guardrail untouched and TP/SL static.
+
+User action required: none for DRY simulation/repair. SMTP/Gmail auth is still required only for actual email delivery to tdifactorToday@gmail.com.
+
+## Codex Relay Update - 2026-06-19T06:09:30Z
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status: hidden DRY supervisor running; hidden lightweight sim/repair wrapper running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured in local runtime status.
+
+Current blocker: approved recovery blocked by market_breadth. Latest readiness: current_open_candidate_present=false, observe_runtime_probe_candidate_present=false, primary blocker=market_breadth, failure counts dmid=1 market_breadth=2 quote_volume=1 tob_usd=1.
+
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update. Prior material config change remains runtime/branch `run_settings.json` probe allowed failures including dmid.
+
+Dry Profit Score evidence: score estimate=38/100; opened=109 closed=109 wins=53 losses=51 open_count=0 realized_pnl_usd=-0.38200197 unrealized_pnl_usd=0.0 net_pnl_usd=-0.38200197. Latest material dry event: TAO-USD close at 2026-06-19T06:05:31Z, profit_protect, +26.7741 bps / +0.00803222 USD, peak +34.8280 bps / +0.01044841 USD. TAO aggregate now 5 wins / 0 losses, +57.2546 bps / +0.01717635 USD.
+
+Action taken: confirmed hidden processes are still running; confirmed loop health healthy with failed_command_count=0; confirmed latest readiness and score evidence. Material email attempts remain blocked by missing SMTP credentials, so relay is carrying the report until email auth is available.
+
+Validation: `tests.test_koko_dry_candidate_rank` and `tests.test_koko_dry_observe_readiness` passed after the prior probe-gate patch. Latest loop state says ready_to_deploy_live=false.
+
+Next action: continue DRY observe/repair on preflight/openability. Do not relax global market_breadth because forward evidence remains negative; only apply product-scoped changes when current data supports them. Keep Coinbase/order guardrail untouched and TP/SL static.
+
+User action required: none for DRY simulation/repair. SMTP/Gmail auth is required only for actual email delivery to tdifactorToday@gmail.com.
+
+## Codex Relay Update - 2026-06-19T06:03:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden lightweight sim wrapper running and healthy; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_position_open. TAO-USD DRY position opened 2026-06-19T05:56:01Z closed via profit_protect at 2026-06-19T06:00:48Z for +6.7540 bps / +0.00202619 USD, peak +13.0722 bps / +0.00392165 USD. New TAO-USD DRY position opened at 2026-06-19T06:00:57Z and is currently open/managed.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: estimated score=38/100; opened=109 closed=108 wins=52 losses=51 open_count=1 realized_usd=-0.39003419 unrealized_usd=-0.00385285 net_usd=-0.39388704 at latest mark 2026-06-19T06:02:20Z. TAO closed ledger now 4 wins / 0 losses, +30.4805 bps / +0.00914413 USD.
+Action taken: synced DRY_OBSERVE_PROBE_ALLOWED_FAILURES=[dmid,market_breadth,quote_volume,tick_dmid] into the branch-copy run_settings.json so cloud branch behavior matches runtime. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime JSON and branch JSON both parse; both show DRY=true LIVE=false TP=8.0 SL=0.8 and the same DRY observe probe allowed failures. Latest loop pass healthy with failed_command_count=0.
+Next action: monitor the currently open TAO dry position through close, then keep collecting dry P&L recovery evidence. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials or refreshed Gmail connector are still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T05:56:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden lightweight sim wrapper running; hidden status monitor running. DRY=true LIVE=false. sim_wrapper_pid=37492. Cloud task URL not configured for this local run.
+Current blocker: quote_volume. Feed/preflight lane is usable: latest readiness generated 2026-06-19T05:54:48Z, signal_timestamp_usable_ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_missing=0, target_refreshed_book_gap=0, latest market breadth no longer blocked at green=0.9 vs min=0.85. ONDO remains blocked by tob_usd/quote_volume. TAO current approved coverage is dmid-only, but after the patch it is DRY observe probe eligible.
+Files changed: C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=38/100; opened=107 closed=107 wins=51 losses=51 open_count=0 realized_usd=-0.39206038 unrealized_usd=0.0 net_usd=-0.39206038. Latest TAO DRY probe opened at 2026-06-19T05:49:46Z and closed via profit_protect at 2026-06-19T05:54:02Z for +7.4254 bps / +0.00222761 USD, peak +15.2875 bps / +0.00458625 USD.
+Action taken: enabled dmid in DRY_OBSERVE_PROBE_ALLOWED_FAILURES while preserving DRY=true, LIVE=false, static TP/SL 8.0/0.8, and the existing probe floors/ceilings. This does not touch Coinbase/order code. Reporter attempted a material-event email to tdifactorToday@gmail.com; delivery failed because SMTP user/password/sender env vars are still missing, outbox throttled.
+Validation: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness OK, 86 tests. Forced bounded readiness refresh completed.
+Next action: keep hidden DRY observe/sim/repair running; gather more TAO/ONDO dry close evidence and continue reducing negative net P&L. Do not enable LIVE.
+User action required: none for DRY repair. SMTP credentials or refreshed Gmail connector are still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T08:59:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as PID 78108; sim/repair loop moved from hidden PowerShell wrapper to no-console pythonw.exe PID 53644; hidden status monitor running as PID 62692. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth. Latest pythonw sim loop state at 2026-06-19T08:57:36Z is healthy=true, failed_command_count=0, interval_sec=90, ready_to_deploy_live=false. The process tree shows pythonw.exe for the sim loop and no PowerShell wrapper/conhost driving it.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271.
+Action taken: stopped the hidden PowerShell one-shot wrapper and replaced it with native continuous pythonw.exe loop using interval=90s, lookback=120, limit=250, heavy_sweep_cadence=3600. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: pythonw loop completed one full iteration and wrote fresh state. No command failures. Existing 195-test runtime set remained green from the current patch set.
+Next action: keep no-console DRY observe/sim/repair running; wait for supported market breadth/market dmid recovery before DRY opens. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials are still required for actual outbound Gmail delivery.
+
+## Codex Relay Update - 2026-06-19T08:55:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted and running as PID 78108; hidden sim/repair wrapper running as PID 37492; hidden status monitor running as PID 62692. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_dmid. Data/preflight false blockers were cleared. Latest loop state at 2026-06-19T08:53:20Z: product_cache_gap=false, approved_runtime_cache_stale=[], quote_volume_abs_supported=true with quote_volume_usable=2681. Remaining market breadth is real: latest_green_ratio=0.4 vs min=0.85 and latest_market_dmid_bps=-0.21 vs min=0.0. No LIVE readiness.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; branch copy synced under C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work; relay updated here.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271; ready_to_deploy_live=false.
+Action taken: added pressure/min pressure to runtime drynear diagnostics and parser so approved dry-P&L guard evidence is no longer inferred from missing pressure. Fixed approved recovery primary selection to follow the closest approved candidate during green-breadth hard blocks. Fixed coverage diagnostics so stale tail cache and low quote-volume ratio do not block when approved products/cache and absolute quote-volume coverage are usable. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime 195-test set passed: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections. Branch-copy validation passed: tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop and py_compile for readiness/sim/runtime manager. Latest sim pass healthy=true, failed_command_count=0.
+Next action: keep DRY observe/sim/repair running until market breadth and market dmid become openable, then let DRY recover P&L. Do not enable LIVE while score=38 and net P&L is negative.
+User action required: none for DRY repair. Gmail/SMTP credentials are still required for actual outbound Gmail delivery.
+
+## Codex Relay Update - 2026-06-19T08:40:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair wrapper running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_dry_pnl_guard. Latest readiness now correctly surfaces approved recovery guard/openability instead of flattening the issue to generic market breadth. Approved products observed=[ONDO-USD,WLD-USD]. WLD current failures=[dmid,market_breadth] with dry_pnl_guard_reason=net_negative_low_dmid; ONDO current failures=[trough,market_breadth,book_pressure,dry_pnl_guard] with dry_pnl_guard_reason=net_negative_low_pressure. Green breadth is still weak at 0.6667 vs min 0.85 and market-breadth forward evidence remains negative, avg_net_close_bps=-20.8933, positive_rate=0.2033, so no breadth loosening was applied.
+Files changed: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271; ready_to_deploy_live=false.
+Action taken: patched approved recovery runtime coverage to merge same-tick runtime guard evidence into approved product diagnostics and promote explicit low-pressure/topbook dry-P&L guard blockers ahead of generic breadth when appropriate. Forced a fresh sim/repair pass; blocker moved from approved_recovery_market_breadth to approved_recovery_dry_pnl_guard. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK (107 tests). python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop OK (149 tests). py_compile tools\koko_dry_observe_readiness.py OK. Latest sim pass healthy=true, failed_command_count=0.
+Next action: continue repair against approved dry-P&L guard/openability causes, especially ONDO pressure and WLD current dmid/breadth, without tuning score while open_count=0 and without relaxing unsupported breadth.
+User action required: none for DRY repair. Gmail/SMTP credentials are still required for actual outbound Gmail delivery.
+
+## Codex Relay Update - 2026-06-19T05:46:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; lightweight hidden sim wrapper wrote fresh state; hidden status monitor running. DRY=true LIVE=false. sim_wrapper_pid=37492. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth. TAO-USD opened DRY at 2026-06-19T05:44:38Z and closed via profit_protect at 2026-06-19T05:45:56Z for +0.2186 bps / +0.00006559 USD, peak +12.025 bps / +0.00360750 USD. No open position remains. Current readiness still blocks new approved opens mainly on market_breadth: TAO failures=[market_breadth] with market_green=0.6 vs 0.85, qv=1095596 pass, tob=222 pass, dmid=17.59, spread=3.5; ONDO failures=[tob_usd,quote_volume,market_breadth].
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=106 closed=106 wins=50 losses=51 open_count=0 realized_usd=-0.39428799 unrealized_usd=0.0 net_usd=-0.39428799. Net improved by +0.00006559 USD from this TAO dry close and by +0.00489033 USD since TAO approval began.
+Action taken: verified lightweight wrapper pass wrote state and captured the TAO open/close. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: latest sim pass healthy; failed_command_count=0; process check confirms hidden wrapper PID 37492.
+Next action: keep lightweight wrapper running; continue TAO/ONDO DRY recovery while market breadth gates control entries. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T05:44:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; previous sim wrapper stopped after a heavy sweep ran too long; lightweight hidden one-shot wrapper started; hidden status monitor running. DRY=true LIVE=false. sim_wrapper_pid=37492 current_python_child_pid=71132. Cloud task URL not configured for this local run.
+Current blocker: TAO/ONDO approved but current gates not openable; background runner health was the immediate operational issue. Heavy sweep in the wrapper was too slow and delayed state writes. Lightweight wrapper now runs lookback=120, limit=250, command_timeout=180, heavy_sweep_cadence=3600, sleep=90 seconds.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=105 closed=105 wins=49 losses=51 open_count=0 realized_usd=-0.39435358 unrealized_usd=0.0 net_usd=-0.39435358.
+Action taken: stopped stale/heavy wrapper; started lightweight hidden wrapper with no visible CMD window. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: process check confirms hidden wrapper PID 37492 and active Python child PID 71132.
+Next action: verify fresh state write from lightweight wrapper; continue DRY P&L repair. Heavy sweeps should be manual/controlled, not blocking the continuous runner.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T05:39:35Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; stale long-running sim loop replaced by hidden PowerShell one-shot supervisor; hidden status monitor running. DRY=true LIVE=false. sim_wrapper_pid=66172 current_python_child_pid=21596. Cloud task URL not configured for this local run.
+Current blocker: TAO/ONDO approved but current gates still not openable. TAO is close but blocked by dmid/market_breadth; ONDO remains qv/tob/market constrained. The prior Python long-loop process was alive but stopped advancing state, so it was replaced with a hidden wrapper that repeatedly runs the proven `tools\koko_sim_repair_loop.py --once` pass every 90 seconds.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=105 closed=105 wins=49 losses=51 open_count=0 realized_usd=-0.39435358 unrealized_usd=0.0 net_usd=-0.39435358.
+Action taken: stopped stale sim loop PID 26468; started hidden pwsh wrapper PID 66172 with no visible CMD window. Wrapper command runs python -X utf8 -u tools\koko_sim_repair_loop.py --once using lookback=120, limit=300, command_timeout=240, heavy_sweep_cadence=900, then sleeps 90 seconds and repeats. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: process check confirms hidden wrapper PID 66172 and active Python child PID 21596.
+Next action: verify the wrapper writes a fresh state; continue DRY P&L repair. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T05:36:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume in loop state, with current readiness showing market_breadth/dmid pressure on TAO and market_breadth/qv/tob on ONDO. TAO is now approved and product-gate synced from fresh threshold evidence: max_spread=5.0, max_trough=0.22, min_book_pressure=0.0, min_dmid=20.0, min_quote_volume=50000, min_tick_dmid=0.0, min_tob=0.0. Current TAO row is close but still invalid: qv=818943 pass, tob=90 pass, spread=0.44 pass, market_green=0.8 vs 0.85 fail, dmid=16.27 vs 20 fail.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this relay update. run_settings.json was auto-synced by the loop for TAO product gates.
+Dry Profit Score evidence: score=37/100; opened=105 closed=105 wins=49 losses=51 open_count=0 realized_usd=-0.39435358 unrealized_usd=0.0 net_usd=-0.39435358.
+Action taken: inspected TAO support/config mismatch concern; confirmed latest threshold evidence intentionally requires TAO min_dmid=20. No manual gate relaxation applied. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+## Codex Relay Update - 2026-06-19T09:20:14Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running PID 78108; hidden no-console sim/repair loop running under pythonw.exe PID 53644; hidden status monitor restarted hidden as PID 62124. DRY=true LIVE=false. Cloud task URL not configured.
+Current blocker: market_breadth. Latest forced monitor check returned hourly_not_due, proving the two-hour summary cadence now respects recent material report/outbox epochs. DRY/LIVE state unchanged; open_count=0; Profit Score remains 38/100.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271. ready_to_deploy_live=false.
+Action taken: fixed two-hour summary anti-spam so hourly cadence uses last_hourly_epoch, last_report_epoch, and last_outbox_epoch. Material events still bypass cadence and write immediately; hourly summaries no longer retry every minute after a recent material outbox. Emitted patch_change report; SMTP credentials are missing, so it wrote C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T092014Z.eml. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime reporter/monitor tests passed 68 tests. Branch reporter/monitor tests passed 68 tests. py_compile passed for reporter/monitor on both copies. Forced monitor check showed two_hour_summary reason=hourly_not_due.
+Next action: continue hidden DRY observe/sim/repair; keep material events immediate without hourly summary spam; wait for market_breadth/dmid to clear on a safe approved product. Do not enable LIVE.
+User action required: none for DRY repair. Actual Gmail send still requires SMTP/Gmail credentials; outbox fallback is functioning.
+
+## Codex Relay Update - 2026-06-19T09:17:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running PID 78108; hidden no-console sim/repair loop running under pythonw.exe PID 53644; hidden status monitor restarted hidden as PID 37520. DRY=true LIVE=false. Cloud task URL not configured; local status reports pid=78108 ts=2026-06-19T09:17:15Z.
+Current blocker: market_breadth. Latest status shows market breadth still deteriorated: latest_mbr=0.0833/0.8500 and latest_mdmid=-43.60/0.00. Feed/preflight remains usable: U=120, S=356, brf=120, book_gap=false, runtime_product_coverage missing=0 empty=0. open_count=0.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271. ready_to_deploy_live=false.
+Action taken: added explicit recovery exclusion cause reporting. Status now reports supported products, actionable products, and why excluded products are not approved: excluded_quarantine=HYPE-USD|JTO-USD|TAO-USD|UNI-USD|XLM-USD and excluded_negative_ledger=HYPE-USD|JTO-USD|XLM-USD in the latest report. This prevents wasting time treating supported-but-unsafe products as deployable while net P&L is negative. Emitted patch_change report; SMTP credentials are missing, so it wrote C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T091720Z.eml. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime reporter/monitor tests passed 67 tests. Branch reporter/monitor tests passed 67 tests. py_compile passed for reporter/monitor on both copies.
+Next action: continue hidden DRY observe/sim/repair; wait for market_breadth/dmid to clear on ONDO or for another supported product to become actionable after quarantine/ledger safety clears. Do not enable LIVE.
+User action required: none for DRY repair. Actual Gmail send still requires SMTP/Gmail credentials; outbox fallback is functioning.
+
+## Codex Relay Update - 2026-06-19T09:13:39Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running PID 78108; hidden no-console sim/repair loop running under pythonw.exe PID 53644; hidden status monitor running PID 22344. DRY=true LIVE=false. Cloud task URL not configured; local status reports pid=78108 ts=2026-06-19T09:11:07Z.
+## Codex Relay Update - 2026-06-19T10:12:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 76832; hidden sim/repair loop running as pythonw PID 59144; hidden status monitor running as pythonw PID 86012. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Latest sim-loop state updated 2026-06-19T10:10:33Z: ready_to_deploy_live=false, profit_score=38/100, net=-0.37924429, open_count=0. Latest readiness generated 2026-06-19T10:12:20Z: market_green_ratio=0.50 vs min 0.85, market_dmid=5.71 vs min 0.0, U=120, S=356, brf=120, approved product RE-USD observed, no missing approved product/cache gap.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429 last_event=2026-06-19T09:22:41Z. No safe DRY open yet.
+Action taken: added optional bounded `--tail-bytes` to the readiness tool so forced diagnostics do not scan the full activity log when a recent-window check is enough. Verified the bounded readiness path completes quickly. This is diagnostic speed only; trading gates and Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime `python -X utf8 -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_dry_candidate_rank tests.test_cloud_only_corrections` passed 140 tests. Runtime py_compile passed. Branch-copy same unittest command passed 140 tests and py_compile passed.
+Next action: continue hidden DRY observe/sim/repair; recheck after quarantine/approval refresh and after breadth changes. Do not bypass market_breadth because forward evidence remains negative/unsupported. Do not tune Profit Score while open_count=0. Do not enable LIVE.
+User action required: none for DRY repair. Actual outbound Gmail still needs SMTP/Gmail credentials; outbox fallback remains active.
+
+## Codex Relay Update - 2026-06-19T10:09:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as pythonw PID 76832; hidden sim/repair loop restarted as pythonw PID 59144; hidden status monitor running as pythonw PID 86012. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Latest sim-loop state updated 2026-06-19T10:07:47Z with ready_to_deploy_live=false, score=38/100, net=-0.37924429, healthy=true. Fresh runtime tick diagnostics after the patch show U=120, S=356, brf=120, drysig=0, dryopen=0, dryblk=0, market_green_ratio about 0.2667 vs min 0.85, market_dmid about -7.95 to -9.94 vs min 0.0, market_breadth_n=120, and market_breadth_timestamp_unusable_skipped=0.
+Files changed: Runtime C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; plus prior missing-trough fix files. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for managers\run_manager\run_manager.py and tests\test_koko_dry_candidate_rank.py.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. No safe DRY open since 2026-06-19T09:22:41Z.
+Action taken: patched market breadth so recent-candle breadth skips explicitly timestamp-unusable candle metrics instead of counting stale candles as red/green votes, and added rejection evidence field market_breadth_timestamp_unusable_skipped. After restart, the skipped count is 0, proving the current block is real red breadth, not stale-cache contamination. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime `python -X utf8 -m unittest tests.test_koko_dry_candidate_rank tests.test_cloud_only_corrections tests.test_koko_dry_observe_readiness` passed 139 tests. Runtime py_compile passed. Branch-copy same unittest command passed 139 tests and py_compile passed.
+Next action: keep hidden DRY observe/sim/repair running; wait for green breadth or a supported non-quarantined/non-negative-ledger product to clear preflight. Do not tune Profit Score while open_count=0. Do not bypass market_breadth because forward evidence remains negative/unsupported. Do not enable LIVE.
+User action required: none for DRY repair. Actual outbound Gmail still needs SMTP/Gmail credentials; outbox fallback remains active.
+
+## Codex Relay Update - 2026-06-19T10:04:11Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 82364; hidden sim/repair loop running as pythonw PID 9136; hidden status monitor running as pythonw PID 86012. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth / market_breadth. Latest sim-loop state updated 2026-06-19T10:02:19Z with healthy=true, command_count=8, failed_command_count=0, ready_to_deploy_live=false. Latest readiness generated 2026-06-19T10:01:41Z reports current_blocker=market_breadth and approved_recovery_runtime_coverage.primary_blocker=market_breadth. Approved product RE-USD is observed; latest approved coverage failures are market_breadth and spread, with market_green=0.375 vs min 0.85, market_dmid=-6.27 vs min 0.0, recent candle dmid=-1.66, and no U=0/stale/cache gap. Coverage remains usable: latest_U=120, latest_S=356, latest_brf=120, signal_timestamp_usable_ratio=1.0.
+Files changed: Runtime C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files, plus prior sim-loop/forward-threshold speed patches.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429 last_event=2026-06-19T09:22:41Z. Score is not improving because no safe DRY open has occurred since that close; openability is blocked before profit scoring.
+Action taken: fixed a false preflight/guard block where missing trough_pct on partial rows could be treated as net_negative_high_trough. After patch and restart, RE-USD no longer shows the false trough blocker; only live market_breadth/spread remain. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime `python -X utf8 -m unittest tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections tests.test_koko_dry_candidate_rank` passed 138 tests. Runtime py_compile passed for tools\koko_dry_observe_readiness.py and managers\run_manager\run_manager.py. Branch-copy `python -X utf8 -m unittest tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections` passed 94 tests.
+Next action: continue hidden DRY observe/sim/repair; verify market_breadth/spread against forward outcomes and only change preflight/config if positive evidence supports it. Do not tune Profit Score while open_count=0. Do not enable LIVE.
+User action required: none for DRY repair. Actual outbound Gmail still needs SMTP/Gmail credentials; outbox fallback remains active.
+
+Current blocker: market_breadth. Sim-loop state updated 2026-06-19T09:11:01Z now agrees with readiness: blocker=approved_recovery_market_breadth, current_blocker=market_breadth. Latest reporter status has Profit 38/100, current blocker market_breadth, and DRY=true LIVE=false.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271. ready_to_deploy_live=false.
+Action taken: fixed material-event reporting fallback so missing-SMTP outbox writes are throttled only for two-hour summaries, not for patch/change material events. Emitted a patch_change report immediately; SMTP credentials are missing, so it wrote C:\ai_trading_bot_koko\logs\tdi_status_outbox\tdi_status_20260619T091339Z.eml. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime reporter/monitor tests passed 67 tests. Branch reporter/monitor tests passed 67 tests. Previous runtime openability suite passed 196 tests and branch openability suite passed 112 tests after the blocker-priority fix.
+Next action: continue hidden DRY observe/sim/repair; wait for market_breadth/dmid to clear on a safe approved product, then let DRY open and rebuild P&L evidence. Do not enable LIVE.
+User action required: none for DRY repair. Actual Gmail send still requires SMTP/Gmail credentials; outbox fallback is functioning and no longer delays material events behind the two-hour cadence.
+
+## Codex Relay Update - 2026-06-19T09:09:35Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running PID 78108; hidden no-console sim/repair loop running under pythonw.exe PID 53644; hidden status monitor restarted hidden as PID 31968. DRY=true LIVE=false. Cloud task URL not configured for this local run; local status reports pid=78108 ts=2026-06-19T09:08:21Z.
+Current blocker: market_breadth. Latest readiness generated 2026-06-19T09:09:30Z reports current_blocker=market_breadth and approved_recovery_runtime_coverage.primary_blocker=market_breadth. Approved product ONDO-USD is observed with failures=[dmid,market_breadth], qv=236009, spread=0.29 pass, tob=2 pass, recent_dmid=-25.66 vs min -20.0, market_green=0.1667 vs 0.85, market_dmid=-16.65 vs 0.0. This is not U=0/stale/cache: latest_U=120, latest_S=356, latest_brf=120, latest_tick_ts=2026-06-19T09:09:23Z, signal_timestamp_usable_ratio=1.0.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py and C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same two files. Prior no-console launcher and sim-loop/run-manager files remain synced.
+Dry Profit Score evidence: score=38/100; opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271 last_event=2026-06-19T08:44:26Z. ready_to_deploy_live=false.
+Action taken: fixed blocker-priority reporting so a hard market breadth failure is not masked by dry_pnl_guard when open_count=0. Guard evidence is still retained on candidate rows, but the primary blocker now stays in the openability lane. Restarted the status monitor hidden so it uses the current two-hour reporting code. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime `python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections` passed 196 tests. Runtime py_compile passed. Branch `python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop` passed 112 tests. Branch py_compile passed. Forced readiness refresh confirms current_blocker=market_breadth.
+Next action: continue hidden DRY observe/sim/repair; do not tune Profit Score while open_count=0; wait for ONDO or another safe approved product to clear current market breadth/dmid without weakening quarantine/negative-ledger/order guardrails. Do not enable LIVE.
+User action required: none for DRY repair. Gmail/SMTP credentials still required for actual outbound delivery; outbox fallback remains throttled to the two-hour cadence.
+
+## Codex Relay Update - 2026-06-19T09:06:22Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running PID 78108; hidden no-console sim/repair loop running under pythonw.exe PID 53644; hidden status monitor running PID 62692. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: market_breadth. Feed/preflight lane is usable: latest_U=120, latest_S=356, latest_brf=120, latest_tick_ts=2026-06-19T09:03:32Z, signal_timestamp_usable_ratio=1.0, book_metric_source_missing=0, quote_volume_usable=2726/3984, liquid_dmid_overlap=1185/3984, tick_dmid_warmed_ratio=0.9568, tob_usable_ratio=0.9706. Approved runtime coverage observes approved_products=[ONDO-USD]; ONDO latest failures=[spread,market_breadth], qv=230098, spread=6.27 vs max 5.0, recent_dmid=-4.56 vs min -20.0, market_green=0.4667 vs 0.85, market_dmid=-3.7 vs 0.0.
+Files changed: Runtime C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tools\start_koko_sim_repair_background.py; C:\ai_trading_bot_koko\managers\run_manager\run_manager.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same readiness/sim-loop/launcher/run-manager files. Relay updated here.
+Dry Profit Score evidence: latest score evidence remains 38/100 from the running score lane; dry P&L file shows opened=112 closed=112 wins=55 losses=52 open_count=0 realized_usd=-0.37056271 unrealized_usd=0.0 net_usd=-0.37056271 last_event=2026-06-19T08:44:26Z. ready_to_deploy_live=false.
+Action taken: synced the no-console background launcher into branch codex/cloud-ready-koko-bot, verified the worker is pythonw.exe rather than a visible CMD/PowerShell wrapper, and validated runtime plus branch copies. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime `python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop tests.test_cloud_only_corrections` passed 196 tests. Runtime py_compile passed for launcher/readiness/sim-loop/run-manager. Branch `python -m unittest tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop` passed 112 tests. Branch py_compile passed for launcher/readiness/sim-loop/run-manager.
+Next action: continue hidden DRY observe/sim/repair; do not tune Profit Score while open_count=0; let DRY open only when ONDO or another supported safe product clears market breadth/current spread without violating quarantine/negative-ledger guardrails. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+Validation: hidden loop last pass healthy; readiness shows timestamp/book coverage present and approved products observed.
+Next action: continue hidden DRY observe/sim/repair; TAO may open when dmid >= 20 and market breadth recovers or allowed probe criteria are met. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T05:28:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. TAO-USD DRY position closed via profit_protect at 2026-06-19T05:27:23Z for +16.0825 bps / +0.00482474 USD, peak +23.1323 bps / +0.00693970 USD. The loop re-approved [ONDO-USD, TAO-USD] from fresh support: TAO fresh recovery signals=7, avg_net_forward_close_bps=4.4409, positive_rate=0.8571, sl_touch_rate=0.0; validation avg=1.5476, positive_rate=0.75, sl_touch_rate=0.0. Current readiness observes both approved products but current market is not openable: TAO failures=[market_breadth,dmid] with qv=774035, tob=170, spr=1.32, market_green=0.1, dmid=-32.92; ONDO failures=[tob_usd,quote_volume,dmid,market_breadth].
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update. run_settings.json was auto-synced by the loop to approved [ONDO-USD, TAO-USD].
+Dry Profit Score evidence: score=37/100; opened=105 closed=105 wins=49 losses=51 open_count=0 realized_usd=-0.39435358 unrealized_usd=0.0 net_usd=-0.39435358. Net improved by +0.00482474 USD from the TAO dry close.
+Action taken: verified TAO close event, refreshed readiness against current [ONDO-USD, TAO-USD] approvals, and confirmed both approved products are observed. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: readiness refresh completed; timestamp/book coverage present; no command failure.
+Next action: keep hidden DRY observe/sim/repair running; let TAO open only when current market_breadth/dmid are safe again, and continue net P&L repair. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:26:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim loop running; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: DRY position is open and managed; approved runtime blocker after forced readiness refresh is not_in_latest_rank for ONDO. The reliable loop opened one DRY TAO-USD position at 2026-06-19T05:24:00Z while TAO was still present in stale approved products, then auto-synced settings back from [ONDO-USD, TAO-USD] to [ONDO-USD]. Forced readiness refresh with current run_settings confirms approved_products=[ONDO-USD] and TAO is no longer in approved runtime coverage. Current TAO mark at 2026-06-19T05:26:04Z is positive: unrealized +18.0653 bps / +0.00541958 USD, peak +20.709 bps / +0.00621269 USD. LIVE=false; this is DRY-only.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update. run_settings.json was auto-synced by the loop to approved [ONDO-USD].
+Dry Profit Score evidence: score=37/100; opened=105 closed=104 wins=48 losses=51 open_count=1 realized_usd=-0.39917832 unrealized_usd=+0.00541958 net_usd=-0.39375874 after latest mark; ready_to_deploy_live=false.
+Action taken: verified DRY/LIVE/TP/SL settings after the open: DRY=true LIVE=false DRY_PNL_TP_PCT=8.0 DRY_PNL_SL_PCT=0.8 DRY_PNL_SIM_APPROVED_PRODUCTS=[ONDO-USD]. Forced readiness refresh to confirm TAO is no longer approved after auto-sync. Coinbase/order path untouched.
+Validation: readiness refresh completed; timestamp/book coverage still present. No code changes in this step.
+Next action: keep hidden DRY P&L running to close the TAO dry position via existing static TP/SL/profit-protect/loss-trim logic; continue sim/repair. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:24:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; widened hidden sim loop was alive but stopped advancing state after the first pass; hidden sim loop restarted on reliable cadence as PID 26468; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth. Latest readiness advanced to 2026-06-19T05:22:16Z and still shows ONDO-USD failures=[tob_usd, quote_volume, dmid, market_breadth]: qv=203048 vs 500000, tob=14 vs 50, recent_dmid=-42.54, market_green=0.0. No new open, no new approved actionable product.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832.
+Action taken: reverted background worker from widened lookback=180/limit=400 to reliable lookback=120/limit=300, interval=60, command_timeout=240, heavy_sweep_cadence=900. This keeps the repair loop writing fresh state instead of going quiet. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: process check confirms hidden sim loop PID 26468 running. No code changes in this step.
+Next action: wait for the reliable worker's next fresh pass; continue data/preflight/openability only. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:21:30Z
+RELAY_FILE_VISIBLE=yes
+## 2026-06-19T11:00:55Z Codex Update
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 55756; hidden sim/repair loop running as pythonw PID 56384; hidden status monitor running as pythonw PID 81028. Visible cmd/python one-shot monitor processes were killed; remaining workers are hidden. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: spread on approved RE-USD, after fixing a readiness false-positive. Fresh readiness now reports timestamp/book/feed coverage healthy: signals=38471, timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_present_ratio=1.0, quote_volume_usable_ratio=0.8252, spread_usable_ratio=0.9713, tob_usable_ratio=0.9478. Approved RE-USD is observed but latest approved coverage fails spread only: spr=23.06 vs RE max=20.0, qv=837530 vs 500000, market_green=0.9677 vs 0.85, market_dmid=50.47 vs 0.0. HYPE/UNI/XLM-style runtime all-pass rows are now correctly marked dry_pnl_guard when dryrank_top carries pnl=net_negative_no_expectancy or pnl=quarantine.
+Files changed: Runtime copy C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py and C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py. Branch mirror synced at C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for tools\koko_dry_observe_readiness.py and tests\test_koko_dry_observe_readiness.py. Relay updated here.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false. Active gate support for RE has avg_net_forward_close_bps=49.0965 over 4 signals but is not supported because support floor requires more evidence; broader recovery threshold support still includes RE and HYPE, but HYPE is excluded by negative dry ledger while net P&L is negative.
+Action taken: patched readiness so drynear_top all_pass rows enriched with dryrank_top pnl labels are not counted as current open candidates; pnl=quarantine/net_negative_no_expectancy now becomes dry_pnl_guard. Killed visible monitor launcher/one-shot processes and kept hidden pythonw workers running. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight tests.test_cloud_only_corrections tests.test_koko_sim_repair_loop OK, 273 tests. Runtime py_compile OK for tools\koko_dry_observe_readiness.py tools\koko_sim_repair_loop.py tools\run_koko_dry_supervised.py managers\run_manager\run_manager.py. Branch mirror same 273-test suite OK and same py_compile OK.
+Next action: continue hidden sim/repair and DRY observe; do not tune Profit Score while open_count=0. Wait for approved RE spread to clear evidence-backed cap or for another supported product to clear quarantine/negative-ledger safety. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:52:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as pythonw PID 11296; hidden sim/repair loop restarted as pythonw PID 38772; hidden status monitor still running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Post-patch readiness at 2026-06-19T12:51:27Z reports current_open_candidate=false, observe_probe_candidate=false, observe_runtime_probe_candidate=false. Timestamp/feed/cache coverage remains usable: latest_U=120, latest_S=356, latest_brf=120, timestamp usable, approved UNI-USD observed, no approved product cache gap. Liquid green breadth remains red: latest_green_ratio=0.1034 vs min=0.8500 and latest_market_dmid_bps=-19.50 vs min=0.0. Approved UNI-USD is correctly blocked with dry_observe_probe reason=failures because it has dmid/trough/market_breadth/dry_pnl_guard failures, recent dmid=-19.76 vs min=9.6092, tob=312 vs new market-breadth probe floor 1000.
+Files changed: runtime C:\ai_trading_bot_koko\managers\run_manager\run_manager.py, C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py, C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py, C:\ai_trading_bot_koko\run_settings.json. Branch mirror synced for the same files. Relay updated here.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false.
+Action taken: aligned market-breadth probe safety to the expanded threshold evidence. Set DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_DMID_BPS=8.0 and added DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_TOB_USD=1000.0. Added matching runtime/readiness guards so weak red-breadth probes cannot count as ready. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections OK, 147 tests; runtime py_compile OK for managers\run_manager\run_manager.py and tools\koko_dry_observe_readiness.py. Branch mirror same 147-test command OK.
+Next action: keep hidden DRY observe/sim/repair running with corrected market-breadth coverage and evidence-backed probe floors; do not tune Profit Score while open_count=0; wait for current liquid breadth/dmid/topbook to clear or for a safe supported actionable product to appear. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:48:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop running as pythonw PID 80988; hidden status monitor running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. A preflight/feed coverage bug was fixed: forward-outcome reason filtering now treats combined blocker strings like dmid|market_breadth as matching market_breadth. After rebuild, market-breadth forward evidence expanded to signals=2279 loaded=2279, threshold_supported=true, supported_count=342, best_avg_net_forward_close_bps=19.3034. Latest loop state at 2026-06-19T12:47:03Z is healthy=true, failed_command_count=0, ready_to_deploy_live=false. Latest readiness at 2026-06-19T12:47:28Z still has current_open_candidate=false and observe_probe_candidate=false because current green breadth is red: latest_green_ratio=0.1000 vs min=0.8500, latest_market_dmid_bps=-15.01 vs min=0.0. Timestamp/cache coverage is usable: timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_missing=0, approved_missing_products=[].
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_paper_signal_forward_outcomes.py and C:\ai_trading_bot_koko\tests\test_koko_paper_signal_forward_outcomes.py. Branch mirror synced at C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false.
+Action taken: added product-scoped forward probing with --products and fixed reason-token matching so combined blockers are included in market-breadth/dry-pnl coverage. Product probes confirmed XRP should not be approved: broad XRP history is negative, while current actionable approved product remains UNI-USD. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_paper_signal_forward_outcomes OK, 16 tests; runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 74 tests; runtime py_compile OK for tools\koko_paper_signal_forward_outcomes.py. Branch mirror python -X utf8 -m unittest tests.test_koko_paper_signal_forward_outcomes OK, 16 tests; branch py_compile OK.
+Next action: keep hidden DRY observe/sim/repair running with expanded market-breadth coverage; do not tune Profit Score while open_count=0; wait for liquid green breadth/current dmid to clear or a safe non-quarantined/non-negative-ledger supported product to become actionable. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:36:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 80988 after verified steady-state pass; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD remains unsafe to open under current market/safety gates. Latest readiness open_candidate=false, probe_candidate=true, current_blocker=market_breadth. Feed/preflight coverage remains usable; no timestamp/cache/missing-product blocker.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: verified sim/repair steady-state speed after cache and limit fixes. Latest foreground one-shot completed healthy with 8 commands, 0 failures, iteration_elapsed_sec=66, command elapsed total=55, heavy_sweeps_due=false. Restarted continuous hidden loop. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: all focused runtime/branch tests already green: tests.test_koko_sim_repair_loop OK, 74 tests in both copies; py_compile OK. One-shot runtime pass healthy after patches.
+Next action: keep hidden loop running; wait for UNI to clear dmid/spread/top-book/book-pressure/market-breadth safety, or for a non-quarantined supported product to become actionable. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:31:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 51304 after broad-recovery cache patch; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD still fails current market/safety gates; no feed/preflight blocker. Latest observed UNI examples fail dmid/market_breadth/spread and sometimes top-book/book-pressure. DRY open remains false.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: fixed second post-command summary stall. Profiling showed broad-recovery product-threshold support could cold-rebuild for about 90s after heavy broad artifacts changed. Patched the same recent-growth cache reuse for broad_recovery artifacts, while keeping config/grid/min_signals matching and shrink/config/grid changes as recompute triggers. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 74 tests. Branch mirror same command OK, 74 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror.
+Next action: verify loop pass completes after broad cache patch; continue monitoring UNI safety gates. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:25:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 59364 after compact heavy-history sweep patch; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD remains unsafe to open on current market/safety gates. Recent readiness: approved UNI observed; examples show dmid and market_breadth failing, with spread/top-book fluctuating. No timestamp/cache/feed blocker.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: stopped a due heavy recovery-history threshold sweep that was blocking the loop. Patched that heavy history sweep to use the compact recovery grid, matching the previous broad-sweep speed fix. This keeps periodic history evidence but prevents it from freezing the observe/repair lane. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 73 tests. Branch mirror same command OK, 73 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror.
+Next action: verify post-patch heavy-sweep pass completes; continue observing for UNI to clear safety gates. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:18:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 55356 after history-cache speed patch; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD still not openable on current market/safety gates. Latest readiness samples show UNI observed and sometimes probe-eligible, but failing combinations of dmid, spread, market_breadth, book_pressure, and/or net-negative top-book. Feed/preflight remains healthy.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: fixed repeated recovery-history threshold rebuild. A cold artifact_summary pass took 81.66s because each appended history row invalidated product-threshold cache. Patched history cache matching to reuse recent cache when history only grows and path/config/grid/min_signals still match; shrink/config/grid changes still force recompute. This preserves safety thresholds while removing repeated full-history sweeps from every normal pass. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 73 tests. Branch mirror same command OK, 73 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror.
+Next action: verify next loop pass timing; keep observing for UNI to clear safety gates or for a non-quarantined supported product to become actionable. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:11:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 94396 after recovery-limit speed patch; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD observed but current market/safety gates still not openable. Latest readiness: open_candidate=false, approved UNI sample dmid=13.11 pass but market_green=0.7742 vs 0.85, book_pressure=0.0009 vs 0.04, tob=33 vs net-negative top-book floor 50, dry_pnl_guard=net_negative_low_topbook. Earlier sample also showed dmid negative. Feed/preflight remains healthy.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: fixed another speed bug: sim/repair was launched with --limit 250 but recovery-forward generation hardcoded --limit 2000, making the slowest command much heavier than requested. Patched recovery-forward to use args.limit and added a regression. Previous telemetry showed recovery-forward was the slowest command at 38s. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 72 tests. Branch mirror same command OK, 72 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror. Hidden process check OK.
+Next action: inspect the first post-patch pass for iteration time and command timing; continue only evidence-backed repair. Do not loosen UNI gates because current-band forward evidence was negative. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:03:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 59612 with command timing telemetry; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD still fails current safety/market gates; no feed/cache/timestamp blocker. Fresh readiness after UNI approval reports approved product observed, open_candidate=false, probe_candidate=true, with UNI failing dmid and market_breadth; latest representative sample dmid=-32.75 vs floor=9.6092, market_green about 0.276 vs 0.85, spread/top-book passing in that sample.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: added per-command elapsed_sec telemetry to sim/repair child command results so the next pass identifies the specific speed bottleneck instead of only total iteration time. Restarted hidden sim/repair loop. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 71 tests. Branch mirror same command OK, 71 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror.
+Next action: inspect the first timed pass; reduce the slowest non-safety command if possible while keeping UNI safety gates intact. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T12:00:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as pythonw PID 46632; hidden sim/repair loop restarted as pythonw PID 79344; hidden status monitor remains pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved UNI-USD is observed but current market state is unsafe. Latest readiness shows UNI failures include dmid, market_breadth, book_pressure, dry_pnl_guard, and low top-book on some samples; current example has dmid=-32.75 vs floor=9.6092, market_green=0.2581 vs 0.85, press=0.001 vs 0.04, tob=36 vs net-negative floor 50, and dry_pnl_guard=net_negative_low_topbook. Feed/preflight coverage is not the blocker: approved product observed, timestamps usable, book metrics present, liquid overlap present.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files plus run_settings.json. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: fixed another sim/repair speed blocker: the loop launch used --interval-sec 30, but main enforced a 60-second minimum sleep. Patched main to honor sub-minute intervals with a 5-second lower safety floor and added a regression for 30-second sleep. Restarted supervisor and sim/repair hidden so the supervisor sees UNI approval and the loop uses the faster cadence. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 70 tests. Branch mirror same command OK, 70 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror. Process check confirms hidden pythonw workers only; no visible cmd.exe worker.
+Next action: keep observing for UNI to clear dmid>=9.6092, spread<=5, top-book>=50, book pressure>=0.04, and market breadth; do not loosen these guards because forward tests around current UNI bands are negative. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T11:54:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 92632; hidden status monitor running as pythonw PID 81028; hidden sim/repair loop running as pythonw PID 49256 after successful one-shot validation. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth plus UNI-specific entry safety under negative net P&L. UNI-USD quarantine expired and approval synced from RE-USD to UNI-USD. Fresh readiness with UNI approved shows approved product observed and probe-eligible, but no open candidate: UNI has qv=173219/50000 pass, tob=1152/50 pass, tick_dmid warmed/pass, but dmid=6.55 vs floor=9.6092, spread=6.56 vs cap=5.0, market_green=0.7931 vs 0.85, and dry_pnl_guard=net_negative_low_dmid.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, C:\ai_trading_bot_koko\run_settings.json. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: current status state reports profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: fixed repair-loop timeout by avoiding repeated full artifact summaries after auto-sync; added regression that auto-sync changes summarize only once. Confirmed one-shot loop now completes healthy with 8 commands, 0 failures, updated_at_utc=2026-06-19T11:52:37Z, approved_products=["UNI-USD"]. Tested whether loosening UNI dmid/spread would be safe and rejected it: current relaxed UNI band is negative across recovery/current/broad histories (examples: recovery current_relaxed n=105 avg=-28.3979 bps pos=0.1524; broad current_relaxed n=473 avg=-25.2767 bps pos=0.1564; threshold sweep supported_count=0). DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 69 tests. Branch mirror same command OK, 69 tests. py_compile OK for tools\koko_sim_repair_loop.py in runtime and branch mirror. One-shot sim/repair loop completed healthy after patch.
+Next action: keep hidden DRY observe/sim/repair running with UNI approved; wait for UNI to clear dmid>=9.6092, spread<=5, and market breadth, or for another supported non-quarantined/non-negative-ledger product to become actionable. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T11:38:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 92632; hidden status monitor running as pythonw PID 81028; hidden sim/repair loop restarted as pythonw PID 54400 after speed patch. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: repair-loop heavy broad sweep was blocking fast approval refresh; market/openability blocker remains recovery approval/top-of-book safety under negative net P&L. UNI-USD quarantine expires at 2026-06-19T11:39:32Z; JTO-USD at 2026-06-19T11:40:49Z.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py. Branch mirror synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: current status state reports profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: killed the stuck child broad-recovery threshold sweep and patched the heavy broad sweep grid from the runaway 48k-combination grid to a compact grid focused on recovery-relevant quote-volume/dmid/spread/tob/trough/tick/book-pressure values. This keeps normal recovery checks intact and prevents heavy broad sweeps from blocking the 30s observe/approval loop. Restarted hidden sim/repair with pythonw. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_sim_repair_loop OK, 68 tests. Branch mirror same command OK, 68 tests. py_compile OK for tools\koko_sim_repair_loop.py in both runtime and branch mirror.
+Next action: after UNI/JTO quarantine expiry, refresh readiness and approval; if UNI enters approved recovery, verify current spread/topbook/dmid/green-breadth/P&L guard and let DRY observe open only if all safety gates pass. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T11:37:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 92632; hidden status monitor running as pythonw PID 81028; hidden sim/repair loop restarted faster as pythonw PID 71104 with 30s cadence and 1800s heavy sweep cadence. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: recovery approval / top-of-book safety under negative net P&L. Fresh readiness at 2026-06-19T11:28:26Z shows the feed/preflight lane is usable: signal_timestamp_usable_ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_missing=0, target_refreshed_book_gap=0, approved_missing_products=[], liquid_dmid_overlap_ratio=0.875, spread_usable_ratio=0.9803, tob_usable_ratio=0.9276, latest_green_ratio=0.8966/0.85, and approved RE-USD observed. RE-USD currently fails tob_usd only: spread=12.18/20 pass, qv=1089774/500000 pass, recent_dmid=1088.52/-20 pass, market_green=0.8966/0.85 pass, but tob=8 vs floor=10 and dry_pnl_guard=net_negative_low_topbook. UNI-USD has positive ledger but remains loss-quarantined until 2026-06-19T11:39:32Z; JTO-USD until 2026-06-19T11:40:49Z; TAO-USD until 2026-06-19T19:59:13Z.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this relay update. No Coinbase/order path changes.
+Dry Profit Score evidence: current status state reports profit_score=38/100; score file has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. ready_to_deploy_live=false.
+Action taken: verified current blocker is not U=0/stale/cache/timestamp coverage; tested lowering RE top-of-book floor and rejected it because forward evidence is not safe (RE 8-10 tob band in recovery/openability history was negative or weak, including recovery threshold slice avg_net_forward_close_bps=-25.1391 with positive_net_close_rate=0.25). Confirmed visible all-pass candidates are blocked by net_negative_no_approved_recovery; most non-approved products have negative forward history, while UNI/JTO are still waiting on quarantine expiry. Restarted hidden sim/repair loop at 30s cadence so approval can resync quickly when quarantine clears. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: process check confirms sim loop, supervisor, and monitor all running as pythonw.exe with hidden windows. run_settings guard check confirms DRY=true, LIVE=false, DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8, DRY_PNL_SIM_APPROVED_PRODUCTS=["RE-USD"]. No code patch in this step, so no unit tests required.
+Next action: after UNI/JTO quarantine expiry, force/observe the 30s sim-repair sync, verify whether UNI enters approved recovery products, then refresh readiness and allow DRY observe to open only if the approved product clears current spread/topbook/dmid/green-breadth/P&L guard. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+## Codex Relay Update - 2026-06-19T11:16:55Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as pythonw PID 88900; hidden sim/repair loop restarted as pythonw PID 58928; hidden status monitor running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth with RE-USD observed. Fresh tick before the auto-sync stability patch had RE-USD clearing spread, qv, top-of-book, and tick_dmid, but blocked by market_breadth plus candle_range/trough: spread=15.33/20, tob=12, qv=994709, tick_dmid=43.4/15, market_green=0.1667/0.85, market_dmid=6.66, candle_range/trough still present.
+Files changed: runtime C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py, C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py, C:\ai_trading_bot_koko\run_settings.json. Branch mirror changed at C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: score file still has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false.
+Action taken: fixed sim/repair auto-sync so it preserves an existing positive min_tob_usd floor instead of overwriting RE-USD back to 0 from a broader supported config. Set RE-USD top-of-book floor to 10.0 in DRY_MIN_TOB_USD_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_TOB_USD_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_TOB_USD_BY_PRODUCT. Kept RE-USD TDI shadow grace at 9.0. Verified DRY=true, LIVE=false, static TP/SL unchanged at 8.0/0.8. Restarted hidden workers with pythonw.
+Validation: runtime and branch mirror python -X utf8 -m unittest tests.test_koko_sim_repair_loop tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight OK, 185 tests each. Runtime and branch py_compile OK for tools\koko_sim_repair_loop.py tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py managers\run_manager\run_manager.py. Settings verification confirms RE-USD tob floors are 10.0 in runtime and branch mirror.
+Next action: continue hidden observe/sim/repair; next repair target is candle_range/trough/market_breadth interaction for RE only if forward outcomes support it. Do not tune Profit Score while open_count=0. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T11:24:33Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor restarted as pythonw PID 92632; hidden sim/repair loop restarted as pythonw PID 12300; hidden status monitor running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_spread / spread. Latest pre-patch readiness had healthy data coverage and approved RE-USD observed with only spread failing: qv=972574, tob=83, recent dmid=511.76, market_green=0.9259/0.85, market_dmid=43.69, spread=24.46 vs RE max 20.0. Observe probe was eligible, but recent RE spread-band simulation says not to raise the cap: RE spread 20-25 bps had 14 signals, avg_net_forward_close_bps=-124.95, positive_net_close_rate=0.143, sl_touch_rate=1.0.
+Files changed: runtime C:\ai_trading_bot_koko\managers\run_manager\run_manager.py and C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py. Branch mirror changed at C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for the same files. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false.
+Action taken: did not loosen RE spread cap. Patched probe DRY preview/open payloads to carry product-scoped dry_max_spr_bps, dry_min_tob_usd, dry_min_tick_dmid_bps, spr_bps, tob_usd, and tick_dmid_bps so the DRY P&L guard cannot fall back to a looser global spread cap while RE's product cap is 20. Added regression proving a RE payload with spr=24 and dry_max_spr_bps=20 is blocked as net_negative_wide_spread, while spr=19.5 passes the same guard. DRY remains true; LIVE remains false; static TP/SL remains 8.0/0.8.
+Validation: runtime and branch mirror python -X utf8 -m unittest tests.test_cloud_only_corrections tests.test_koko_dry_candidate_rank tests.test_run_koko_dry_supervised_preflight OK, 153 tests each. Runtime and branch py_compile OK for managers\run_manager\run_manager.py.
+Next action: continue hidden observe/sim/repair; wait for RE spread <=20 with other gates still clean, or find another approved/non-quarantined product that clears safety. Do not tune Profit Score while open_count=0. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound delivery.
+
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop PID 91380 wrote a fresh state; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Latest hidden pass completed at 2026-06-19T05:21:23Z with healthy=true, 8 commands, 0 failures. ONDO-USD remains the only approved actionable product but latest coverage regressed to failures=[tob_usd, quote_volume, dmid, market_breadth]: qv=203048 vs 500000, tob=21 vs 50, recent_dmid=-42.54 vs min 0, market_green=0.0 vs 0.85. Feed/timestamp/book coverage remains present; this is not U=0/stale/cache.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832.
+Action taken: verified hidden loop is writing fresh state after clean restart. No gate relaxation applied; ONDO lower quote-volume history remains negative and current market breadth/dmid are not safe. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: latest hidden pass healthy, failed_command_count=0. No code changes in this step.
+Next action: continue hidden observe/sim/repair; wait for ONDO to become openable or for a supported non-quarantined/non-negative-ledger product to appear. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:20:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; forced wider sim/repair pass completed; hidden sim/repair loop restarted clean with unbuffered Python; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=91380 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume. Forced wider pass completed at 2026-06-19T05:19:24Z with 11 commands, 0 failures, healthy=true, ready_to_deploy_live=false. Approval remains ONDO-USD only. Latest ONDO approved coverage fails qv/top-of-book: qv=193323 vs 500000 and tob=13 vs 50; spread=1.98 pass, market_green=1.0 pass, recent_dmid=116.32 pass.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update. Runtime/branch code unchanged.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832 last_event=2026-06-19T04:23:34Z.
+Action taken: forced a wider pass with lookback=180, limit=400, activity_tail=128MB, heavy_sweep_cadence=600. Result found broader supported products (ENA, ICP, JTO, LIGHTER, NEAR, ONDO, SUI, UNI, ZEC), but all except ONDO are excluded by quarantine and/or negative ledger while net P&L is negative. Restarted hidden loop cleanly as PID 91380 using python -X utf8 -u. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: forced pass command set healthy with 0 failures. No code changes in this step, so no new tests required beyond prior green branch/runtime suites.
+Next action: keep hidden sim/repair running; wait for ONDO qv/tob recovery or a supported product to become actionable after quarantine/ledger safety clears. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:14:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted with faster broad recovery sweeps; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=69120 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume. Latest completed loop pass at 2026-06-19T05:10:40Z was healthy with 8 commands, 0 failures, ready_to_deploy_live=false. ONDO-USD now fails only quote_volume: qv=227221 vs min=500000; top-of-book recovered to tob=190 vs min=50; spread=4.5 pass; market_green=1.0 pass; recent_dmid=71.67 pass.
+Files changed: C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md only for this update. Runtime/branch patch set unchanged from prior update.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832 last_event=2026-06-19T04:23:34Z.
+Action taken: tested ONDO lower quote-volume thresholds against recovery forward history; lower qv thresholds remain negative, so no gate relaxation was applied. Restarted hidden sim/repair with wider lookback=180, limit=400, activity_tail=128MB, and heavy_sweep_cadence=600 seconds to search faster for safe non-quarantined/non-negative-ledger recovery products. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: latest completed loop pass before cadence restart was healthy. Branch-copy tests remain OK from 2026-06-19T05:10Z. No test failure.
+Next action: continue hidden sim/repair; do not tune Profit Score while opened=0; wait for ONDO qv to meet supported gate or for another supported product to become actionable without violating quarantine/negative-ledger safety.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+
+## Codex Relay Update - 2026-06-19T05:10:08Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted on patched readiness logic; hidden status monitor running. DRY=true LIVE=false. supervisor_pid=68568 sim_loop_pid=30632 status_monitor_pid=62692. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_quote_volume / quote_volume. The feed/preflight lane is usable: signal_timestamp_usable_ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, latest_tick_ts=2026-06-19T05:07:40Z, book_metric_source_missing=0, target_refreshed_book_gap=0, approved_missing_products=[]. ONDO-USD is the only approved actionable product and is observed, but latest approved coverage fails quote_volume and top-of-book: qv=227221 vs min=500000, tob=15 vs min=50, spread=4.8 pass, market_green=1.0 pass, recent_dmid=71.67 pass. UNI-USD remains active loss-quarantined until 2026-06-19T11:39:32Z despite positive ledger support. PENGU-USD has threshold support but remains excluded by negative ledger while net P&L is negative.
+Files changed: Runtime copy: C:\ai_trading_bot_koko\tools\koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tests\test_koko_dry_observe_readiness.py; C:\ai_trading_bot_koko\tools\tdi_status_reporter.py; C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work: tools\koko_dry_observe_readiness.py; tests\test_koko_dry_observe_readiness.py; tools\tdi_status_reporter.py; tests\test_tdi_status_reporter.py. Relay updated here.
+Dry Profit Score evidence: score=37/100; opened=104 closed=104 wins=48 losses=51 open_count=0 realized_usd=-0.39917832 unrealized_usd=0.0 net_usd=-0.39917832 last_event=2026-06-19T04:23:34Z; ready_to_deploy_live=false.
+Action taken: restarted the hidden sim/repair loop so the running process uses the corrected readiness dmid/preflight logic. Mechanically synced readiness/reporting files into branch codex/cloud-ready-koko-bot and validated the branch copy. Did not touch Coinbase/order path. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: branch-copy python -m unittest tests.test_koko_dry_observe_readiness tests.test_tdi_status_reporter tests.test_tdi_status_monitor OK (111 tests; urllib3 SystemTimeWarning observed, tests passed). Branch-copy py_compile for tools\koko_dry_observe_readiness.py tools\tdi_status_reporter.py tools\tdi_status_monitor.py OK. Runtime full relevant suite remains OK from the patched pass.
+Next action: keep hidden DRY observe/sim/repair running; continue scanning for a non-quarantined, non-negative-ledger product with fresh support or ONDO liquidity/top-of-book recovery. Do not enable LIVE.
+User action required: none for DRY repair. Gmail connector auth/SMTP credentials still required for actual outbound delivery.
+## Codex Relay Update - 2026-06-19T09:52:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running; hidden sim/repair loop restarted as pythonw PID 35176 after the candle-range sweep speed patch; hidden status monitor running. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Latest fresh loop state at 2026-06-19T09:51:03Z is healthy=true, command_count=8, failed_command_count=0, ready_to_deploy_live=false. Latest readiness at 2026-06-19T09:51:38Z reports blocker=market_breadth. No new DRY open since the ONDO close at 2026-06-19T09:22:41Z.
+Files changed: Runtime copy C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py and C:\ai_trading_bot_koko\tools\koko_forward_threshold_sweep.py. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for tools\koko_sim_repair_loop.py, tools\koko_forward_threshold_sweep.py, and tests\test_koko_forward_threshold_sweep.py. Relay updated here.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429. Current actionable approved product remains RE-USD; wider threshold evidence sees ENA,HYPE,JTO,ONDO,RE,UNI,WLD,XLM, but all except RE are excluded by active loss quarantine and/or negative ledger while net P&L is negative. RE is blocked by market_breadth and current spread/candle-range conditions.
+Action taken: fixed a repair-loop speed blocker by narrowing recurring candle-range threshold sweeps to the live 600 bps gate, while leaving larger 600/900 bps candle-range checks for heavy sweeps. Fixed historical/cache compatibility so rows without dry_recent_candle_range_bps are not falsely rejected as wide candles. Restarted the sim/repair loop hidden with pythonw. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -m unittest tests.test_koko_forward_threshold_sweep tests.test_koko_sim_repair_loop OK, 70 tests. Runtime py_compile for tools\koko_sim_repair_loop.py and tools\koko_forward_threshold_sweep.py OK. Branch-copy python -m unittest tests.test_koko_forward_threshold_sweep tests.test_koko_sim_repair_loop OK, 70 tests.
+Next action: continue hidden DRY observe/sim/repair; do not tune Profit Score while open_count=0; keep looking for a non-quarantined, non-negative-ledger product that clears current preflight, or for RE to clear market breadth/spread/candle-range. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+## Codex Relay Update - 2026-06-19T10:30:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 20648; hidden sim/repair loop running as pythonw PID 95808; hidden status monitor running as pythonw PID 98156. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. The data/preflight lane is now usable and explicit: latest forced readiness at 2026-06-19T10:25:01Z has signal timestamps 739/739 usable, latest_U=120, latest_S=356, latest_brf=120, book_metric_source_missing=0, approved_missing_products=[], and approved RE-USD observed. Liquid-filtered breadth is still red: latest_green_ratio=0.2414 vs min=0.85 and latest_market_dmid_bps=-10.12 vs min=0.0. Approved RE-USD has strong recent dmid 153.26 bps and qv 1,040,687, but still fails spread 18.74 vs max 5.0 plus market_breadth.
+Files changed: Runtime copy C:\ai_trading_bot_koko\managers\run_manager\run_manager.py; C:\ai_trading_bot_koko\tests\test_koko_dry_candidate_rank.py; C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py; C:\ai_trading_bot_koko\run_settings.json. Branch copy synced on C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work for managers\run_manager\run_manager.py, tests\test_koko_dry_candidate_rank.py, tests\test_cloud_only_corrections.py, tools\parallel_dry\replay_parallel_dry_variants.py, tools\parallel_dry\evaluate_parallel_dry_campaign.py, and run_settings.json.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429 last_dry_event=2026-06-19T09:22:41Z; ready_to_deploy_live=false.
+Action taken: added DRY_MARKET_BREADTH_MIN_QUOTE_VOLUME_USD=50000.0 and changed runtime market breadth to exclude recent-candle rows below that floor, reporting market_breadth_quote_volume_filtered/missing. Restarted hidden monitor/supervisor/sim loop with pythonw so no CMD windows pop up. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime python -X utf8 -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections OK, 141 tests. Branch-copy same command OK, 141 tests. Runtime and branch py_compile for touched runtime modules OK. New live ticks confirm liquid filter active: market_breadth_n dropped from 120 to 29-31, with about 91 rows quote-volume-filtered, but liquid breadth remains red.
+Next action: keep hidden DRY observe/sim/repair running; do not tune Profit Score while open_count=0; wait for RE spread and liquid breadth to clear or for a supported non-quarantined/non-negative-ledger product to appear. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+## Codex Relay Update - 2026-06-19T10:34:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 26484; hidden sim/repair loop running as pythonw PID 78040; hidden status monitor running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: market_breadth, with RE-USD still not openable. A supported market-breadth threshold sweep appeared at 2026-06-19T10:29:18Z (supported_count=96, best_avg_net_forward_close_bps=61.0932, best_positive_net_close_rate=0.6667), so spread was added to DRY_OBSERVE_PROBE_ALLOWED_FAILURES under the existing 25 bps probe spread cap. After hidden restart, no DRY_OPEN occurred: RE-USD either exceeded the 25 bps probe cap, had TDI shadow too low, or flipped recent-candle dmid negative while liquid breadth remained red.
+Files changed: Runtime and branch run_settings.json changed to include DRY_OBSERVE_PROBE_ALLOWED_FAILURES=["dmid","market_breadth","quote_volume","spread","tick_dmid"]. Prior liquid breadth code/test changes remain in managers/run_manager/run_manager.py, tests/test_koko_dry_candidate_rank.py, tests/test_cloud_only_corrections.py, and branch-synced parallel_dry helper files.
+Dry Profit Score evidence: score=38/100; opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429 last_dry_event=2026-06-19T09:22:41Z; ready_to_deploy_live=false.
+Action taken: enabled spread as a DRY observe probe failure only under the existing DRY_OBSERVE_PROBE_MAX_SPREAD_BPS=25.0 cap; restarted hidden monitor/supervisor/sim loop with pythonw. Coinbase/order path untouched. DRY remains true. LIVE remains false. Static TP/SL remains 8.0/0.8.
+Validation: runtime and branch python -X utf8 -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_cloud_only_corrections both OK, 141 tests each. Post-restart ticks show dryopen=0 and no new DRY_OPEN; current block is real market/feed state, not missing cache/timestamp coverage.
+Next action: keep hidden DRY observe/sim/repair running; do not increase spread beyond the supported 25 bps cap; wait for RE to align on spread <=25, non-low TDI shadow, dmid, and improving liquid breadth, or for a safe supported product to appear. Do not enable LIVE.
+User action required: none for DRY repair. SMTP user/password/sender or Gmail connector refresh still required for actual outbound email delivery.
+
+## 2026-06-19T10:44:22Z Codex Update
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor and sim-repair loops restarted; branch validation in progress/synced from runtime.
+Current blocker: approved_recovery_market_breadth; fresh post-restart coverage has U=120/S=356/brf=120, timestamp usable, approved RE observed, but RE effective recent-candle dmid is negative and liquid breadth is red.
+Files changed: managers/run_manager/run_manager.py; tools/koko_dry_observe_readiness.py; tools/run_koko_dry_supervised.py; run_settings.json; tests/test_koko_dry_candidate_rank.py; tests/test_koko_dry_observe_readiness.py.
+Dry Profit Score evidence: latest repair summary score=38/100, opened=113 closed=113 wins=55 losses=53 open_count=0 net=-0.37924429; not ready for LIVE.
+Action taken: fixed supervisor product-scoped spread cap, added dedicated DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_DMID_BPS=80.0 from supported market-breadth sweep evidence; DRY remains true and LIVE remains false.
+Next action: observe fresh post-patch ticks and continue replay/repair only if openability remains blocked by data/preflight instead of real red market conditions.
+
+## Codex Relay Update - 2026-06-19T11:12:17Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor running as pythonw PID 8592; hidden sim/repair loop running as pythonw PID 61040; hidden status monitor running as pythonw PID 81028. DRY=true LIVE=false. Cloud task URL not configured for this local run.
+Current blocker: approved_recovery_market_breadth / market_breadth. Feed/preflight coverage is usable: latest 5m readiness has signals=143, tick_diag_rows=27, liquid_dmid_overlap=84, runtime_near_misses=25, dry_open_seen=false, current_open_candidate=false, observe_probe_candidate=true. Approved RE-USD is observed and probe-eligible when only market_breadth fails; current RE example at 2026-06-19T11:11:04Z has qv=928831, spread=15.27/20, tob=8, recent dmid=1149.65, but market_green=0.1724/0.85 and tick_dmid still not yet actionable in the displayed candidate.
+Files changed: runtime C:\ai_trading_bot_koko\run_settings.json and branch mirror C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work\run_settings.json. Relay updated here. Coinbase/order path untouched.
+Dry Profit Score evidence: score file currently has opened=113 closed=113 wins=55 losses=53 open_count=0 realized_usd=-0.37924429 unrealized_usd=0.0 net_usd=-0.37924429; ready_to_deploy_live=false. Latest openability forward test: RE-USD supported slice with qv>=500000, spread<=20, tick_dmid>=15, tob>=10, book_pressure>=0.04 showed 7 signals, avg_net_forward_close_bps=169.0889, positive_net_close_rate=0.8571, sl_touch_rate=0.0.
+Action taken: corrected RE-USD DRY top-of-book floor to 10.0 in DRY_MIN_TOB_USD_BY_PRODUCT and added RE-USD TDI shadow grace 9.0 so DRY effective TDI floor is about 61 instead of disabling the shadow guard. Verified DRY=true, LIVE=false, static TP/SL unchanged at 8.0/0.8. Restarted hidden DRY supervisor and sim/repair with pythonw so no CMD windows are opened.
+Validation: runtime settings JSON check OK; readiness threshold helper now returns RE-USD dry_min_tob_usd=10 and blocks tob_usd=8; python -X utf8 -m unittest tests.test_koko_dry_observe_readiness tests.test_run_koko_dry_supervised_preflight tests.test_koko_paper_signal_forward_outcomes tests.test_koko_sim_repair_loop OK, 196 tests. py_compile OK for tools\koko_dry_observe_readiness.py tools\run_koko_dry_supervised.py tools\koko_sim_repair_loop.py managers\run_manager\run_manager.py.
+Next action: continue hidden observe/sim/repair; watch for fresh RE-USD candidate with tob>=10, spread<=20, tick_dmid>=15, and market_breadth/probe conditions supported. Do not enable LIVE.
+User action required: none for DRY repair. SMTP/Gmail credentials still required for actual outbound email delivery.
+
+
+## Codex Relay Update - 2026-06-19T13:00:58Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local hidden DRY supervisor and sim/repair loop running; ready_to_deploy_live=False; loop_health=True.
+Current blocker: dry_position_open / readiness=book_pressure; feed coverage usable, current approved UNI candidate blocked by spread; non-approved liquid candidates remain held by recovery/ledger safety.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; hidden TDI Discord launcher cmd files patched outside repo to prevent visible windows.
+Dry Profit Score evidence: score=38; realized=-0.37728575; unrealized=0.0; net=-0.37973393; opened=114; closed=114; wins=56; losses=53; open_count=0.
+Action taken: fixed product-threshold merge so later unsupported detail rows no longer erase valid support from independent cache/evidence sources; preserved single-source unsupported-row filtering; validated runtime tests.
+Next action: restart hidden loop with merge fix, rerun readiness, keep DRY observe waiting for an approved candidate with spread/tob inside guardrails; do not loosen profit scoring while open_count=0.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T18:25:28Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after patched restart (status monitor pid=27544, DRY supervisor pid=83772, sim/repair loop pid=32228, hidden forward child pid=74924); branch mirror synced; forced preflight cache refresh completed; not ready for LIVE. Status reporter generated [TDI STATUS] Profit 38/100 | DRY=true LIVE=false | market_breadth and skipped send because the two-hour cadence is not due.
+Current blocker: green_breadth / market_breadth. Data/cache lane is now clean for local missing/failure causes: forced refresh returned products=356, refreshed=356, failed=0, retry_failed=0. Latest cache evidence: files_checked=356, files_present=356, missing_files=0, empty_files=0, timestamp_usable=317/356, timestamp_usable_ratio=0.8904, liquid_subset=14 vs min 10. Remaining timestamp misses are fresh-file/outside-window sparse-feed products, not local missing cache. Green breadth remains red: green_ratio=0.2107 vs min 0.8500.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; branch mirror synced for both.
+Dry Profit Score evidence: score=38/100; realized=-0.42672451 USD; unrealized=0.0; net=-0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0.
+Action taken: added DRY preflight candle-cache retry pass for failed public-candle products, with retry_refreshed/retry_failed accounting; added regression test for first-fetch-fails/second-fetch-succeeds; 372 focused tests passed; py_compile passed; restarted only hidden pythonw workers. DRY=true LIVE=false TP=8.0 SL=0.8 remain intact; Coinbase/order path untouched.
+Next action: keep hidden observe/sim/repair running; do not loosen market_breadth because forward support is still negative/unsupported; continue watching green breadth and approved SOL/UNI recovery gates under static safety.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T18:22:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after patched restart (status monitor pid=27544, DRY supervisor pid=72052, sim/repair loop pid=93544, hidden forward child pid=78396); branch mirror synced; clean one-shot repair/simulation completed; not ready for LIVE. Status reporter generated [TDI STATUS] Profit 38/100 | DRY=true LIVE=false | market_breadth and skipped send because the two-hour cadence is not due.
+Current blocker: market_breadth / approved_recovery_market_breadth. The approved-product coverage gap is fixed: approved recovery products are now observed in runtime coverage, not missing from rank/check coverage. Latest approved_products=[AVAX-USD,SOL-USD,UNI-USD], observed_products=[AVAX-USD,SOL-USD,UNI-USD], primary_blocker=market_breadth. Latest green ratio is about 0.3548 vs 0.8500 floor; latest market dmid about -4.49 bps vs 0.00 floor. Current approved failures: market_breadth=3, dry_pnl_guard=3, trough=2, dmid=1, tick_dmid=1, quote_volume=1.
+Files changed: managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; run_settings.json; branch mirror synced for all.
+Dry Profit Score evidence: score=38/100; realized=-0.42672451 USD; unrealized=0.0; net=-0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0; blocked_open=280.
+Action taken: patched DRY-only candidate refresh/check coverage so products in DRY_PNL_SIM_APPROVED_PRODUCTS are appended to refresh_rows_iter and rows_iter even when they rank outside candidate_check_limit; max_tries now covers the appended DRY rows. This keeps approved recovery products visible/evaluable without changing Coinbase/order bodies, LIVE behavior, or static TP/SL. Added regression tests; 371 focused tests passed; py_compile passed; restarted only hidden pythonw workers.
+Next action: keep hidden DRY observe/sim/repair running; next repair target is market_breadth/openability evidence, especially green breadth and approved recovery gates, not profit-score tuning while opened=0. Do not start LIVE.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:38:56Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=27544, DRY supervisor pid=86744, sim/repair loop pid=13500); targeted SOL trough sweep completed and artifact synced to branch mirror; not ready for LIVE.
+Current blocker: approved_recovery_trough / trough on freshest readiness. Market breadth is currently green (latest_green_ratio=0.9643 vs min=0.8500, latest_market_dmid_bps=48.87), feed/cache lane remains usable (timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, approved_missing_products=[]). SOL-USD is observed and actionable but blocked by high trough: trough_pct=0.708333 vs supported max=0.22.
+Files changed: logs/forward_threshold_sweep_sol_trough_probe_5m.json synced to branch mirror. No code change in this pass. Earlier active code changes remain tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_cache_market_regime.py; tests/test_koko_cache_market_regime.py; managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42672451 USD; unrealized=0.0; opened=119; closed=119; wins=58; losses=56; open_count=0. DRY=true LIVE=false TP=8.0 SL=0.8 verified; approved products remain [SOL-USD].
+Action taken: ran targeted forward threshold sweep over recovery candidates with trough caps 0.22, 0.35, 0.50, 0.65, and 1.0. Result: supported configs exist only at max_trough_pct=0.22; zero supported configs above 0.22. Best supported slice avg_net_forward_close_bps=15.3565, positive_net_close_rate=1.0, signals=12, train/validation positive, sl_touch_rate=0.0. This confirms the current SOL trough gate should not be loosened.
+Next action: keep hidden widened sim/repair loop running until SOL trough falls under evidence-backed 0.22 or a different actionable approved recovery candidate clears gates. Do not tune score while opened=0; do not loosen Coinbase/order path, DRY/LIVE safety, or static TP/SL.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:36:38Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after restart (status monitor pid=27544, DRY supervisor pid=86744, sim/repair loop pid=13500); one-shot patched sim/repair pass completed; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth / market_breadth on latest patched one-shot (latest_green_ratio=0.4286 vs min=0.8500, latest_market_dmid_bps=-1.42). Reporter's newest status subject reported blocker=trough, so the openability blocker is still oscillating between market_breadth and trough near the live gate boundary. Feed/cache lane remains usable: timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, approved_missing_products=[].
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py. Earlier active files remain tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_cache_market_regime.py; tests/test_koko_cache_market_regime.py; managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py. Branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42672451 USD; unrealized=0.0; opened=119; closed=119; wins=58; losses=56; open_count=0. SOL-USD remains the only actionable approved product. DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Action taken: fixed readiness diagnostic overlay so runtime near-miss rows keep their own market_green_ratio/market_dmid_bps instead of inheriting market breadth from a different paper-signal guard row. Patched artifact is coherent: raw JTO-USD runtime row mbr=0.4194/0.8500 now matches parsed market_green_ratio=0.4194 and shortfall=0.4306. Added regression coverage. 365 focused tests passed; py_compile passed; hidden workers restarted.
+Next action: keep hidden widened sim/repair loop running; do not loosen market-breadth green floor or SOL trough cap without forward evidence. Wait for SOL to clear market_breadth/trough or for another actionable approved recovery product to clear gates; keep Coinbase/order path, DRY/LIVE safety, and static TP/SL intact.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:27:41Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=27544, DRY supervisor pid=55672, sim/repair loop pid=8152); status monitor restarted with reporter fix; branch mirror synced; not ready for LIVE.
+Current blocker: market_breadth on the freshest status snapshot (latest_mbr=0.8438 vs min=0.8500); recent prior readiness had briefly recovered to 0.8788 and shifted to trough, so the live blocker is oscillating at the green breadth threshold. No stale feed/root cache issue: timestamp/feed/product-cache evidence remains usable, approved product SOL-USD observed, no approved_missing_products.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_cache_market_regime.py; tests/test_koko_cache_market_regime.py; earlier active files remain managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py. Branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42672451 USD; unrealized=0.0; opened=119; closed=119; wins=58; losses=56; open_count=0. SOL-USD remains the only actionable approval; current safety state DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: fixed material-event normalization so human CLI labels like "patch/change applied" are treated as material patch_change_applied events; restarted hidden status monitor; verified email cadence remains two-hour-only (event report skipped with report_cadence_not_due, no duplicate spam); 364 focused tests passed.
+Next action: keep hidden widened sim/repair loop running until SOL clears both market breadth and evidence-backed trough cap, or another actionable recovery product clears gates; do not loosen Coinbase/order path, DRY/LIVE safety, static TP/SL, or score tuning while opened=0.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:25:43Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after patched restart (status monitor pid=90968, DRY supervisor pid=55672, sim/repair loop pid=8152); one-shot sim/repair pass completed; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_trough / trough. Market breadth recovered on readiness (latest_green_ratio=0.8788 vs min=0.8500; market_dmid_bps=27.45), timestamps/feed/cache are usable (timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, approved_missing_products=[]). SOL-USD is actionable but blocked by trough/dry_pnl_guard: trough_pct about 0.35 vs max 0.22, dry_pnl_guard_reason=net_negative_high_trough.
+Files changed: tools/koko_cache_market_regime.py; tests/test_koko_cache_market_regime.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; earlier active changes remain managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py. Branch mirror synced for all.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42672451 USD; unrealized=0.0; opened=119; closed=119; wins=58; losses=56; open_count=0. Forward evidence does not justify loosening SOL trough: fresh SOL threshold support uses max_trough_pct=0.22 with avg_net_forward_close_bps=14.2657, positive_net_close_rate=1.0, signals=16, sl_touch_rate=0.0.
+Action taken: added explicit cache broad_openable/ranked_openable/diagnostic_openable evidence so cache_openable=true no longer hides broad green-breadth failure; status evidence now reports broad_openable and ranked_openable; regenerated cache artifact shows cache_openable=true, broad_openable=false, ranked_openable=true, blocker=green_breadth. Restarted hidden workers with patched code. Focused cache/status/preflight tests passed (159 tests OK); py_compile passed.
+Next action: keep hidden widened sim/repair loop running; wait for SOL trough to fall under evidence-backed 0.22 cap or for another actionable approved recovery candidate to clear gates; do not loosen Coinbase/order path, DRY/LIVE safety, or static TP/SL.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:54:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after sim/repair blocker restart (status monitor pid=90968, DRY supervisor pid=96396, sim/repair loop pid=3868); patch event recorded but not emailed because two-hour cadence was not due; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. Sim/repair state now preserves the readiness follow-up blocker directly instead of collapsing to generic recovery quarantine. Cache/feed lane remains usable but not openable: cache_openable=false, probe_openable=true, cache blocker=green_breadth, readiness blocker=market_breadth, feed_issue_counts={}, stale_feed_causes={}.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; branch mirror synced for those files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: added recovery_followup_blocker logic so non-actionable recovery approval reports `dry_pnl_recovery_quarantine_then_market_breadth` when readiness is blocked by market breadth; verified runtime artifact and reporter subject; 308 focused tests plus py_compile passed; DRY=true LIVE=false TP=8.0 SL=0.8; Coinbase/order path untouched.
+Next action: hidden DRY observe/sim/repair loop continues until market breadth and recovery approval produce a usable DRY open candidate; no LIVE trading.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:47:22Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after cache-regime semantics restart (status monitor pid=37856, DRY supervisor pid=29104, sim/repair loop pid=77900); reporter patch event recorded but not emailed because two-hour cadence was not due; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine+market_breadth. Cache/feed lane now distinguishes actual openability from diagnostic/probe value: cache_openable=false, probe_openable=true, diagnostic_worthwhile=true, cache blocker=green_breadth, readiness blocker=market_breadth. Feed/cache health remains usable: latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, product/cache gaps clean.
+Files changed: tools/koko_cache_market_regime.py; tests/test_koko_cache_market_regime.py; branch mirror synced for those files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: corrected cache regime semantics so top-level openable means configured/ranked actual-openable, while probe-only green-breadth windows remain worthwhile via probe_openable/diagnostic_worthwhile; verified artifact on disk; 307 focused tests plus py_compile passed; DRY=true LIVE=false TP=8.0 SL=0.8; Coinbase/order path untouched.
+Next action: hidden DRY observe/sim/repair loop continues until market breadth and recovery approval produce a usable DRY open candidate; no profit-score tuning while open_count=0/no actionable supported product.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:39:13Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after reporter restart (status monitor pid=43632, DRY supervisor pid=9552, sim/repair loop pid=49944); reporter dry check completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine+market_breadth. Feed/cache lane remains usable: latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, timestamp usable, product/cache gaps clean.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced for those files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: reporter now combines recovery quarantine with readiness blocker in status/subject; verified dry-check subject `[TDI STATUS] Profit 38/100 | DRY=true LIVE=false | dry_pnl_recovery_quarantine+market_breadth`; 283 focused tests plus py_compile passed; DRY=true LIVE=false TP=8.0 SL=0.8; Coinbase/order path untouched.
+Next action: hidden DRY observe/sim/repair loop continues until market breadth and approved recovery produce a usable dry open candidate; no LIVE trading.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:36:51Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers restarted and active (status monitor pid=62500, DRY supervisor pid=40484, sim/repair loop pid=28744); one-shot repair/regeneration completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine with readiness blocker=market_breadth. Feed/cache lane is not the blocker: feed_issue_counts={}, latest_feed_issue_counts={}, stale_feed_causes={}, latest_U=120, latest_S=356, latest_brf=120, timestamp_usable_ratio=1.0, book_metric_source_missing=0, target_refreshed_book_gap=0.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; branch mirror synced for those files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0; blocked_open=280.
+Action taken: added explicit U=0/stale-feed cause buckets to DRY observe readiness, corrected current_blocker priority so latest runtime market_breadth is not masked by trough early-skip context, regenerated readiness, passed 282 focused tests plus py_compile, synced mirror, restarted hidden pythonw workers. DRY=true LIVE=false TP=8.0 SL=0.8 verified; Coinbase/order path untouched.
+Next action: keep hidden sim/repair loop running until market breadth and approved recovery conditions produce a usable DRY open candidate; do not tune profit score while opened=0 and no actionable supported product exists.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:24:42Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=45312, DRY supervisor pid=22620, sim/repair loop pid=92592); post-LIGHTER-quarantine re-evaluation completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine plus red breadth/trough. LIGHTER-USD cooldown expired and is no longer in active_loss_quarantine_details, but no product became actionable. Remaining active quarantine: TAO-USD until 2026-06-19T19:59:13Z, ONDO-USD until 2026-06-19T21:22:41Z, RE-USD until 2026-06-20T01:43:58Z, UNI-USD until 2026-06-20T03:45:23Z, VVV-USD until 2026-06-20T03:49:51Z. Green breadth latest=0.1471 vs min=0.8500.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: forced repair pass after LIGHTER expiry; verified approvals remain empty because supported threshold products are excluded by active-preview, negative-ledger, and remaining quarantine evidence; 280 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Next action: hidden loop continues; next major expiry to re-evaluate is TAO-USD at 2026-06-19T19:59:13Z, while market breadth/trough must also recover before safe DRY opens.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:18:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=39540, DRY supervisor pid=36868, sim/repair loop pid=51504); not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine; readiness blocker remains trough / green breadth below threshold. No stale feed or product/cache gap currently blocks coverage.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: status reporter now includes quarantine_until in recovery approval evidence; current expected values include LIGHTER-USD:2026-06-19T16:23:34Z, TAO-USD:2026-06-19T19:59:13Z, ONDO-USD:2026-06-19T21:22:41Z, RE-USD:2026-06-20T01:43:58Z, UNI-USD:2026-06-20T03:45:23Z, VVV-USD:2026-06-20T03:49:51Z. 280 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Next action: hidden loop continues; re-evaluate approvals only as quarantine clears and green/trough coverage permits safe DRY opens.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:15:25Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=25096, DRY supervisor pid=50104, sim/repair loop pid=77296); one-shot repair pass completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine. Readiness blocker=trough; green breadth improving but still below gate (latest_green_ratio=0.7500 vs min=0.8500). Product/cache coverage is clean: book_metric_source_missing=0, paper_signal_book_source_gap=0, target_refreshed_book_gap=0.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: added active_loss_quarantine_details with reason/until_utc/seconds_left so the blocker exposes expiry evidence; nearest active expiry LIGHTER-USD at 2026-06-19T16:23:34Z, then TAO-USD at 2026-06-19T19:59:13Z, ONDO-USD at 2026-06-19T21:22:41Z; 280 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified. TDI patch-change email was not sent because two-hour cadence throttle is active.
+Next action: hidden loop continues; after each quarantine expiry, auto-sync can re-evaluate only products with real ledger/active-preview support and green/trough coverage.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:06:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=47928, DRY supervisor pid=68772, sim/repair loop pid=66724); one-shot repair pass completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine. Current readiness blocker=trough with red green breadth (latest_green_ratio=0.4333 vs min=0.85); timestamp/feed coverage is usable (timestamp_usable_ratio=1.0, U=120/S=356, book metrics present).
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; run_settings.json; branch mirror synced.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0. Latest dry trade remains VVV-USD 2026-06-19T15:47:48Z -> 2026-06-19T15:49:51Z loss_trim for -70.6832 bps / -0.02120497 USD.
+Action taken: added market-breadth probe green-ratio enforcement in supervisor preflight and readiness; added active-preview exclusion reporting so weak threshold-only SOL-style evidence no longer appears actionable; verified VVV-style low/missing green-ratio probes are rejected; 279 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Next action: hidden loop continues collecting/simulating until quarantine clears and green/trough coverage permits a candidate with active/fresh support; do not force LIVE or approve weak threshold-only products.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:55:49Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; one-shot repair loop completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_ready_for_approval with current readiness blocker=trough; green breadth is red (latest_green_ratio=0.2121 vs min=0.85), so market coverage is still not safe for new opens.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; run_settings.json; branch mirror synced for these plus current repair/readiness test files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0. Latest material dry event: VVV-USD opened 2026-06-19T15:47:48Z and closed 2026-06-19T15:49:51Z loss_trim for -70.6832 bps / -0.02120497 USD; VVV is no longer approved.
+Action taken: added DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_GREEN_RATIO=0.55 and supervisor preflight enforcement so red market-breadth probe candidates like the VVV 0.2414 green-ratio event stop before DRY open; 276 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Next action: restart hidden workers on patched code, continue observe/sim repair until a candidate opens only with usable green/liquid/timestamp/feed coverage, then re-measure dry P&L.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:49:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers restarted on patched code: tdi_status_monitor.py PID 72032, run_koko_dry_supervised.py PID 51084, koko_sim_repair_loop.py PID 11792. Branch mirror synced. Not ready for LIVE.
+Current blocker: VVV-USD is approved from fresh strong threshold probation evidence; current tape has market_breadth/dry_pnl_guard blockers in readiness, but DRY did open a VVV position at 2026-06-19T15:47:48Z. Open_count=1, unrealized currently +0.00246447 USD.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json. Prior readiness fixes remain in tools/koko_dry_observe_readiness.py and tests/test_koko_dry_observe_readiness.py.
+Dry Profit Score evidence: score still 38/100; realized P&L -0.40858054 USD; unrealized +0.00246447 USD; opened 118, closed 117, wins 57, losses 55, open_count 1. Recent closed UNI sequence: profit_protect +0.00685714 USD, then loss_trim -0.00587180 USD.
+Action taken: fixed approval sync to treat fresh recovery candidate threshold support as valid active-preview/probation evidence and as negative-ledger protection when it meets the existing strong threshold criteria. VVV-USD was approved and product gates synced from evidence: max_spread 10, min_quote_volume 50000, min_dmid -20, min_tick_dmid 0, min_tob 0, max_trough 0.22. Tests passed: 275 focused tests. Verified DRY=true LIVE=false TP=8.0 SL=0.8; Coinbase/order path untouched.
+Next action: monitor VVV dry open to close, then continue sim/repair based on realized result. If VVV closes profitably, keep measuring dry P&L improvement; if it fails, quarantine/adjust approval evidence rather than going LIVE.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:43:15Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers restarted on patched code: tdi_status_monitor.py PID 29364, run_koko_dry_supervised.py PID 54228, koko_sim_repair_loop.py PID 57724. Branch mirror synced. Not ready for LIVE.
+Current blocker: approved recovery still not open; latest blocker moved through market_breadth -> spread/book_pressure -> not_in_latest_rank as ticks changed. Data/preflight progress: topbook floor regression fixed; green breadth recovered on latest good samples; missing feed/cache/topbook is no longer the active blocker.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; run_settings.json.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0.
+Action taken: fixed auto-sync so ledger-supported UNI cannot be pushed back to a stale 100 USD topbook floor when positive ledger evidence implies no topbook floor; reapplied sync so UNI DRY_MIN_TOB_USD_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_TOB_USD_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_TOB_USD_BY_PRODUCT are all 0. Also normalized approved-runtime dry_pnl_guard=net_negative_wide_spread to the actual spread gate so observe probes are not falsely blocked by duplicate dry_pnl_guard. Tests passed: 274 focused tests.
+Next action: continue hidden sampling until approved UNI is back in latest rank with spread/book_pressure clear; then verify DRY observe opens and resume P&L improvement. Do not touch Coinbase/order path; DRY=true LIVE=false TP=8.0 SL=0.8 remains verified.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:36:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active: tdi_status_monitor.py PID 36044, run_koko_dry_supervised.py PID 18512, koko_sim_repair_loop.py PID 96108. Branch mirror synced. Not ready for LIVE.
+Current blocker: approved_recovery_market_breadth / market_breadth. Feed/cache/topbook coverage is usable, but the latest approved UNI runtime row is blocked by spread + market_breadth + dry_pnl_guard; dry_pnl_guard_reason=net_negative_wide_spread. Current UNI evidence: spr_bps=6.51 vs max 5.0, market_green_ratio=0.6774 vs 0.85, dmid=13.05, qv=175597, tob=504.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py. Mirrored both to AI_trading_bot_pro_cloud_work. Prior touched files remain tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0, blocked_open 280.
+Action taken: fixed readiness probe topbook floor to respect product-scoped DRY_MIN_TOB_USD_BY_PRODUCT, then fixed top-level observe probe flags to include approved recovery probe candidates. Regression coverage passed: 272 focused tests across sim repair, readiness, reporter, and supervisor preflight. Verified DRY=true LIVE=false TP=8.0 SL=0.8; no Coinbase/order path touched.
+Next action: continue evidence-driven repair on current spread/net-negative-wide-spread and green-breadth causes; do not tune profit scoring while opened=0 and do not bypass dry P&L/static TP/SL safety.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:27:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden workers restarted after UNI gate sync; status monitor PID 36044; DRY supervisor PID 18512; sim/repair PID 96108; not ready for LIVE.
+Current blocker: market_breadth remains, but stale topbook gating was removed from approved UNI. Latest regenerated readiness after the change shows UNI no longer has tob_usd failure; current approved failures are market_breadth, book_pressure, dry_pnl_guard/dmid. Feed/cache coverage remains usable, with tob_usable_ratio=1.0.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; plus previously mirrored readiness/reporter files.
+Dry Profit Score evidence: score=38/100; realized/net P&L -0.40956588 USD; opened=115; closed=115; wins=56; losses=54; open_count=0. DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: fixed product gate auto-sync so ledger-supported approved products can lower topbook floors to their supported threshold config, while non-ledger/probation products still preserve positive topbook floors. Applied sync to UNI-USD: DRY_MIN_TOB_USD_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_TOB_USD_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_TOB_USD_BY_PRODUCT are now 0.0. Regression passed 207 focused tests.
+Next action: continue hidden observe/sim loop on real remaining blockers: market breadth, book pressure, and dmid under net-negative dry guard.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:19:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor active as pythonw PID 63108; hidden status monitor restarted as PID 31212; hidden sim/repair restarted as PID 98032; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth / market_breadth. The global high-volume market-breadth threshold slice is profitable, but product attribution shows no safe per-product expansion yet.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; mirrored to AI_trading_bot_pro_cloud_work.
+Dry Profit Score evidence: score=38/100; realized/net P&L -0.40956588 USD; opened=115; closed=115; wins=56; losses=54; open_count=0. DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: added market_breadth_threshold_product_attribution to sim-repair state and TDI email evidence. Current attribution: threshold support exists globally, but matched products are HYPE-USD, ONDO-USD, VVV-USD, ZEC-USD; HYPE/VVV/ZEC are excluded by negative ledger, ONDO by quarantine, and no product reaches safe_supported=true. Also fixed false trough failure when TROUGH_PCT_MAX_BY_PRODUCT=1.0. Combined focused regression passed 206 tests.
+Next action: continue hidden loop until a safe product-supported breadth slice or approved UNI conditions become openable; do not tune score while opened=0.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:12:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY supervisor still active; hidden sim/repair restarted as pythonw PID 89648; hidden status monitor restarted as pythonw PID 50784; not ready for LIVE.
+Current blocker: market_breadth, with approved UNI-USD currently blocked by spread/tob_usd/market_breadth after removing a false trough blocker. Feed coverage is usable; current_open_candidate_present=false.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; mirrored to AI_trading_bot_pro_cloud_work.
+Dry Profit Score evidence: score=38/100; realized/net P&L -0.40956588 USD; opened=115; closed=115; wins=56; losses=54; open_count=0; blocked_open=280. DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: fixed readiness trough gate so product-scoped TROUGH_PCT_MAX=1.0 disables the trough cap instead of requiring trough samples; regenerated readiness confirmed UNI no longer carries bogus trough failure. Added regression test; combined readiness/sim-repair/reporter regression passed 204 tests.
+Next action: continue hidden sim/repair loop on real remaining blockers: market breadth, topbook, spread, and safe product support.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:10:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; status monitor restarted hidden as pythonw PID 97084; branch file mirror synced; not ready for LIVE.
+Current blocker: market_breadth. Fresh readiness has current_open_candidate_present=false, observe_probe_candidate_present=false, approved UNI-USD observed, market_green_ratio about 0.18-0.20 vs 0.85, market_breadth_n 38-41 vs min 10. This is not stale feed/cache; it is red breadth plus approved-product quality gates.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; mirrored to AI_trading_bot_pro_cloud_work. Prior openability/support patches remain in tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py, tools/koko_dry_observe_readiness.py, tests/test_koko_dry_observe_readiness.py, managers/run_manager/run_manager.py, run_settings.json.
+Dry Profit Score evidence: score=38/100; realized/net P&L -0.40956588 USD; opened=115; closed=115; wins=56; losses=54; open_count=0; blocked_open=280. DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: added market_breadth_product_support reporting into TDI status emails so reports show safe_supported=false, safe=none, supported=PENGU-USD, PENGU excluded by negative_ledger, and top unsupported products including UNI-USD negative forward support under red breadth. Reporter tests passed and combined readiness/sim-repair/reporter regression passed.
+Next action: continue hidden sim/repair loop on market_breadth-safe product support and wait for DRY observe to open only when breadth and product-quality evidence are safe.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T15:04:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active with pythonw; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth. Feed/preflight remains usable: latest runtime preflight refresh 356/356, failed=0, timestamp_ratio about 0.8764, liquid=11. Current approved UNI-USD remains openability-blocked by red breadth and quality gates; no live trading.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py. Mirrored both files to branch workspace.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0.
+Action taken: added market_breadth_product_support to sim-repair state so each loop now reports product-level support under market-breadth failures, including ledger/quarantine exclusions. This prevents repeated manual rediscovery of whether a safe red-breadth product exists.
+Evidence from new state: safe_supported=false; safe_supported_products=[]; supported_products=['PENGU-USD'] but PENGU-USD is excluded by negative_ledger. UNI-USD has positive ledger but market-breadth outcome support is false (avg_net_forward_close_bps -25.8431, positive rate 0.1533). RE-USD is quarantine + negative_ledger; TAO-USD quarantine and unsupported; ONDO-USD quarantine and unsupported.
+Tests: runtime 230-test regression slice passed; branch mirror sim-repair suite 79 tests passed; py_compile passed.
+Next action: continue hidden observe/sim loop; only promote a red-breadth product if market_breadth_product_support.safe_supported becomes true or breadth recovers enough for approved UNI-USD to clear gates.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T14:52:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active with pythonw; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth. Current feed is usable: latest preflight refresh 356/356, failed=0, timestamp_ratio=0.9129, liquid=12. Runtime breadth sample is covered (mbn about 39-41, mbmin=10, mbls=0), so the blocker is genuine red breadth plus approved-product quality, not stale feed or missing cache.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; earlier data-lane changes remain managers/run_manager/run_manager.py, tests/test_koko_dry_candidate_rank.py, run_settings.json. Mirrored changed files to branch workspace.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0.
+Action taken: readiness now maps dry P&L guard reasons to concrete gates, so net_negative_high_trough counts as trough, net_negative_low_dmid counts as dmid, net_negative_low_topbook counts as tob_usd, etc. Current approved UNI-USD evidence is tob_usd + dmid + market_breadth; current HYPE near-misses now show trough + dry_pnl_guard instead of hiding behind generic guard text.
+Product expansion evidence: no safe expansion applied. XLM/HYPE/SOL/AERO are not supported by current direct/candidate evidence; HYPE and XLM also carry negative ledger evidence; ONDO/RE/TAO remain quarantine excluded. Approved recovery remains UNI-USD only.
+Tests: runtime 228-test regression slice passed; branch mirror readiness test passed; py_compile passed.
+Next action: continue hidden observe/sim loop and wait for either green breadth recovery or evidence-backed product expansion that clears ledger/quarantine/direct-support checks.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T14:46:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active with pythonw; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth. Feed/preflight is usable, not dead: latest preflight refresh 355/356, failed=1, timestamp_ratio=0.8961, liquid=12. Current approved UNI-USD sample is blocked by spread plus market_breadth; market_green_ratio about 0.3953 vs 0.85, market_dmid_bps about -4.44, spread 6.42 vs 5.0.
+Files changed: managers/run_manager/run_manager.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_candidate_rank.py; tests/test_koko_dry_observe_readiness.py; run_settings.json. Mirrored same files to branch workspace.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0, blocked_open 280.
+Action taken: added explicit DRY_MARKET_BREADTH_MIN_PRODUCTS=10; runtime breadth now enforces minimum liquid sample and reports market_breadth_min_products / market_breadth_liquid_shortfall; readiness reports liquid_subset separately when the breadth sample is too thin; stale guard overlay remains freshness-bounded.
+Tests: runtime 227-test regression slice passed; runtime focused 107 tests passed; branch mirror focused 107 tests passed; py_compile passed for run_manager and readiness.
+Next action: continue hidden observe/sim loop; use fresh breadth evidence to find safe openable approved candidates or evidence-backed product expansion without loosening Coinbase/order guardrails or static TP/SL.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T14:21:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; second readiness patch synced to branch mirror; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth with current approved UNI also blocked by topbook/trough depending on tick. Current probe/open flags are now false when only stale historical near-misses exist.
+Files changed: tools/koko_dry_observe_readiness.py; run_settings.json mirrored from runtime to branch workspace.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0, blocked_open 280. Latest generated readiness 2026-06-19T14:21:11Z showed current_open_candidate_present=false, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
+Action taken: fixed timestamp/probe coverage so historical RE-USD near-misses from the lookback window no longer count as current probe candidates when fresh tick diagnostics exist. Runtime tests passed 176/176; branch mirror focused readiness tests passed 56/56.
+Next action: continue hidden sim/repair loop; target real current blockers only: green breadth, approved UNI topbook/trough, and evidence-backed recovery expansion.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T14:16:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth plus approved UNI high-trough dry P&L guard. Feed/cache/timestamp coverage is usable; latest readiness shows timestamps usable, book metrics present, spread/topbook/quote-volume populated, and no stale-feed/cache blocker.
+Files changed: tools/koko_dry_observe_readiness.py; run_settings.json mirrored from runtime to branch workspace. Earlier changed files remain tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py, tools/tdi_status_reporter.py, tests/test_tdi_status_reporter.py.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened 115, closed 115, wins 56, losses 54, open_count 0, blocked_open 280. Approved runtime candidate UNI-USD has qv about 223404, spread about 3.21 bps, topbook about 183, but trough_pct about 0.932927 versus max 0.22 and market_green_ratio about 0.2326 versus 0.85.
+Action taken: fixed readiness approved-recovery coverage so latest real PAPER_BUY_SIGNAL dry_pnl_guard reasons overlay approved runtime candidates even when tick_diag and signal ticks do not exactly match; regenerated readiness; tests passed 176/176 and py_compile passed. Verified replay evidence does not support loosening UNI high-trough guard: history is supported at trough <=0.22 but unsupported at trough 0.5/0.75/1.0.
+Next action: continue hidden sim/repair loop; keep DRY=true LIVE=false and static TP/SL; wait for usable green breadth plus low-trough approved candidate, then resume dry P&L improvement.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T13:57:55Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; branch mirror synced; ready_to_deploy_live=false.
+Current blocker: market_breadth plus dry P&L entry-quality guard, not missing feed/cache. Runtime readiness now reports observe_runtime_probe_candidate_present=false after overlaying actual PAPER_BUY_SIGNAL guard results onto tick_diag drynear rows. Approved SOL is observed but blocked by net_negative_high_trough / net_negative_low_pressure / low tick dmid; approved UNI is observed but currently spread/market_breadth constrained.
+Files changed: tools/koko_dry_observe_readiness.py; managers/run_manager/run_manager.py; run_settings.json mirrored to branch workspace.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; opened=115 closed=115 wins=56 losses=54 open_count=0 blocked_open=280. Post-patch readiness shows current_open_candidate_present=false, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false.
+Action taken: fixed readiness/preflight lane so tick_diag drynear candidates are overlaid with matching dry_pnl_guard PAPER_BUY_SIGNAL outcomes by product/tick; normal DRY preview now uses the full payload that the dry ledger enforces. Runtime tests passed 176-test readiness/loop set; branch mirror same 176-test set passed. DRY=true LIVE=false TP=8.0 SL=0.8.
+Next action: continue hidden sim/repair loop; do not force opens while market breadth is red and approved candidates fail net-negative quality. Next repair target is supported approval/config alignment that can open without bypassing dry P&L guard.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T13:52:03Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active under pythonw; branch mirror synced and validation passed; ready_to_deploy_live=false.
+Current blocker: approved_recovery_market_breadth with actual dry opens still blocked by net-negative entry quality. Post-patch runtime now emits dry signals again, but dryopen remains 0 because SOL market-breadth probes hit dry P&L guard reasons such as net_negative_high_trough / net_negative_low_pressure, and UNI is below synced quote-volume/topbook requirements.
+Files changed: managers/run_manager/run_manager.py; run_settings.json; mirrored to C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_cloud_work. Earlier changed files still include tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py, tools/tdi_status_reporter.py, tests/test_tdi_status_reporter.py, and hidden launcher cmd files outside repo.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.40956588 USD; unrealized 0.0; opened=115 closed=115 wins=56 losses=54 open_count=0 blocked_open=280. Latest successful dry open/close remains UNI-USD; latest post-patch dry signal evidence shows drysig>0 but dryblk>0, not dryopen.
+Action taken: made TDI low score diagnostic-only by default for DRY observe instead of an opener veto; DRY_TDI_BLOCK_SHADOW_LOW=false. Verified DRY=true LIVE=false TP=8.0 SL=0.8. Runtime focused suite passed 224 tests; branch mirror suite passed 288 tests; hidden workers restarted with no visible CMD window.
+Next action: continue repairing the real open blocker: green breadth / market breadth plus net-negative quality alignment for approved recovery products. Do not touch Coinbase/order path. Do not enable LIVE.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:03:50Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim loop running; LIVE remains false.
+Current blocker: post-fix DRY observe opened and closed a UNI dry candidate; waiting on next openable approved candidate.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; C:\Users\13144\.tdi_discord_mechanic launcher cmd files.
+Dry Profit Score evidence: latest dry ledger has UNI open 2026-06-19T12:58:46Z and profit_protect close 2026-06-19T12:59:58Z for +6.5285 bps / +0.00195854 USD; score pending next loop refresh; realized=-0.37728575; unrealized=0.0; opened=114; closed=114; wins=56; losses=53; open_count=0.
+Action taken: verified DRY=true LIVE=false TP=8.0 SL=0.8 after dry open/close; no Coinbase path touched.
+Next action: continue sim/repair loop on dry P&L improvement now that opened=0 blocker is cleared.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:05:36Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden sim/repair loop healthy; dry supervisor restarted hidden to pick up settings.
+Current blocker: market_breadth after approval widened; latest green breadth red, so no new dry open should fire until breadth recovers.
+Files changed: run_settings.json auto-synced DRY_PNL_SIM_APPROVED_PRODUCTS from [UNI-USD] to ['RE-USD', 'UNI-USD']; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=38; net=-0.37728575; latest dry realized improved after UNI profit-protect close; open_count=0.
+Action taken: mirrored run_settings.json to branch workspace and restarted hidden DRY supervisor; verified DRY=True LIVE=False TP=8.0 SL=0.8.
+Next action: continue loop until breadth/openability returns, then measure next dry P&L cycle.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:07:32Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden loop restart in progress after second product-cache merge patch.
+Current blocker: product-gate auto-sync skipped RE because merged cross-source support preserved the unsupported detail instead of supported_config.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score remains 38; net improved to about -0.37728575 after UNI profit-protect close; next evidence pending loop refresh.
+Action taken: fixed merge to preserve supported_config for cross-source supported products and attach later unsupported rows as latest_unsupported_detail; tests passed in runtime and branch mirror.
+Next action: wait for loop refresh and verify RE/UNI product gate auto-sync.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:10:05Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden loop healthy; DRY supervisor restart requested after product-gate sync.
+Current blocker: approved_recovery_market_breadth; market breadth red, not stale feed.
+Files changed: run_settings.json product gates auto-synced for ['RE-USD', 'UNI-USD']; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: score=38; net=-0.37728575; open_count=0.
+Action taken: RE/UNI product entry gates aligned to supported threshold configs; unsafe names remain excluded by negative ledger/quarantine.
+Next action: continue hidden sim/repair loop until breadth/openability returns and then measure new dry P&L cycle.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:12:45Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden loops running; supervisor restarted after approval stabilization.
+Current blocker: market breadth red; no stale feed/cache blocker.
+Files changed: run_settings.json mirrored; current approved products=['RE-USD', 'UNI-USD'].
+Dry Profit Score evidence: latest net remains about -0.37728575 after UNI win; score 38 pending more dry cycles.
+Action taken: verified SOL was removed from approved recovery list; RE/UNI remain approved; DRY=true LIVE=false static TP/SL intact.
+Next action: continue hidden loop until breadth recovers and next approved dry candidate opens under tightened gates.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T13:14:38Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden status monitor restart requested after reporter throttle patch.
+Current blocker: market_breadth; trading loops remain DRY-only.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json.
+Dry Profit Score evidence: score remains 38; latest net about -0.37728575; no live trading.
+Action taken: added TDI_REPORT_MATERIAL_BYPASS_HOURLY=False so material reports obey the two-hour email cadence; tests passed; SMTP still absent so any due reports go to outbox.
+Next action: continue hidden dry observe/sim loop until market breadth recovers and approved RE/UNI candidates become openable.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T13:21:57Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: local cloud-ready branch mirror synced; hidden runtime workers active; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth / market_breadth. Approved recovery set stabilized to RE-USD and UNI-USD; SOL-USD excluded by active-preview evidence.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; run_settings.json; hidden Discord launcher .cmd files outside repo.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.37728575 USD; opened 114, closed 114, wins 56, losses 53, open_count 0. Latest open evidence remains UNI-USD opened 2026-06-19T12:58:46Z, closed 2026-06-19T12:59:58Z, profit_protect +6.5285 bps / +0.00195854 USD.
+Action taken: fixed product-report merge so unsupported stale rows no longer erase supported rows; added nonledger active-preview approval guard; synced runtime to branch mirror; restarted hidden pythonw workers; verified DRY=true LIVE=false TP=8.0 SL=0.8.
+Next action: continue green breadth / market breadth repair and simulation until dry observe can open usable candidates without admitting weak products.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T13:35:18Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; branch mirror synced; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth, with current approved samples additionally blocked by tdi_shadow/trough/spread quality. Feed/openability lane is no longer dead: observe_probe_candidate_present=true and approved recovery products are observed.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; earlier reporter/status files and hidden launcher files remain changed.
+Dry Profit Score evidence: score 38/100; realized/net P&L -0.37728575 USD; opened 114, closed 114, wins 56, losses 53, open_count 0. Latest successful dry open/close remains UNI-USD 2026-06-19T12:58:46Z -> 2026-06-19T12:59:58Z, profit_protect +6.5285 bps / +0.00195854 USD.
+Action taken: stabilized approval at RE-USD/SOL-USD/UNI-USD using a DRY recovery pin for SOL backed by fresh/broad recovery threshold evidence; widened market-breadth probe floors to dmid -20 bps and topbook 100; tests passed in runtime and mirror.
+Next action: continue hidden DRY observe cycles and only open when an approved product clears TDI/trough/spread/net-negative quality. Do not loosen Coinbase/order path or static TP/SL.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T16:09:34Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=49704, DRY supervisor pid=54944, sim/repair loop pid=5040); one-shot repair pass completed; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine. Readiness blocker=trough; green breadth still red (latest_green_ratio=0.6000 vs min=0.8500). Timestamp/feed coverage is usable: timestamp_usable_ratio=1.0, latest_U=120, latest_S=356, latest_brf=120.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; branch mirror synced for those files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0.
+Action taken: added product_cache_coverage alias to readiness so product/cache gap evidence is visible under both product_cache_gaps and product_cache_coverage; regenerated readiness shows book_metric_source_missing=0, paper_signal_book_source_gap=0, target_refreshed_book_gap=0, approved_missing_products=[]; 279 focused tests passed; DRY=true LIVE=false TP=8.0 SL=0.8 verified.
+Next action: hidden loop continues sim/repair while quarantine and green/trough blockers clear; do not force LIVE or approve weak threshold-only products.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:01:54Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active (status monitor pid=90968, DRY supervisor pid=96396, sim/repair loop pid=3868); one-shot repair/simulation pass completed; branch mirror synced; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. Feed/cache lane is usable: timestamp present/usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, book_metric_source_missing=0, paper_signal_book_source_gap=0, target_refreshed_book_gap=0. Market breadth is the hold: latest_green_ratio=0.0000 vs min=0.8500, latest_market_dmid_bps about -59, cache_openable=false, probe_openable=true.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced for both files.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0; blocked_open=280. Market breadth forward evidence remains negative: avg_net_close_bps=-17.8444, positive_net_close_rate=0.1660, safe_supported=false.
+Action taken: patched TDI status next_action so reports name the real blocker as market_breadth recovery plus actionable recovery product/quarantine expiry instead of generic cache_openable; generated no-send preview; cadence correctly skipped email because two-hour report window is not due; 310 focused tests passed.
+Next action: continue hidden DRY observe/sim/repair loop until market_breadth recovers and an actionable recovery product clears quarantine/negative-ledger/active-preview gates; do not tune score while opened=0; do not loosen Coinbase/order path or static TP/SL.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:04:17Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active; sim/repair worker restarted in background with wider replay settings (pid=91076, lookback=360m, limit=500, heavy_sweep_cadence=600s); DRY supervisor pid=96396; status monitor pid=90968; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. Wider replay still found no safe-supported market_breadth product: product support safe_supported=false, threshold safe_supported=false; PENGU only supported but negative-ledger excluded, VVV threshold-supported but quarantine+negative-ledger excluded.
+Files changed: tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced. Runtime worker arguments changed in background only.
+Dry Profit Score evidence: score=38/100; realized/net P&L=-0.42978551 USD; unrealized=0.0; opened=118; closed=118; wins=57; losses=56; open_count=0. Latest feed evidence remains healthy: timestamp usable ratio=1.0, feed_issue_counts={}, stale_feed_causes={}, product/cache gaps zero.
+Action taken: ran wider one-shot replay, confirmed no safe product under existing gates, then restarted hidden sim/repair loop with wider lookback and faster heavy sweep cadence to accelerate discovery without loosening DRY/LIVE, Coinbase/order path, or static TP/SL safety.
+Next action: let wider hidden loop continue; next automatic improvement path is safe-supported product emergence after market breadth recovery or quarantine expiry, not score tuning while opened=0.
+User action required: no.
+
+
+## Codex Relay Update - 2026-06-19T17:15:21Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after restart (status monitor pid=90968, DRY supervisor pid=48536, sim/repair loop pid=19636); branch mirror synced; not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_market_breadth. Feed/cache lane remains usable: timestamp usable ratio=1.0, latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts={}, stale_feed_causes={}, book_metric_source_missing=0, paper_signal_book_source_gap=0, target_refreshed_book_gap=0. Green breadth still blocks: latest_green_ratio=0.4857 vs min=0.8500.
+Files changed: managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; branch mirror synced for all.
+Dry Profit Score evidence: score=38/100; realized/net P&L improved to -0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0. Latest SOL-USD DRY probe opened 2026-06-19T17:05:24Z and closed 2026-06-19T17:10:25Z by profit_protect for +10.2033 bps / +0.003061 USD.
+Action taken: found actual open-path bug where market_breadth observe probes could open with market_green_ratio below the configured floor; patched managers/run_manager/run_manager.py to require DRY_OBSERVE_PROBE_MIN_MARKET_BREADTH_FAILURE_GREEN_RATIO in the real _dry_observe_probe_ok path, including missing-green rejection; added regression tests; patched reporter to surface dry_position_open; refreshed sim state; 363 focused tests passed; restarted hidden workers. DRY=true LIVE=false TP=8.0 SL=0.8 confirmed.
+Next action: keep hidden widened sim/repair loop running; no more low-green market_breadth probe opens; wait for green breadth/recovery product gates to clear, then measure next DRY P&L improvement. Do not start LIVE.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T17:48:08Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after patch restart (status monitor pid=27544, DRY supervisor pid=78064, sim/repair loop pid=22128); branch mirror synced; one-shot repair/simulation completed; not ready for LIVE. Status reporter event generated subject [TDI STATUS] Profit 38/100 | DRY=true LIVE=false | trough and skipped send because two-hour cadence is not due.
+Current blocker: trough / approved_recovery_trough. Feed/preflight lane is usable: latest_U=120, latest_S=356, latest_brf=120, feed_issue_counts empty in readiness, cache_supported=true, ranked_openable=true, diagnostic_worthwhile=true. Current SOL approved recovery candidate is liquid/green enough but blocked by trough=0.767857 vs cap=0.22 and dry_pnl_guard=net_negative_high_trough; prior targeted SOL trough sweep found no safe supported configs above 0.22, so trough cap was not widened.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; branch mirror synced for both files.
+Dry Profit Score evidence: score=38/100; realized=-0.42672451 USD; unrealized=0.0; net=-0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0; blocked_open=280. Latest successful DRY open remains SOL-USD opened 2026-06-19T17:05:24Z and closed 2026-06-19T17:10:25Z by profit_protect for about +10.2033 bps / +0.003061 USD.
+Action taken: patched readiness promotion so approved recovery candidates with zero failures now set current_open_candidate_present/observe_current_open_candidate_present and expose closest_approved_recovery_open_candidate; added regression test; 366 focused tests passed; restarted hidden pythonw workers so no CMD window should pop up. DRY=true LIVE=false TP=8.0 SL=0.8 remain intact; Coinbase/order path untouched.
+Next action: keep hidden DRY observe/sim/repair running; do not tune score while opened=0; wait for approved recovery product to clear trough/dry PnL guard under static safety, then measure DRY P&L improvement before any LIVE discussion.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T18:00:37Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after clean patched restart (status monitor pid=27544, DRY supervisor pid=98152, sim/repair loop pid=22820); branch mirror synced; clean one-shot repair/simulation completed; not ready for LIVE. Status reporter generated [TDI STATUS] Profit 38/100 | DRY=true LIVE=false | not_in_latest_rank and skipped send because two-hour cadence is not due.
+Current blocker: not_in_latest_rank / approved_recovery_market_breadth. Feed/preflight lane is usable but current market is not openable: latest_U=120, latest_S=356, latest_brf=120, book_gap=false, cache_supported=true, diagnostic_worthwhile=true; latest market green fell to about 0.6667 vs 0.8500 floor and UNI is not currently in the latest rank. Approved recovery runtime now tracks SOL-USD and UNI-USD.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; run_settings.json; branch mirror synced for all.
+Dry Profit Score evidence: score=38/100; realized=-0.42672451 USD; unrealized=0.0; net=-0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0; blocked_open=280.
+Action taken: added narrow positive-expectancy loss_trim quarantine override for recovery approval only: UNI-USD is restored because it has positive ledger support plus threshold support; SL quarantines remain excluded. Clean patched one-shot set DRY_PNL_SIM_APPROVED_PRODUCTS to [SOL-USD, UNI-USD]. Added regression tests; 367 focused tests passed; restarted only hidden pythonw workers. DRY=true LIVE=false TP=8.0 SL=0.8 remain intact; Coinbase/order path untouched.
+Next action: keep hidden DRY observe/sim/repair running until SOL or UNI appears in current rank and clears market breadth/trough/not-in-rank gates; do not widen unsafe trough; do not start LIVE.
+User action required: no.
+
+## Codex Relay Update - 2026-06-19T18:06:22Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden runtime workers active after clean patched restart (status monitor pid=27544, DRY supervisor pid=67564, sim/repair loop pid=33884); branch mirror synced; clean one-shot repair/simulation completed; not ready for LIVE. Status reporter generated [TDI STATUS] Profit 38/100 | DRY=true LIVE=false | not_in_latest_rank and skipped send because two-hour cadence is not due.
+Current blocker: not_in_latest_rank / approved_recovery_market_breadth. Settings and summary now agree: DRY_PNL_SIM_APPROVED_PRODUCTS=[SOL-USD, UNI-USD], actionable approved products=[SOL-USD, UNI-USD], UNI-USD is preserved by quarantine_override_products=[UNI-USD]. Current market still not openable: latest market green about 0.4074 vs 0.8500 floor; SOL is in rank but market_breadth/dmid/trough blocked; UNI is not currently in latest rank.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; run_settings.json; branch mirror synced for all.
+Dry Profit Score evidence: score=38/100; realized=-0.42672451 USD; unrealized=0.0; net=-0.42672451 USD; opened=119; closed=119; wins=58; losses=56; open_count=0.
+Action taken: fixed auto-sync race by making _auto_sync_recovery_approval reuse recovery_approval_cross_check.quarantine_override_products when already computed, preventing the background loop from reverting UNI-USD back out of run_settings. Added regression test for the reversion path; 368 focused tests passed; restarted only hidden pythonw workers. DRY=true LIVE=false TP=8.0 SL=0.8 remain intact; Coinbase/order path untouched.
+Next action: keep hidden DRY observe/sim/repair running and watch for SOL or UNI to clear market_breadth/dmid/trough/not-in-rank gates; do not widen unsafe trough; do not start LIVE.
+User action required: no.
+
+## 2026-06-19T18:32:39Z Codex Update
+RELAY_FILE_VISIBLE=yes
+Cloud task status: DRY observe/sim-repair workers running hidden; supervisor restarted pid=62008 after preflight blocker-state patch.
+Current blocker: approved_recovery_market_breadth; readiness=market_breadth; approved_runtime=market_breadth.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py.
+Dry Profit Score evidence: score=38/100 net=-0.42672451 opened=119 closed=119 wins=58 losses=56; latest readiness timestamp_U=120 S=356 signal_timestamp_ratio=1 market_green=0.0606.
+Action taken: refreshed entry preflight blocker-state payload so reporting tracks actual blocker plus signal/liquid coverage; tests passed 144 OK; supervisor restarted hidden.
+Next action: continue DRY observe/sim-repair loop; do not loosen market breadth while forward evidence remains negative.
+User action required: no.
+
+
+## 2026-06-19T18:33:35Z Codex Update
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair workers still running; supervisor pid=62008.
+Current blocker: market_breadth / red breadth; cache and timestamp coverage usable.
+Files changed: tests/test_run_koko_dry_supervised_preflight.py.
+Dry Profit Score evidence: unchanged score=38/100 net=-0.42672451; DRY=true LIVE=false.
+Action taken: isolated unit-test supervisor logging so verification no longer writes fake preflight timestamps into live dry_supervised_loop.log; focused tests 65 OK.
+Next action: continue hidden DRY observe/sim-repair loop and wait for data-backed safe open conditions; no market-breadth bypass.
+User action required: no.
+
+
+## Codex update 2026-06-19T13:40:13
+RELAY_FILE_VISIBLE=yes
+Cloud task status: DRY observe/sim-repair running locally with hidden pythonw workers; status monitor active; latest supervisor restarted hidden pid=18400.
+Current blocker: market_breadth / approved_recovery_market_breadth; no open candidate yet.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py.
+Dry Profit Score evidence: score=38/100; net=-0.42672451; opened=119; closed=119; wins=58; losses=56; open_count=0.
+Action taken: synced latest preflight blocker-state patch to mirror, restarted hidden supervisor, tests passed tests.test_run_koko_dry_supervised_preflight 66 OK plus py_compile OK.
+Next action: wait for next real DRY preflight sample, verify timestamp/liquid/U/stale/cache evidence, then repair the next data-backed openability blocker without touching Coinbase/order path or static TP/SL.
+User action required: no.
+
+
+## Codex update 2026-06-19T13:48:47
+RELAY_FILE_VISIBLE=yes
+Cloud task status: DRY observe/sim-repair running hidden; supervisor pid=18400; monitor/sim workers active.
+Current blocker: sim=approved_recovery_market_breadth; readiness=market_breadth; approved_primary=market_breadth.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; run_settings.json mirror sync.
+Dry Profit Score evidence: score=38/100; net=-0.42672451; opened=119; closed=119; wins=58; losses=56; open_count=0.
+Coverage evidence: timestamp_usable_ratio=1; U=120; approved=SOL-USD|UNI-USD|WLD-USD; observed=SOL-USD|UNI-USD|WLD-USD; open_candidate=False.
+Action taken: verified preflight state writes real sample payload; synced runtime run_settings to mirror; verified SOL/UNI in latest rank diagnostics.
+Next action: continue sim-repair loop until sim state consumes latest rank/readiness and repair any remaining coverage gap; do not loosen unsafe market breadth.
+User action required: no.
+
+
+
+## Codex update 2026-06-19T13:59:38
+RELAY_FILE_VISIBLE=yes
+Cloud task status: DRY observe/sim-repair running hidden; supervisor pid=10132.
+Current blocker: DRY opened SOL-USD probe; now monitoring open position and exit behavior; sim blocker remains approved_recovery_market_breadth.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; run_settings.json mirror sync.
+Dry Profit Score evidence: score=38/100; state opened=120; closed=119; wins=58; losses=56; open_count=1; realized=-0.42672451; unrealized=0.00261116; net=-0.42411335.
+Action taken: verified DRY open path is no longer blocked at preflight/feed; SOL-USD opened with DRY probe while LIVE=false.
+Next action: monitor SOL exit and P&L, then continue sim-repair until Profit Score and net P&L are deployable.
+User action required: no.
+
+
+
+## Codex update 2026-06-19T14:06:13
+RELAY_FILE_VISIBLE=yes
+Cloud task status: DRY observe/sim-repair running hidden; supervisor pid=10132.
+Current blocker: last DRY SOL-USD probe closed win; sim summary still catching up from dry_position_open.
+Files changed: tools/run_koko_dry_supervised.py; tests/test_run_koko_dry_supervised_preflight.py; run_settings.json mirror sync.
+Dry Profit Score evidence: score=38/100; PnL state opened=120; closed=120; wins=59; losses=56; open_count=0; realized=-0.42628932; unrealized=0; net=-0.42628932.
+Action taken: confirmed DRY open and close path works with static TP/SL; SOL closed winning.
+Next action: wait for sim summary refresh, then continue repairing next openability/PnL blocker.
+User action required: no.
+
+
+## Codex update 2026-06-19T19:23:55Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair workers restarted with patched approval logic; status monitor pid=27544, sim/repair pid=38796, supervisor pid=94488; not ready for LIVE.
+Current blocker: approved_recovery_not_in_latest_rank; readiness=not_in_latest_rank; approved runtime primary=not_in_latest_rank.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; mirror synced.
+Dry Profit Score evidence: score=38/100; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0; DRY=True LIVE=False TP=8 SL=0.8.
+Approval evidence: patched fresh broad threshold preview path; approved=UNI-USD; actionable=UNI-USD; AERO gates synced from supported config (dmid=-20, qv=50000, tick=15, tob=50).
+Action taken: fixed approval gap that excluded fresh broad recovery threshold candidates from non-ledger active-preview override; focused tests passed 90 OK and py_compile OK; restarted hidden workers only; Coinbase/order path untouched.
+Next action: continue DRY observe/sim-repair until AERO-USD or UNI-USD clears latest-rank/market-breadth/liquidity gates and closes positive; do not start LIVE while score=38 and net P&L is negative.
+User action required: no.
+
+## Codex update 2026-06-19T19:27:27Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden workers active after corrected approval sync; status monitor pid=27544, sim/repair pid=38796, supervisor pid=94488; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth; readiness=market_breadth; approved runtime primary=market_breadth.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; mirror synced.
+Dry Profit Score evidence: score=38/100; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0; DRY=True LIVE=False TP=8 SL=0.8.
+Coverage evidence: approved=AERO-USD|UNI-USD; observed=AERO-USD|UNI-USD; timestamp_ratio=1; U=120; S=356; stale_U_zero=False.
+Action taken: corrected approval sync now holds AERO-USD|UNI-USD; AERO and UNI are both observed in runtime coverage. Current block is real market breadth plus AERO dmid/topbook and UNI quote-volume, not missing product/cache coverage. Focused tests passed 90 OK; py_compile OK.
+Next action: keep hidden DRY observe/sim-repair running; only patch if fresh data shows a coverage/config bug; do not bypass market breadth while market-breadth forward evidence is negative.
+User action required: no.
+
+## Codex update 2026-06-19T19:30:57Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair workers active; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth; readiness=market_breadth; approved runtime primary=market_breadth.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; targeted evidence artifacts under logs.
+Dry Profit Score evidence: score=38/100; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0.
+Coverage evidence: approved=AERO-USD|UNI-USD; observed=AERO-USD|UNI-USD; timestamp_ratio=1; U=120; S=356; stale_U_zero=False.
+Forward evidence: AERO/UNI market-breadth sweep supported=False supported_count=0 best_avg=23.1547 best_positive_rate=0.5; approved non-breadth gate sweep supported=True best_avg=49.8283 best_positive_rate=0.875.
+Action taken: validated that product-specific market-breadth bypass is not supported, so market breadth remains locked. No Coinbase/order path changes; DRY=true LIVE=false.
+Next action: continue hidden DRY observe until breadth and product gates clear; patch only a real feed/coverage gap, not score tuning.
+User action required: no.
+
+## Codex update 2026-06-19T19:50:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair workers active on patched code; status monitor pid=27544, DRY supervisor pid=94488, sim/repair pid=42616; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth / readiness=market_breadth. Current score remains pinned by negative dry net P&L and no new safe positive closes; current feed/preflight coverage is usable, not U=0/stale.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; mirror synced. No Coinbase/order path changes.
+Dry Profit Score evidence: score=38/100; realized=-0.43020776; unrealized=0.0; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0; DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: approved=AERO-USD|UNI-USD; observed=AERO-USD|UNI-USD; timestamp_ratio=1.0; U=120; S=356; latest signal ts=2026-06-19T19:42:35Z; no approved product missing; stale_U_zero=False.
+Forward evidence: JTO/AVAX market-breadth sweep unsupported (49 signals, supported_count=0, best positive rate=0.2857); recovery sweep unsupported (115 signals, supported_count=0); market-breadth bypass remains unsafe.
+Action taken: patched auto product-config sync so broad threshold supported configs can be used for already approved recovery products; added regression test; unittest tests.test_koko_sim_repair_loop passed 91 OK; py_compile OK. Manual one-shot timed out, duplicate foreground python.exe was stopped, and hidden pythonw sim/repair was restarted through CREATE_NO_WINDOW launcher.
+Reporting status: local SMTP reporter could not send because SMTP user/password/sender env vars are missing and wrote logs/tdi_status_outbox/tdi_status_20260619T194941Z.eml. Gmail connector send also failed with token_expired HTTP 401. Reporting email delivery needs auth refresh or SMTP env, but bot workers remain active.
+Next action: continue hidden DRY observe/sim-repair; patch only evidence-backed coverage/config blockers; do not bypass market breadth without positive forward support; do not start LIVE.
+User action required: yes for email delivery auth only; no for DRY bot execution.
+
+## Codex update 2026-06-19T19:53:40Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair worker restarted on final patched code pid=42168; status monitor pid=27544; DRY supervisor pid=94488; not ready for LIVE.
+Current blocker: market_breadth remains primary; AERO also had a stale top-of-book floor blocking one fresh paper signal.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; mirror synced.
+Dry Profit Score evidence: unchanged score=38/100; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0; DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: U=120; S=356; timestamp_ratio=1.0; approved=AERO-USD|UNI-USD; observed=AERO-USD|UNI-USD; latest green around 0.6364 vs 0.85 floor; product/cache coverage still usable.
+Action taken: patched product-config sync to allow nonzero evidence-supported TOB floors to lower stale stricter non-ledger floors while still preserving the safety rule against dropping positive TOB floors to zero. Applied current supported AERO config: DRY_MIN_TOB_USD_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_TOB_USD_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_TOB_USD_BY_PRODUCT moved from 100.0 to 50.0. Focused tests passed 92 OK; py_compile OK.
+Next action: keep hidden DRY observe/sim-repair running; watch whether AERO/UNI clear market breadth and remaining product gates; do not bypass market breadth without positive forward support.
+User action required: email delivery auth only; no for DRY bot execution.
+
+## Codex update 2026-06-27T16:33:14Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: goal is active, not blocked; hidden DRY keep-working workers are running via pythonw; popup guard is active; not ready for LIVE.
+Current blocker: market_breadth plus dry PnL guard. Feed/preflight is not the active blocker: timestamp usable ratio=1.0, latest_U=120, latest_S=359, latest_brf=120, U_zero=false, approved_missing_products=[], book_metric_source_missing=0. Latest readiness has current_open_candidate_present=true, observe_probe_candidate_present=true, observe_runtime_probe_candidate_present=true, but market_green_ratio is only about 0.4857-0.5000 vs required 0.8500.
+Files changed: CODEX_RELAY.md in this update only. Coinbase/order paths untouched.
+Dry Profit Score evidence: active sim summary profit_score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.228697 USD, unrealized=0.0, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Forward evidence: latest market_breadth sweeps do not support loosening the breadth gate: 5m supported_configs=0, best_avg_net_forward_close_bps=-24.7224; 15m supported_configs=0, best_avg_net_forward_close_bps=-11.6108; focused recovery 15m supported_configs=0, best_avg_net_forward_close_bps=-4.8715.
+Action taken: resumed from the interrupted foreground trace, verified hidden worker/popup-guard state, verified safety config, checked current readiness/PnL/sim-state artifacts, and inspected the runtime market-breadth calculation path. No scoring tune applied.
+Next action: continue tracing whether market breadth should exclude non-actionable products from the runtime breadth sample; patch only if the calculation/filtering is wrong. Otherwise keep DRY observe running and wait for market breadth/product quality to clear with positive dry PnL evidence.
+User action required: no for DRY execution; email delivery auth remains separate if Gmail status reporting is required.
+
+## Codex update 2026-06-27T16:41:55Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loops remain active via pythonw; popup guard active; accelerated hidden DRY supervisor chunk completed 6/6 cycles with patched code; not ready for LIVE.
+Current blocker: market_breadth. Latest refreshed readiness shows current_open_candidate_present=false, observe_probe_candidate_present=false, observe_runtime_probe_candidate_present=false after low-TDI/market-quality guards. Feed/preflight is healthy: latest_U=120, latest_S=359, latest_brf=120, timestamp usable ratio=1.0, book_metric_source_missing=0, approved_missing_products=[], approved observed=AERO-USD|ETH-USD|ONDO-USD|TAO-USD. Latest green breadth remains short: market_green_ratio=0.5278 vs 0.8500, market_dmid_bps=8.09 vs 0.0, signals_green_ok=0.
+Files changed: managers/run_manager/run_manager.py; tests/test_koko_dry_candidate_rank.py; CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.228697 USD, unrealized=0.0, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: patched runtime market-breadth candidate sampling so DRY breadth uses the same approved-recovery product inclusion path as DRY candidate checking, preventing approved products outside the normal top slice from disappearing from the breadth/openability sample. Added regression tests for default approved inclusion and the existing disable guard. Validation passed: python -m unittest tests.test_koko_dry_candidate_rank tests.test_koko_dry_observe_readiness tests.test_koko_sim_repair_loop = 290 OK; py_compile managers/run_manager/run_manager.py OK. Hidden 6-cycle supervisor run completed with no opens because breadth still failed.
+Next action: continue hidden DRY observe/sim-repair; do not tune Profit Score while open_count=0 and market_breadth remains the gate; next evidence-backed target is product-quality recovery once breadth improves or a supported product-specific pocket appears.
+User action required: no for DRY execution.
+
+## Codex update 2026-06-27T16:22:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; hidden sim/repair and forward-evidence jobs active; not ready for LIVE.
+Current blocker: market_breadth remains primary. Current readiness is honest after patch: open_candidate=false, current_open_candidate=false, probe=false, runtime_probe=false; latest green_ratio=0.3214 vs min_green=0.85.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/koko_sim_repair_loop.py; CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: latest sim state score=40; dry PnL realized=-0.228697, unrealized=0.0, net=-0.228697, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: timestamp_ratio=1.0; latest_U=120; approved products observed=AERO-USD|ETH-USD|ONDO-USD|TAO-USD|XLM-USD; product_cache approved_missing_products=[]; book_metric_source_missing=0. Current approved failures include market_breadth=5, dmid=5, dry_pnl_guard=3, book_pressure=2, quote_volume=1, tick_dmid=1, tob_usd=1.
+Forward evidence: fresh focused 5m blocker evidence remains net negative after costs: market_breadth avg_net=-26.6641 bps, dmid avg_net=-18.1375 bps, quote_volume avg_net=-22.562 bps, spread avg_net=-24.678 bps, tob_usd avg_net=-20.8459 bps. No safe market-breadth loosening applied.
+Action taken: patched readiness so market-breadth-only product support cannot promote multi-failure probes such as dmid|market_breadth as openable; patched sim/repair summary broad-guard active-preview logic to match auto-sync and avoid false actionable product gaps. Validation passed: 328 focused tests OK. Manual foreground sim run timed out and was stopped; hidden pythonw workers remain active.
+Next action: keep DRY-only hidden loop running; let fresh sim/repair state converge on patched summary; only add/loosen products when active preview and forward evidence support it. Do not tune Profit Score while open_count=0 and preflight/market-breadth quality is the blocker; do not start LIVE.
+User action required: no for DRY execution.
+
+## Codex update 2026-06-27T16:29:20Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; hidden sim/repair workers active; not ready for LIVE.
+Current blocker: approved_recovery_market_breadth_then_dmid_then_quote_volume_then_tob_usd_then_book_pressure_then_dry_pnl_guard_then_tdi_shadow_then_trough. Readiness remains market_breadth with open_candidate=false/current_open_candidate=false.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; logs/koko_sim_repair_loop_state.json; CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; dry PnL realized=-0.228697, unrealized=0.0, net=-0.228697, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: latest readiness timestamp_ratio=1.0, latest_U=120; green breadth remains weak around 0.3214 vs 0.85 floor; approved/actionable products now consistently AERO-USD|ETH-USD|ONDO-USD|TAO-USD|XLM-USD.
+Forward evidence: newest focused recovery 15m threshold sweep supported_count=0, best_avg_net_forward_close_bps=-4.8715, best_positive_net_close_rate=0.3. No safe loosening signal.
+Action taken: patched sim/repair state writer to apply auto_sync_recovery_approval back into summary.recovery_approval_cross_check so false actionable products such as AVAX-USD are removed from summary/status. Added regression test. Validation passed: 329 focused tests OK. Manual foreground sim timed out and was stopped; hidden pythonw workers remain active.
+Next action: keep DRY-only hidden loop running; wait for positive active-preview/forward evidence before changing gates. Do not tune Profit Score while open_count=0 and market/preflight quality is the blocker; do not start LIVE.
+User action required: no for DRY execution.
+
+## Codex update 2026-06-27T15:39:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; bounded DRY supervised observe chunk completed hidden after preflight refresh; not ready for LIVE.
+Current blocker: market_breadth remains active, but data/preflight openability is no longer stuck at opened=0. Fresh readiness reports open_candidate=true/current_open_candidate=true/probe=true/runtime_probe=true.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: active sim state previously showed score=40; latest dry PnL summary has realized=-0.22535746, unrealized=0.01147265, net=-0.21388481, opened=193, closed=191, wins=102, losses=84, open_count=2, DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: preflight refreshed 359/359 products, failed=0, timestamp_ratio=1.0; readiness signals=110, liquid_dmid=74, liquid_dmid_spread_tob=55; blocked_by includes market_breadth=41, tob_usd=33, dry_pnl_guard=17.
+Action taken: fixed readiness false-positive handling and added strong broad-guard forward evidence support for approved probes when direct market-breadth evidence is weak but configured broad-guard product evidence is supported. Validation passed: 193 focused tests OK.
+Next action: keep DRY-only hidden loop running, monitor the two open DRY positions through static TP/SL, and only patch the next evidence-backed feed/preflight blocker if opens stall or close poorly. Do not tune scoring while openability is the active lane; do not start LIVE.
+User action required: no for DRY execution; email delivery auth remains separate if Gmail status reporting is required.
+
+## Codex update 2026-06-27T15:56:30Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; post-patch DRY supervised chunk completed hidden; not ready for LIVE.
+Current blocker: market_breadth remains primary. After low-TDI probe tightening, latest continuous readiness moved to open_candidate=false; this is intentional because the prior openable probes were low-quality TDI-shadow entries.
+Files changed: tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; run_settings.json; CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: active dry summary after old-policy positions closed is realized=-0.228697, unrealized=0.0, net=-0.228697, opened=195, closed=195, wins=103, losses=87, open_count=0, DRY=true LIVE=false TP=8 SL=0.8.
+Evidence: low-TDI probe leak found in ledger: UNI opened with tdi_score=47.17/70 and closed loss_trim -19.9833 bps; SUI opened with tdi_score=61.94/70 and closed loss_trim -13.3633 bps; UNI opened with tdi_score=45.57/70 and closed loss_trim -13.3578 bps. Post-patch cycle had opened_delta=0 and no new PnL movement.
+Action taken: enabled DRY_TDI_BLOCK_SHADOW_LOW=true and patched readiness _probe_status to reject DRY observe probes with tdi_shadow_low or tdi_score below configured min/grace. Validation passed: py_compile OK; 195 focused tests OK.
+Next action: keep DRY-only hidden loop running; wait for candidates that pass TDI and market/preflight gates, then evaluate realized dry PnL. Do not tune Profit Score while openability/quality is the active lane; do not start LIVE.
+User action required: no for DRY execution.
+
+## Codex update 2026-06-19T20:00:10Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden DRY observe/sim-repair worker restarted with compact always-on sweep pid=53980; status monitor pid=27544; DRY supervisor pid=94488; not ready for LIVE.
+Current blocker: live readiness moved from market_breadth to spread. Market breadth recovered on latest approved window (green about 0.88 vs 0.85 floor); approved products observed; timestamp/feed coverage clean.
+Files changed: tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py; run_settings.json; mirror synced.
+Dry Profit Score evidence: unchanged score=38/100; net=-0.43020776; opened=121; closed=121; wins=59; losses=57; open_count=0; DRY=true LIVE=false TP=8 SL=0.8.
+Coverage evidence: U=120; S=356; timestamp_ratio=1.0; approved=AERO-USD|UNI-USD; observed=AERO-USD|UNI-USD; latest approved failure_counts={spread:2}; no product/cache gap.
+Action taken: compacted the always-on recovery candidate threshold sweep grid so the repair loop does not stall before writing fresh state. Tests passed 93 OK; py_compile OK. AERO top-of-book is now using supported 50 floor; live AERO now blocks on spread (examples around 10.6 to 15.1 bps vs 10 bps cap), not missing feed/TOB. UNI is mostly blocked by dry P&L quarantine/guard and occasional spread.
+Next action: wait for compact sim/repair state update; gather forward evidence for AERO spread before any spread change; do not loosen spread without positive support; do not start LIVE.
+User action required: email delivery auth only; no for DRY bot execution.
