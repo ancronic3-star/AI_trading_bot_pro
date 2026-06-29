@@ -1,3 +1,19 @@
+
+## Codex Relay Update - 2026-06-29T06:18:48Z
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status: local hidden DRY keep-working runner active via pythonw; popup guard active; no LIVE trading enabled.
+DRY/LIVE state: DRY=true, LIVE=false. Static dry TP/SL preserved at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+Current blocker: not timestamp/feed/cache. Latest coverage has timestamp usable ratio 1.0, latest_U=120, book metric coverage 1.0, quote usable ratio 0.7541, liquid dmid overlap 0.6066. Current observe lane opened one AVAX dry position after fixes; next blocker is post-open dry P&L outcome/quality monitoring.
+Action taken: fixed DRY entry guard to honor configured positive-stats loss-cooldown bypass for sim-approved products; added AVAX-only DRY TDI grace with effective floor so 70 can relax to 52 but never below 52; kept AVAX quote floor 75000 and book pressure 0.1; restarted hidden runner.
+Files changed locally: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Dry Profit Score evidence: current score 40; dry P&L summary opened=247 closed=246 wins=132 losses=109 open_count=1 positive_open_count=1 realized=-0.19248173 unrealized=0.0; latest open event 2026-06-29T06:16:35Z AVAX-USD.
+Openability evidence: loss cooldown no longer suppresses AVAX when approved positive stats support bypass; AVAX stats closed=51 wins=36 losses=15 pnl_usd=0.24390756 pnl_bps=813.0254. AVAX tdi evidence with pressure>=0.1 and qv>=75000: n=45 wins=31 pnl_usd=0.17363796 avg=12.8621 bps for tdi>=52. New AVAX open used qv=80862.8208, press=0.5113849499, tdi=83.12, effective TDI floor=52.
+P&L accounting evidence: dry_cycle18_pnl_ledger.jsonl has 246 closes, duplicate close keys=0, ledger sum realized=-0.19248173 matching summary; repeated realized P&L reports are cumulative status snapshots, not repeated close events.
+Tests: py_compile passed for managers/run_manager/run_manager.py and tests/test_cloud_only_corrections.py; focused unittest passed for loss-cooldown bypass, cooldown age expiry, and TDI effective floor.
+Coinbase/order guardrail: not touched. DRY remains true and LIVE remains false.
+User action required: no.
+Next action: monitor the open AVAX dry position to close, then use realized outcome evidence for next repair; do not tune Profit Score while openability/P&L outcome evidence is pending.
 RELAY_FILE_VISIBLE=yes
 
 ## Latest Codex Relay Update - 2026-06-29T06:05:59Z
