@@ -1,5 +1,19 @@
 RELAY_FILE_VISIBLE=yes
 
+## Latest Codex Relay Update - 2026-06-29T06:05:59Z
+- Cloud/local task status: hidden KOKO keep-working runner active via pythonw.exe; popup guard active via hidden PowerShell; status monitor running hidden; Cloud task URL/status not configured locally / unknown.
+- DRY/LIVE: DRY=True, LIVE=False; static TP/SL preserved at DRY_PNL_TP_PCT=8 and DRY_PNL_SL_PCT=0.8.
+- Current blocker: dry P&L guard / approved-product openability, not timestamp/cache. Latest readiness snapshot has current_blocker=dry_pnl_guard, current_open_candidate_present=False, latest_U=120, latest_U_zero=False, timestamp_usable=True.
+- Coverage evidence: signals=67, quote_volume_usable_ratio=0.5373, liquid_dmid_overlap_ratio=0.3881, tick_dmid_warmed_ratio=0.8507, book_metric_source_present_ratio=1.
+- Dry Profit Score evidence: profit_score=40; dry P&L realized=-0.19248173, unrealized=0, net=-0.19248173; opened=246, closed=246, wins=132, losses=109, open_count=0, blocked_open=289.
+- P&L explanation evidence: ledger audit reports duplicate_close_count=0 and summary/ledger match; repeated stale realized totals were fixed locally by ledger-authoritative reconciliation. Latest AVAX sequence had one small win then one lower-pressure loss, leaving net still negative.
+- Action taken: set AVAX-USD dry book-pressure floor to 0.1 in DRY_MIN_BOOK_PRESSURE_BY_PRODUCT, DRY_PNL_NET_NEGATIVE_MIN_BOOK_PRESSURE_BY_PRODUCT, and DRY_PNL_SCOUT_MIN_BOOK_PRESSURE_BY_PRODUCT based on ledger evidence that press>=0.1 keeps 50/51 AVAX closes, removes the newest low-pressure loss, and removes no AVAX winners.
+- Files changed locally: run_settings.json. Existing local changed files from prior fixes remain: managers/run_manager/run_manager.py, tools/tdi_status_reporter.py, tests/test_cloud_only_corrections.py, tests/test_tdi_status_reporter.py, tools/koko_dry_observe_readiness.py, tests/test_koko_dry_observe_readiness.py, tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py.
+- Verification: run_settings.json parses; DRY=true, LIVE=false, TP/SL unchanged; hidden runner restarted with pythonw.exe; foreground readiness snapshot completed without visible window.
+- Next action: let hidden DRY observe collect fresh post-change ticks; if open_count stays 0, continue data/preflight/openability fixes only. Do not tune profit scoring while openability is blocked.
+- User action required: no.
+RELAY_FILE_VISIBLE=yes
+
 ## Latest Codex Relay Update - 2026-06-29T05:52:16Z
 - Cloud/local task status: hidden KOKO keep-working runner active via pythonw.exe; popup guard active via hidden PowerShell; no visible bot cmd runner found.
 - DRY/LIVE: DRY=true, LIVE=false; static TP/SL preserved at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
