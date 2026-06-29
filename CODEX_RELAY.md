@@ -1,4 +1,19 @@
 
+## Codex Relay Update - 2026-06-29T06:26:12Z
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status: local hidden DRY runner active; popup guard active. No LIVE trading. One visible cmd.exe in process list is Chrome native messaging, not KOKO automation.
+DRY/LIVE: DRY=true LIVE=false. Static dry TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+Current blocker: not missing feed coverage. Runtime blocker is dry_pnl_guard/quarantine while AVAX position is already open; next open waits for close/re-entry eligibility. Latest readiness primary blocker for approved subset: tick_dmid; secondary: tdi_shadow,tick_dmid,book_pressure,quarantine.
+Feed coverage: timestamp usable ratio=1, latest_U=120, U_zero_rows=0, book source ratio=1, quote usable ratio=0.5583, liquid_dmid_overlap=0.3738, green ratio=0.9048, approved products observed=True.
+Current dry Profit Score evidence: score file still reports score lane around 40; realized=-0.18427628, unrealized=0.00454201, net=-0.17973427, opened=250, closed=249, wins=135, losses=109, open_count=1, positive_open_count=1, last_event=06/29/2026 06:22:31, last_mark=06/29/2026 06:26:03.
+Open dry position: AVAX-USD open entry=6.605 last=6.615 unrealized_bps=15.14 unrealized_usd=0.00454201 entry_ts=06/29/2026 06:22:31 last_mark=06/29/2026 06:26:03.
+P&L accounting note: repeated realized value is cumulative realized P&L and remains unchanged while a position is open; only unrealized changes until a close event posts to the ledger. This is not repeated new loss realization.
+Files changed locally in this work lane: managers/run_manager/run_manager.py; tests/test_cloud_only_corrections.py; run_settings.json; tools/tdi_status_reporter.py; tests/test_tdi_status_reporter.py; tools/koko_dry_observe_readiness.py; tests/test_koko_dry_observe_readiness.py; tools/koko_sim_repair_loop.py; tests/test_koko_sim_repair_loop.py.
+Action taken: refreshed readiness; verified hidden runner and popup guard; verified feed coverage is usable; updated relay with latest AVAX dry state and P&L explanation.
+Next action: keep monitoring the open AVAX outcome; after close, analyze whether re-entry is blocked by guard/quarantine versus true feed/data gaps. Do not tune score while openability is constrained by open position/guard state.
+User action required: no.
+
 ## Codex Relay Update - 2026-06-29T06:18:48Z
 RELAY_FILE_VISIBLE=yes
 
