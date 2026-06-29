@@ -1,3 +1,16 @@
+RELAY_FILE_VISIBLE=yes
+
+## Latest Codex Relay Update - 2026-06-29T05:52:16Z
+- Cloud/local task status: hidden KOKO keep-working runner active via pythonw.exe; popup guard active via hidden PowerShell; no visible bot cmd runner found.
+- DRY/LIVE: DRY=true, LIVE=false; static TP/SL preserved at DRY_PNL_TP_PCT=8.0 and DRY_PNL_SL_PCT=0.8.
+- Current blocker: approved TAO-USD recovery is observed but not openable; latest readiness blocker dry_pnl_guard with TAO failures quote_volume, score, dry_pnl_guard. Data feed coverage is usable: timestamp ratio 1.0, latest_U=120, latest tick timestamp usable, no U=0 stale-feed blocker.
+- Files changed locally: tools/koko_sim_repair_loop.py, tests/test_koko_sim_repair_loop.py, tools/koko_dry_observe_readiness.py, tests/test_koko_dry_observe_readiness.py, managers/run_manager/run_manager.py, tests/test_cloud_only_corrections.py, tools/tdi_status_reporter.py, tests/test_tdi_status_reporter.py.
+- Patch evidence: ledger P&L summary reconcile added so stale workers cannot keep republishing old realized totals; readiness drynear false-positive fixed; ledger probation can now use threshold support when active preview is empty under existing config flags.
+- Test evidence: py_compile passed for changed Python files; focused unittest sets passed for P&L reconcile, status reporter ledger audit, readiness suppressed dry_pnl_guard, and ledger probation active-missing fallback.
+- Dry Profit Score evidence: profit_score=40; dry P&L realized=-0.19068862, unrealized=0.0, net=-0.19068862; opened=244, closed=244, wins=131, losses=108, open_count=0, blocked_open=289.
+- Approval/openability evidence: run_settings currently has DRY_PNL_SIM_APPROVED_PRODUCTS=[TAO-USD]; approved observed candidate count=1; current_open_candidate_present=false; open_candidate_present=false.
+- Next action: continue DRY-only observe/readiness loop, wait for/repair TAO openability blockers (quote_volume, score, dry_pnl_guard) and only then resume dry P&L improvement.
+- User action required: no.
 # KOKO Cloud Engine Relay
 
 This file is the fallback relay when issue comments are unavailable.
