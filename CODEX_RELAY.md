@@ -1,4 +1,26 @@
 
+## Codex Relay Update - 2026-06-29T06:36:55Z
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status: local hidden DRY runner active; popup guard active; Cloud task URL not configured locally. Hidden process chain is pythonw keep-working + pythonw dry supervisor; duplicate independent supervisors were cleaned up and single-instance lock patched.
+
+DRY/LIVE: DRY=true, LIVE=false. Static dry TP/SL unchanged: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8. Coinbase/order path not touched.
+
+Current blocker: dry_pnl_guard. Feed/preflight coverage is usable: timestamp usable ratio 1.0, latest U=120, U=0 rows 0, book source present ratio 1.0, market green 0.8824. Approved recovery products observed: AVAX-USD and TAO-USD. Current approved blockers: TAO tdi_shadow/basket negative; AVAX loss_cooldown plus quote_volume shortfall (70772 vs 75000) after latest loss-trim.
+
+Dry Profit Score evidence: current repo status monitor reports Profit Score 40/100. This is not a feed coverage block now; opened count has advanced and dry positions are opening/closing.
+
+Dry P&L evidence: latest dry state closed=252, opened=252, wins=136, losses=111, open_count=0, realized=-0.21105048, unrealized=0.0, net=-0.21105048. AVAX stats remain positive overall (closed=57, wins=40, losses=17, pnl_usd=0.22533881, pnl_bps=751.1295) but the latest AVAX close at 2026-06-29T06:36:08Z was loss_trim and worsened net.
+
+Files changed: tools/run_koko_dry_supervised.py; tools/koko_keep_working_loop.py; tests/test_run_koko_dry_supervised_preflight.py; tests/test_koko_keep_working_loop.py.
+
+Patch/change applied: fixed Windows single-instance locking by acquiring initial mutex ownership for run_koko_dry_supervised.py, added older-instance guard that ignores its own pythonw launcher parent, and added focused regression tests for supervisor/keep-working mutex ownership. This is automation/background-only; no Coinbase/order code, no LIVE, no TP/SL change.
+
+Tests run: py_compile for tools/run_koko_dry_supervised.py, tools/koko_keep_working_loop.py, tests/test_run_koko_dry_supervised_preflight.py, tests/test_koko_keep_working_loop.py. Focused unittest passed: supervisor lock rejection, supervisor Windows mutex ownership, keep-working Windows mutex ownership.
+
+Next action: continue DRY-only loop but stop treating the blocker as feed coverage; next evidence-backed repair should address why AVAX positive-stat recovery re-enters after loss_trim into weak quote-volume/loss-cooldown conditions, without tuning Profit Score and without touching Coinbase/order paths.
+
+User action required: no.
 ## Codex Relay Update - 2026-06-29T06:26:12Z
 RELAY_FILE_VISIBLE=yes
 
