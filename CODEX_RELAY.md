@@ -13,6 +13,18 @@ Standing state:
 
 Use this file for approved instructions, report requests, and status handoffs related to KOKO Cloud engine work.
 
+## Latest Status - 2026-06-29T07:05:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; one-shot DRY sim repair completed after patch. Not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_dry_pnl_guard. Feed/preflight is usable: latest_U=120, window_U_zero_rows=0, latest tick timestamp usable=true, signal_timestamp_usable_ratio=1.0, book_metric_source_present_ratio=1.0. The current blocker is approval/openability safety, not stale feed or U=0.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\ai_trading_bot_koko\run_settings.json; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.21105048 USD, unrealized=0.0, opened=252, closed=252, wins=136, losses=111, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: patched expectancy quarantine override so a product-specific minimum close override can qualify a threshold-supported quarantined product only when it still passes positive dry ledger PnL, positive bps, win-rate, loss-trim, and fresh threshold checks. Added PUMP-USD product-specific override minimum of 4 closes. Current evidence: PUMP dry ledger +0.02793166 USD / +93.1055 bps, win_rate=0.75, loss_trim_rate=0.25, fresh threshold avg_net_forward_close_bps=75.4276, positive_rate=0.8462, signals=13. One-shot sim now reports quarantine_override_products=[PUMP-USD].
+Current blocker detail: PUMP is not approved yet because current readiness still reports readiness_current_failure_excluded_products=[PUMP-USD], mainly TDI-shadow/current-quality failures. Regenerated readiness confirms PUMP book-pressure floor now propagates as 0.0; a recent PUMP row had only dry_pnl_guard/quarantine left, so the patched path can open on the next clean current tick instead of waiting until quarantine expiry.
+Validation: py_compile passed for tools\koko_sim_repair_loop.py and tests\test_koko_sim_repair_loop.py. Focused unittest coverage passed: test_auto_sync_recovery_approval_uses_product_specific_min_closed_for_threshold_product, test_auto_sync_recovery_approval_uses_product_specific_quarantine_override_min_closed, and test_auto_sync_recovery_approval_blocks_quarantine_override_when_latest_unsupported. Regenerated dry_observe_readiness_latest.json and ran one sim-repair iteration.
+Next action: keep hidden DRY observe/sim/repair running. Do not tune profit score while opened/open_count=0. Next evidence target is current readiness/TDI-shadow clearance for PUMP or another actionable supported product; continue P&L repair only after DRY opens/closes.
+User action required: no for DRY execution.
+
 ## Latest Status - 2026-06-29T06:54:00Z
 RELAY_FILE_VISIBLE=yes
 Cloud task status: hidden keep-working loop active via pythonw; popup guard active; hidden runner restarted after patch. Current local state updated around 2026-06-29T06:53:59Z. Not ready for LIVE.
