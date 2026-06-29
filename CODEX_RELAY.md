@@ -8513,3 +8513,56 @@ Next action:
 
 User action required:
 - No.
+
+## Codex relay status update
+
+Timestamp: 2026-06-29T05:35:10Z
+
+RELAY_FILE_VISIBLE=yes
+
+Cloud task status:
+- Cloud task URL/status: not configured locally / not visible from this workspace.
+- Local hidden keep-working runner: active via pythonw.exe after hidden restart.
+- DRY=true and LIVE=false.
+- Coinbase/order placement path not touched.
+- Static TP/SL safety intact: DRY_PNL_TP_PCT=8.0, DRY_PNL_SL_PCT=0.8.
+
+Current blocker:
+- Primary blocker is DRY recovery/openability, not score tuning.
+- Summary/ledger stale P&L mismatch was fixed locally by reconciling dry summary writes from the append-only ledger.
+- Current approved recovery product is XLM-USD only, backed by direct recovery evidence, but latest observed XLM row is blocked by dmid/net_negative_low_dmid, not missing approval.
+- Feed/data coverage is usable: timestamp coverage 1.0, latest U=120, U-zero rows=0, book metric present ratio about 0.9909, spread usable about 0.9640, top-book usable about 0.8825.
+
+Files changed locally:
+- C:\ai_trading_bot_koko\managers\run_manager\run_manager.py
+- C:\ai_trading_bot_koko\tools\tdi_status_reporter.py
+- C:\ai_trading_bot_koko\tests\test_cloud_only_corrections.py
+- C:\ai_trading_bot_koko\tests\test_tdi_status_reporter.py
+- C:\ai_trading_bot_koko\run_settings.json
+- Remote relay update: CODEX_RELAY.md on ancronic3-star/AI_trading_bot_pro branch codex/cloud-ready-koko-bot
+
+Dry Profit Score / P&L evidence:
+- Current score evidence: Profit Score 40/100 from dry_cycle18 score summary.
+- Reconciled dry P&L: realized=-0.19068862 USD, unrealized=0.0 USD, net=-0.19068862 USD.
+- opened=244, closed=244, wins=131, losses=108, open_count=0.
+- Ledger and summary now match after reconciliation: opened/closed 244/244, realized=-0.19068862.
+- Previous stale summary showed opened/closed 243/243 and realized=-0.20249407 while ledger showed 244/244 and realized=-0.19068862.
+
+Action taken:
+- Added DRY P&L ledger audit to status reporting so stale summary mismatches are visible.
+- Added write-boundary dry P&L reconciliation from ledger to prevent stale in-memory workers from republishing old realized P&L totals.
+- Restarted only hidden KOKO pythonw workers in background and reconciled current state.
+- Set DRY_PNL_SIM_APPROVED_PRODUCTS and DRY_PNL_SIM_APPROVED_HISTORY_OVERRIDE_PRODUCTS to ["XLM-USD"] based on positive forward evidence; did not loosen trough, dmid, TP/SL, or live/order settings.
+
+Verification:
+- py_compile passed for run_manager, tdi_status_reporter, and touched tests.
+- Focused unittest set passed: 4 tests OK.
+- Fresh readiness regenerated after the approval change.
+
+Next action:
+- Keep hidden DRY observe running and collect the next XLM/recovery candidate with nonnegative dmid under existing guards.
+- Do not tune Profit Score while open_count remains 0 and openability is the blocker.
+- Continue data/preflight/openability work only if evidence shows product/rank/cache gaps rather than real dmid/trough/quality failure.
+
+User action required:
+- No.
