@@ -13,6 +13,17 @@ Standing state:
 
 Use this file for approved instructions, report requests, and status handoffs related to KOKO Cloud engine work.
 
+## Latest Status - 2026-06-29T06:54:00Z
+RELAY_FILE_VISIBLE=yes
+Cloud task status: hidden keep-working loop active via pythonw; popup guard active; hidden runner restarted after patch. Current local state updated around 2026-06-29T06:53:59Z. Not ready for LIVE.
+Current blocker: dry_pnl_recovery_quarantine_then_dry_pnl_guard. Feed/preflight remains usable; this is now an approval/recovery safety block, not U=0/stale feed. Sim state has no actionable approved product after exclusions; threshold/direct support exists for some products, but quarantine/negative-ledger/active-preview safety excludes them.
+Files changed: C:\ai_trading_bot_koko\tools\koko_sim_repair_loop.py; C:\ai_trading_bot_koko\tests\test_koko_sim_repair_loop.py; C:\Users\13144\OneDrive\Documents\AI_trading_bot_pro_codex_relay\CODEX_RELAY.md. Coinbase/order paths untouched.
+Dry Profit Score evidence: score=40; ready_to_deploy_live=false; realized/net dry PnL=-0.21105048 USD, unrealized=0.0, opened=252, closed=252, wins=136, losses=111, open_count=0, DRY=true LIVE=false TP=8.0 SL=0.8.
+Action taken: patched recovery product gate auto-sync so a strong supported approved product can lower stale book-pressure floors when the supported config has positive train and validation evidence. This prevents the next supported approved product from staying blocked behind an old stricter book-pressure setting. Did not force any excluded product open; current approvals remain empty because the latest sim repair found no actionable product after quarantine/negative-ledger/active-preview filters.
+Validation: py_compile passed for tools\koko_sim_repair_loop.py and tests\test_koko_sim_repair_loop.py. Focused unittest coverage passed: test_auto_sync_recovery_product_configs_lowers_book_pressure_for_strong_supported_product, test_auto_sync_recovery_product_configs_preserves_stricter_book_pressure_for_nonledger_product, test_auto_sync_recovery_product_configs_lowers_book_pressure_for_ledger_override_product, and test_auto_sync_recovery_product_configs_uses_broad_supported_threshold. DRY=true LIVE=false TP=8.0 SL=0.8 verified after patch.
+Next action: continue hidden DRY observe/sim/repair. Do not enable LIVE. Next evidence target is actionable recovery approval once quarantine/negative-ledger/active-preview exclusions clear or fresh positive evidence supports a guarded probation product.
+User action required: no for DRY execution.
+
 ## Latest Status - 2026-06-29T06:44:29Z
 RELAY_FILE_VISIBLE=yes
 Cloud task status: hidden keep-working loop active via pythonw and hidden supervised DRY runner active via pythonw; popup guard active; current local cloud-equivalent pid=10556 at 2026-06-29T06:44:22Z. Not ready for LIVE.
